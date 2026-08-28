@@ -339,8 +339,8 @@ export default function VisitReportModal() {
             ========================================================================= */}
         <div ref={reportRef} style={{ background: '#FFFFFF', padding: '1rem' }}>
           {/* Printable Report Header */}
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2px solid #2C1810', paddingBottom: '1rem' }}>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#2C1810', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2px solid #5D3826', paddingBottom: '1rem' }}>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#5D3826', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
               PLANO DE AÇÃO
             </h1>
             <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: '#334155' }}>
@@ -376,16 +376,16 @@ export default function VisitReportModal() {
                 <strong>Parabéns! Nenhuma não-conformidade identificada nesta visita.</strong>
               </div>
             ) : (
-              <div className="table-responsive" style={{ border: '1px solid #2C1810', borderRadius: '4px', overflow: 'hidden' }}>
+              <div className="table-responsive" style={{ border: '1px solid #5D3826', borderRadius: '4px', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ background: '#2C1810', color: '#FFFFFF', textAlign: 'center' }}>
-                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #5C3A28', width: '70px' }}>Data</th>
-                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #5C3A28', width: '130px' }}>Tema / Causa</th>
-                      <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #5C3A28' }}>Ação</th>
-                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #5C3A28', width: '110px' }}>Quem</th>
-                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #5C3A28', width: '110px' }}>Status</th>
-                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #5C3A28', width: '85px' }}>Prazo</th>
+                    <tr style={{ background: '#5D3826', color: '#FFFFFF', textAlign: 'center' }}>
+                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #7E5038', width: '70px' }}>Data</th>
+                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #7E5038', width: '130px' }}>Tema / Causa</th>
+                      <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #7E5038' }}>Ação</th>
+                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #7E5038', width: '110px' }}>Quem</th>
+                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #7E5038', width: '110px' }}>Status</th>
+                      <th style={{ padding: '0.6rem 0.5rem', borderRight: '1px solid #7E5038', width: '85px' }}>Prazo</th>
                       <th style={{ padding: '0.6rem 0.75rem' }}>Observação</th>
                     </tr>
                   </thead>
@@ -446,7 +446,7 @@ export default function VisitReportModal() {
           {/* Parecer do Consultor */}
           {visit.generalNotes && (
             <div style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.35rem', color: '#2C1810', textTransform: 'uppercase' }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.35rem', color: '#5D3826', textTransform: 'uppercase' }}>
                 Observações Gerais do Consultor
               </h3>
               <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', padding: '0.8rem', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', color: '#334155', fontStyle: 'italic' }}>
