@@ -39,7 +39,8 @@
   --border-strong: #D6C6BA;
 
   /* Tipografia */
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-brand: 'Montserrat', 'Poppins', -apple-system, sans-serif;
+  --font-serif: 'Montserrat', 'Poppins', sans-serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Sombras */
@@ -68,9 +69,10 @@ body {
 }
 
 h1, h2, h3, .brand-title, .report-title {
-  font-family: var(--font-serif);
-  font-weight: 700;
+  font-family: var(--font-brand);
+  font-weight: 800;
   color: var(--primary-brown);
+  letter-spacing: 0.5px;
 }
 
 .container {
@@ -122,16 +124,21 @@ h1, h2, h3, .brand-title, .report-title {
 
 .brand-title {
   color: #FFFFFF;
-  font-size: 1.35rem;
-  letter-spacing: 0.5px;
+  font-family: var(--font-brand);
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   line-height: 1.1;
 }
 
 .brand-subtitle {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-family: var(--font-brand);
+  font-size: 0.68rem;
+  font-weight: 600;
   color: #E8D9CE;
-  letter-spacing: 0.3px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .nav-tabs {
@@ -249,10 +256,11 @@ h1, h2, h3, .brand-title, .report-title {
 }
 
 .kpi-value {
-  font-family: var(--font-serif);
+  font-family: var(--font-brand);
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--primary-brown);
+  letter-spacing: -0.5px;
   line-height: 1.2;
 }
 
