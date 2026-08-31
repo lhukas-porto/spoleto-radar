@@ -22,6 +22,30 @@ import {
   Trash2
 } from 'lucide-react';
 
+const OFFICIAL_REGIONS = [
+  "SP Capital, Campinas & Região",
+  "SP Capital, ABC, Litoral & Vale",
+  "SP Capital, Osasco, Alto Tietê & Interior",
+  "SP Capital, Campinas & Piracicaba",
+  "SP Capital, Campinas & Interior",
+  "SP Interior & Sul de Minas",
+  "RJ Capital & Sul Fluminense",
+  "RJ Capital, Serrana, Lagos & Norte",
+  "RJ Capital & Espírito Santo",
+  "Minas Gerais (BH & Interior)",
+  "Região Sul (PR, SC, RS)",
+  "Nordeste (PB, PE, AL, BA, RN)",
+  "Nordeste (CE, BA)",
+  "Norte & Nordeste (AM, PA, AP, RR, RO, MA, PI)",
+  "Centro-Oeste (DF, GO, MT, MS, TO)",
+  "DF, GO, MT, AC & BA",
+  "SP - Capital",
+  "SP - Interior",
+  "RJ - Capital",
+  "Sul - Geral",
+  "Nacional / Brasil"
+];
+
 export default function ConsultantsView() {
   const { 
     consultants, 
@@ -33,6 +57,12 @@ export default function ConsultantsView() {
     assignStoresToConsultant, 
     setActiveTab 
   } = useApp();
+
+  // Get all unique regions combining official list with any active consultants' regions
+  const availableRegions = Array.from(new Set([
+    ...OFFICIAL_REGIONS,
+    ...consultants.map(c => c.region).filter(Boolean)
+  ]));
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -42,7 +72,7 @@ export default function ConsultantsView() {
   // Edit Consultant Form State
   const [editForm, setEditForm] = useState({
     name: '',
-    region: '',
+    region: OFFICIAL_REGIONS[0],
     email: '',
     phone: ''
   });
@@ -58,7 +88,7 @@ export default function ConsultantsView() {
     name: '',
     email: '',
     phone: '',
-    region: 'SP - Capital'
+    region: OFFICIAL_REGIONS[0]
   });
 
   const handleOpenEditModal = (consultant) => {
@@ -583,14 +613,19 @@ export default function ConsultantsView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Região de Atuação *</label>
-                  <input 
-                    type="text" 
+                  <label className="form-label">Região / Praça de Atuação *</label>
+                  <select 
                     value={newCons.region} 
                     onChange={(e) => setNewCons({ ...newCons, region: e.target.value })} 
-                    placeholder="Ex: SP Capital, RJ, Minas Gerais, Sul..." 
-                    required 
-                  />
+                    required
+                  >
+                    {availableRegions.map(reg => (
+                      <option key={reg} value={reg}>
+                        {reg}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="form-help">Selecione a região ou praça oficial de atendimento</span>
                 </div>
 
                 <div className="form-group">
@@ -654,14 +689,19 @@ export default function ConsultantsView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Região de Atuação *</label>
-                  <input 
-                    type="text" 
+                  <label className="form-label">Região / Praça de Atuação *</label>
+                  <select 
                     value={editForm.region} 
                     onChange={(e) => setEditForm({ ...editForm, region: e.target.value })} 
-                    placeholder="Ex: Nordeste (PB, PE, AL, BA, RN)" 
                     required
-                  />
+                  >
+                    {availableRegions.map(reg => (
+                      <option key={reg} value={reg}>
+                        {reg}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="form-help">Selecione a região ou praça oficial de atendimento</span>
                 </div>
 
                 <div className="form-group">
