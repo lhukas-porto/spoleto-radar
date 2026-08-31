@@ -25,9 +25,6 @@ export default function Header() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <SpoletoRadarLogo variant="navbar" size="md" />
-            <span className="brand-badge" style={{ fontSize: '0.68rem', padding: '0.2rem 0.5rem' }}>
-              CONSULTORIA
-            </span>
           </div>
           <div className="brand-subtitle" style={{ fontSize: '0.74rem', opacity: 0.85, paddingLeft: '2px' }}>
             Grupo Trigo &bull; {stores.length} Lojas Ativas
@@ -75,7 +72,7 @@ export default function Header() {
             className={`nav-tab ${activeTab === 'taxonomy' ? 'active' : ''}`}
             onClick={() => setActiveTab('taxonomy')}
           >
-            <Settings2 size={16} /> Matriz de Temas
+            <Settings2 size={16} /> Matriz de Tópicos
           </button>
         </nav>
       </div>

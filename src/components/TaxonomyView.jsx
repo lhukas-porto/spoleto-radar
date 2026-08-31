@@ -74,7 +74,7 @@ export default function TaxonomyView() {
   };
 
   const handleDeleteCategory = (catId, catName) => {
-    if (confirm(`Tem certeza que deseja excluir o Tema Principal "${catName}" e todos os seus subproblemas?`)) {
+    if (confirm(`Tem certeza que deseja excluir o Tópico Principal "${catName}" e todos os seus subtópicos?`)) {
       deleteCategory(catId);
       const remaining = categories.filter(c => c.id !== catId);
       if (remaining.length > 0) {
@@ -97,7 +97,7 @@ export default function TaxonomyView() {
   const handleSaveEditSubproblem = (e) => {
     e.preventDefault();
     if (!subTitle.trim()) {
-      alert('Informe o título do subproblema.');
+      alert('Informe o título do subtópico.');
       return;
     }
 
@@ -113,7 +113,7 @@ export default function TaxonomyView() {
   };
 
   const handleDeleteSubproblem = (subId, title) => {
-    if (confirm(`Deseja remover o subproblema "${title}"?`)) {
+    if (confirm(`Deseja remover o subtópico "${title}"?`)) {
       deleteSubproblem(selectedCategory.id, subId);
     }
   };
@@ -122,7 +122,7 @@ export default function TaxonomyView() {
   const handleSaveNewSubproblem = (e) => {
     e.preventDefault();
     if (!subTitle.trim()) {
-      alert('Informe o título do subproblema.');
+      alert('Informe o título do subtópico.');
       return;
     }
 
@@ -152,18 +152,21 @@ export default function TaxonomyView() {
     setSubAction3('');
   };
 
-  // Save New Category
-  const handleSaveNewCategory = (e) => {
+  // Save New Category (Criar apenas com o nome)
+  const handleSaveNewCategory = async (e) => {
     e.preventDefault();
-    if (!catName.trim()) {
-      alert('Informe o nome do tema.');
+    const trimmedName = catName.trim();
+    if (!trimmedName) {
+      alert('Informe o nome do tópico.');
       return;
     }
-    const newCat = addCategory({
-      name: catName,
-      description: catDesc
+    const newCat = await addCategory({
+      name: trimmedName,
+      description: catDesc.trim() || `Tópico e causa operacional: ${trimmedName}`
     });
-    if (newCat) setSelectedCatId(newCat.id);
+    if (newCat) {
+      setSelectedCatId(newCat.id);
+    }
     setIsNewCatModalOpen(false);
     setCatName('');
     setCatDesc('');
@@ -173,13 +176,13 @@ export default function TaxonomyView() {
     <div>
       <div className="section-header">
         <div>
-          <h1 className="section-title">Matriz de Temas & Planos de Ação Oficiais</h1>
-          <p className="section-subtitle">Gerencie e edite os Temas Principais e Subproblemas com seus 3 Planos de Ação oficiais.</p>
+          <h1 className="section-title">Matriz de Tópicos & Planos de Ação Oficiais</h1>
+          <p className="section-subtitle">Gerencie e edite os Tópicos Principais e Subtópicos com seus 3 Planos de Ação oficiais.</p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button className="btn-primary" onClick={() => setIsNewCatModalOpen(true)}>
-            <FolderPlus size={18} /> Novo Problema Principal
+            <FolderPlus size={18} /> Novo Tópico Principal
           </button>
           <button className="btn-secondary" onClick={() => {
             setSubTitle('');
@@ -188,18 +191,18 @@ export default function TaxonomyView() {
             setSubAction3('');
             setIsNewSubModalOpen(true);
           }}>
-            <Plus size={18} /> Novo Subproblema
+            <Plus size={18} /> Novo Subtópico
           </button>
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '1.5rem', alignItems: 'flex-start' }}>
         
-        {/* Lista Lateral de Temas / Problemas Principais */}
+        {/* Lista Lateral de Tópicos Principais */}
         <div className="card-panel" style={{ padding: '0.75rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', marginBottom: '0.25rem' }}>
             <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-              Problemas Principais ({categories.length})
+              Tópicos Principais ({categories.length})
             </span>
             <button 
               type="button" 
@@ -254,12 +257,12 @@ export default function TaxonomyView() {
                       {cat.subproblems?.length || 0}
                     </span>
 
-                    {/* Botão Editar Tema */}
+                    {/* Botão Editar Tópico */}
                     <button
                       type="button"
                       onClick={() => handleOpenEditCategory(cat)}
                       style={{ color: 'var(--primary-brown)', padding: '4px', borderRadius: '4px' }}
-                      title="Editar este Tema Principal"
+                      title="Editar este Tópico Principal"
                     >
                       <Edit2 size={13} />
                     </button>
@@ -270,15 +273,15 @@ export default function TaxonomyView() {
           </div>
         </div>
 
-        {/* Detalhamento dos Subproblemas e Botões de Edição */}
+        {/* Detalhamento dos Subtópicos e Botões de Edição */}
         <div className="card-panel">
           {selectedCategory && (
             <div>
-              {/* Header do Tema Selecionado com Botão de Editar */}
+              {/* Header do Tópico Selecionado com Botão de Editar */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, color: 'var(--accent-gold-dark)', letterSpacing: '0.5px' }}>
-                    Tema Principal Selecionado
+                    Tópico Principal Selecionado
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.2rem' }}>
                     <h2 style={{ fontSize: '1.4rem', color: 'var(--primary-brown)' }}>
@@ -289,13 +292,13 @@ export default function TaxonomyView() {
                       onClick={() => handleOpenEditCategory(selectedCategory)}
                       className="btn-secondary"
                       style={{ fontSize: '0.75rem', padding: '0.25rem 0.55rem' }}
-                      title="Editar nome e descrição deste tema"
+                      title="Editar nome e descrição deste tópico"
                     >
-                      <Edit2 size={13} /> Editar Tema
+                      <Edit2 size={13} /> Editar Tópico
                     </button>
                   </div>
                   <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                    {selectedCategory.description || 'Tema e causa operacional da rede Spoleto.'}
+                    {selectedCategory.description || 'Tópico e causa operacional da rede Spoleto.'}
                   </p>
                 </div>
 
@@ -311,7 +314,7 @@ export default function TaxonomyView() {
                       setIsNewSubModalOpen(true);
                     }}
                   >
-                    <Plus size={15} /> Adicionar Subproblema
+                    <Plus size={15} /> Adicionar Subtópico
                   </button>
 
                   <button
@@ -319,94 +322,120 @@ export default function TaxonomyView() {
                     onClick={() => handleDeleteCategory(selectedCategory.id, selectedCategory.name)}
                     className="btn-secondary"
                     style={{ color: 'var(--status-nao-iniciado-text)', borderColor: '#FCA5A5', fontSize: '0.82rem', padding: '0.5rem 0.75rem' }}
-                    title="Excluir este tema principal"
+                    title="Excluir este tópico principal"
                   >
                     <Trash2 size={15} />
                   </button>
                 </div>
               </div>
 
-              {/* Lista de Subproblemas com Ações de Edição */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {(selectedCategory.subproblems || []).map((sub, idx) => (
-                  <div 
-                    key={sub.id}
-                    style={{
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: 'var(--radius-md)',
-                      padding: '1.25rem',
-                      background: '#FFFFFF',
-                      boxShadow: 'var(--shadow-sm)'
+              {/* Lista de Subtópicos com Ações de Edição */}
+              {(!selectedCategory.subproblems || selectedCategory.subproblems.length === 0) ? (
+                <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '2px dashed #D6C7B8' }}>
+                  <FolderPlus size={42} color="var(--primary-brown)" style={{ margin: '0 auto 0.75rem', opacity: 0.8 }} />
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-brown)', marginBottom: '0.35rem', fontWeight: 800 }}>
+                    Tópico "{selectedCategory.name}" criado!
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: '440px', margin: '0 auto 1.5rem' }}>
+                    Agora adicione os subtópicos com seus respectivos 3 planos de ação oficiais para completar a matriz.
+                  </p>
+                  <button 
+                    type="button" 
+                    className="btn-primary"
+                    onClick={() => {
+                      setSubTitle('');
+                      setSubAction1('');
+                      setSubAction2('');
+                      setSubAction3('');
+                      setIsNewSubModalOpen(true);
                     }}
+                    style={{ padding: '0.65rem 1.4rem', fontSize: '0.92rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', margin: '0 auto' }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.6rem' }}>
-                      <div>
-                        <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--accent-gold-dark)', textTransform: 'uppercase' }}>
-                          Subproblema #{idx + 1}
-                        </span>
-                        <strong style={{ fontSize: '1.02rem', color: 'var(--text-main)', display: 'block', marginTop: '0.1rem' }}>
-                          {sub.title}
-                        </strong>
+                    <Plus size={18} /> Cadastrar 1º Subtópico
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {selectedCategory.subproblems.map((sub, idx) => (
+                    <div 
+                      key={sub.id}
+                      style={{
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '1.25rem',
+                        background: '#FFFFFF',
+                        boxShadow: 'var(--shadow-sm)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.6rem' }}>
+                        <div>
+                          <span style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--accent-gold-dark)', textTransform: 'uppercase' }}>
+                            Subtópico #{idx + 1}
+                          </span>
+                          <strong style={{ fontSize: '1.02rem', color: 'var(--text-main)', display: 'block', marginTop: '0.1rem' }}>
+                            {sub.title}
+                          </strong>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span className={`badge ${sub.defaultSeverity === 'Crítica' ? 'badge-critica' : sub.defaultSeverity === 'Alta' ? 'badge-alta' : 'badge-media'}`}>
+                            {sub.defaultSeverity}
+                          </span>
+
+                          {/* Botão Editar Subtópico */}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditSubproblem(sub)}
+                            className="btn-secondary"
+                            style={{ fontSize: '0.76rem', padding: '0.3rem 0.6rem', color: 'var(--primary-brown)' }}
+                            title="Editar este subtópico e os 3 planos de ação"
+                          >
+                            <Edit2 size={13} /> Editar
+                          </button>
+
+                          {/* Botão Excluir Subtópico */}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSubproblem(sub.id, sub.title)}
+                            style={{ color: '#EF4444', padding: '0.3rem', borderRadius: '4px' }}
+                            title="Excluir este subtópico"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span className={`badge ${sub.defaultSeverity === 'Crítica' ? 'badge-critica' : sub.defaultSeverity === 'Alta' ? 'badge-alta' : 'badge-media'}`}>
-                          {sub.defaultSeverity}
-                        </span>
-
-                        {/* Botão Editar Subproblema */}
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditSubproblem(sub)}
-                          className="btn-secondary"
-                          style={{ fontSize: '0.76rem', padding: '0.3rem 0.6rem', color: 'var(--primary-brown)' }}
-                          title="Editar este subproblema e os 3 planos de ação"
-                        >
-                          <Edit2 size={13} /> Editar
-                        </button>
-
-                        {/* Botão Excluir Subproblema */}
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSubproblem(sub.id, sub.title)}
-                          style={{ color: '#EF4444', padding: '0.3rem', borderRadius: '4px' }}
-                          title="Excluir este subproblema"
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                      {/* Caixa com os 3 Planos de Ação */}
+                      <div style={{ background: 'var(--bg-warm)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginTop: '0.5rem' }}>
+                        <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <Lightbulb size={13} color="var(--accent-gold-dark)" /> 3 Planos de Ação Pré-configurados:
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                          {(sub.suggestedActions || [sub.suggestedAction || 'Definir ação']).map((action, aIdx) => (
+                            <div key={aIdx} style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', padding: '0.15rem 0' }}>
+                              <strong style={{ color: 'var(--primary-brown)' }}>Opção {aIdx + 1}:</strong> {action}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
-
-                    {/* Caixa com os 3 Planos de Ação */}
-                    <div style={{ background: 'var(--bg-warm)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginTop: '0.5rem' }}>
-                      <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <Lightbulb size={13} color="var(--accent-gold-dark)" /> 3 Planos de Ação Pré-configurados:
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                        {(sub.suggestedActions || [sub.suggestedAction || 'Definir ação']).map((action, aIdx) => (
-                          <div key={aIdx} style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', padding: '0.15rem 0' }}>
-                            <strong style={{ color: 'var(--primary-brown)' }}>Opção {aIdx + 1}:</strong> {action}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
       {/* =========================================================================
-          MODAL: EDITAR TEMA PRINCIPAL
+          MODAL: EDITAR TÓPICO PRINCIPAL
           ========================================================================= */}
       {isEditCatModalOpen && (
         <div className="modal-overlay" onClick={() => setIsEditCatModalOpen(false)}>
           <div className="modal-card" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Edit2 size={20} /> Editar Problema Principal
+                <Edit2 size={20} /> Editar Tópico Principal
               </h2>
               <button onClick={() => setIsEditCatModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -416,7 +445,7 @@ export default function TaxonomyView() {
             <form onSubmit={handleSaveEditCategory}>
               <div className="form-grid">
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Nome do Problema Principal *</label>
+                  <label className="form-label">Nome do Tópico Principal *</label>
                   <input 
                     type="text" 
                     value={editCatName} 
@@ -427,12 +456,12 @@ export default function TaxonomyView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Descrição do Tema</label>
+                  <label className="form-label">Descrição do Tópico</label>
                   <textarea 
                     rows="3"
                     value={editCatDesc} 
                     onChange={(e) => setEditCatDesc(e.target.value)} 
-                    placeholder="Resumo do que abrange este tema operacional..." 
+                    placeholder="Resumo do que abrange este tópico operacional..." 
                   />
                 </div>
               </div>
@@ -451,14 +480,14 @@ export default function TaxonomyView() {
       )}
 
       {/* =========================================================================
-          MODAL: EDITAR SUBPROBLEMA (TÍTULO, SEVERIDADE E 3 AÇÕES)
+          MODAL: EDITAR SUBTÓPICO (TÍTULO, SEVERIDADE E 3 AÇÕES)
           ========================================================================= */}
       {editingSubproblem && (
         <div className="modal-overlay" onClick={() => setEditingSubproblem(null)}>
           <div className="modal-card" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Edit2 size={20} /> Editar Subproblema & Planos de Ação
+                <Edit2 size={20} /> Editar Subtópico & Planos de Ação
               </h2>
               <button onClick={() => setEditingSubproblem(null)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -468,17 +497,17 @@ export default function TaxonomyView() {
             <form onSubmit={handleSaveEditSubproblem}>
               <div className="form-grid">
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Tema Principal Vinculado</label>
+                  <label className="form-label">Tópico Principal Vinculado</label>
                   <input type="text" value={selectedCategory.name} disabled style={{ background: '#F5EFE6', fontWeight: 700 }} />
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Título do Subproblema *</label>
+                  <label className="form-label">Título do Subtópico *</label>
                   <input 
                     type="text" 
                     value={subTitle} 
                     onChange={(e) => setSubTitle(e.target.value)} 
-                    placeholder="Descrição do subproblema verificado em loja..." 
+                    placeholder="Descrição do subtópico verificado em loja..." 
                     required 
                   />
                 </div>
@@ -534,7 +563,7 @@ export default function TaxonomyView() {
                   Cancelar
                 </button>
                 <button type="submit" className="btn-primary">
-                  <Check size={16} /> Salvar Subproblema
+                  <Check size={16} /> Salvar Subtópico
                 </button>
               </div>
             </form>
@@ -543,15 +572,20 @@ export default function TaxonomyView() {
       )}
 
       {/* =========================================================================
-          MODAL: NOVO PROBLEMA PRINCIPAL
+          MODAL: NOVO TÓPICO PRINCIPAL
           ========================================================================= */}
       {isNewCatModalOpen && (
         <div className="modal-overlay" onClick={() => setIsNewCatModalOpen(false)}>
-          <div className="modal-card" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
+          <div className="modal-card" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
-              <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FolderPlus size={20} /> Cadastrar Novo Problema Principal
-              </h2>
+              <div>
+                <h2 style={{ fontSize: '1.15rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <FolderPlus size={20} color="var(--accent-gold-dark)" /> Criar Novo Tópico
+                </h2>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                  Informe apenas o nome do tópico. Em seguida, você adicionará os subtópicos e planos de ação.
+                </p>
+              </div>
               <button onClick={() => setIsNewCatModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
               </button>
@@ -560,23 +594,15 @@ export default function TaxonomyView() {
             <form onSubmit={handleSaveNewCategory}>
               <div className="form-grid">
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Nome do Problema Principal *</label>
+                  <label className="form-label">Nome do Tópico *</label>
                   <input 
                     type="text" 
                     value={catName} 
                     onChange={(e) => setCatName(e.target.value)} 
-                    placeholder="Ex: HIGIENE & CONTROLE DE PRAGAS..." 
+                    placeholder="Ex: CONTROLE DE TEMPERATURA, HIGIENE, CAIXA..." 
+                    autoFocus
                     required 
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Descrição do Tema</label>
-                  <textarea 
-                    rows="3"
-                    value={catDesc} 
-                    onChange={(e) => setCatDesc(e.target.value)} 
-                    placeholder="Breve resumo da finalidade deste tema..." 
+                    style={{ fontSize: '0.95rem', padding: '0.65rem 0.85rem' }}
                   />
                 </div>
               </div>
@@ -585,8 +611,8 @@ export default function TaxonomyView() {
                 <button type="button" className="btn-secondary" onClick={() => setIsNewCatModalOpen(false)}>
                   Cancelar
                 </button>
-                <button type="submit" className="btn-primary">
-                  <CheckCircle2 size={16} /> Salvar Tema
+                <button type="submit" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <CheckCircle2 size={16} /> Criar Tópico
                 </button>
               </div>
             </form>
@@ -595,14 +621,14 @@ export default function TaxonomyView() {
       )}
 
       {/* =========================================================================
-          MODAL: NOVO SUBPROBLEMA
+          MODAL: NOVO SUBTÓPICO
           ========================================================================= */}
       {isNewSubModalOpen && (
         <div className="modal-overlay" onClick={() => setIsNewSubModalOpen(false)}>
           <div className="modal-card" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Plus size={20} /> Adicionar Novo Subproblema
+                <Plus size={20} /> Adicionar Novo Subtópico
               </h2>
               <button onClick={() => setIsNewSubModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -612,7 +638,7 @@ export default function TaxonomyView() {
             <form onSubmit={handleSaveNewSubproblem}>
               <div className="form-grid">
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Tema Principal Vinculado</label>
+                  <label className="form-label">Tópico Principal Vinculado</label>
                   <select value={selectedCatId} onChange={(e) => setSelectedCatId(e.target.value)}>
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -621,7 +647,7 @@ export default function TaxonomyView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Título do Subproblema *</label>
+                  <label className="form-label">Título do Subtópico *</label>
                   <input 
                     type="text" 
                     value={subTitle} 
@@ -682,7 +708,7 @@ export default function TaxonomyView() {
                   Cancelar
                 </button>
                 <button type="submit" className="btn-primary">
-                  <Check size={16} /> Salvar Subproblema
+                  <Check size={16} /> Salvar Subtópico
                 </button>
               </div>
             </form>

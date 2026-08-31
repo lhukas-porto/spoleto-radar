@@ -140,7 +140,7 @@ export default function DashboardView() {
               <div>
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <PieIcon size={20} color="var(--primary-brown)" />
-                  Matriz de Gargalos Operacionais (Gráfico Pizza)
+                  Itens de Oportunidade (Gráfico Pizza)
                 </h3>
                 <p className="section-subtitle">
                   Distribuição percentual dos temas mais apontados nos Planos de Ação.

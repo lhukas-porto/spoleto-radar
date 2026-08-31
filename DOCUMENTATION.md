@@ -12,7 +12,7 @@ src/
 │   ├── ReportsView.jsx        # Relatórios com filtros por período e calendário customizado
 │   ├── StoresView.jsx         # Diretório com as 409 lojas Spoleto de todo o Brasil
 │   ├── ConsultantsView.jsx    # Gestão de consultores e atribuição exclusiva de lojas
-│   └── TaxonomyView.jsx       # Editor de Temas Principais, Subproblemas e 3 Ações
+│   └── TaxonomyView.jsx       # Editor de Tópicos Principais, Subtópicos e 3 Ações
 ├── context/
 │   └── AppContext.jsx         # Estado global, persistência LocalStorage e handlers de CRUD
 ├── data/

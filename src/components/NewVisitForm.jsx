@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import DateInput from './DateInput';
+import SignaturePad from './SignaturePad';
 import { 
   ClipboardCheck, 
   Store, 
@@ -20,7 +22,9 @@ import {
   Layers,
   AlertTriangle,
   Lightbulb,
-  UserCheck
+  UserCheck,
+  PenTool,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function NewVisitForm() {
@@ -35,8 +39,15 @@ export default function NewVisitForm() {
   const [selectedConsultantId, setSelectedConsultantId] = useState(consultants[0]?.id || '');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState(new Date().toTimeString().slice(0, 5));
+  const [endTime, setEndTime] = useState('');
   const [visitType, setVisitType] = useState('Visita agendada'); // 'Visita agendada' | 'Visita surpresa'
   const [generalNotes, setGeneralNotes] = useState('');
+
+  // Assinaturas Digitais Coletadas no Formulário
+  const [storeSignature, setStoreSignature] = useState(null);
+  const [storeSignerName, setStoreSignerName] = useState('');
+  const [consultantSignature, setConsultantSignature] = useState(null);
+  const [showSignatureSection, setShowSignatureSection] = useState(false);
 
   // Dynamic Diagnostics List Builder
   const [diagnostics, setDiagnostics] = useState([
@@ -200,14 +211,25 @@ export default function NewVisitForm() {
 
     const validDiagnostics = diagnostics.filter(d => d.categoryId && d.subproblemId);
 
+    const hasSignatures = storeSignature || consultantSignature;
+    const currentConsultant = consultants.find(c => c.id === selectedConsultantId);
+
     const newVisit = {
       storeId: selectedStoreId,
       consultantId: selectedConsultantId,
       date,
       time,
+      endTime,
       visitType,
       generalNotes,
-      diagnostics: validDiagnostics
+      diagnostics: validDiagnostics,
+      signatures: hasSignatures ? {
+        consultantImg: consultantSignature,
+        consultantName: currentConsultant?.name || 'Consultor(a) de Negócios',
+        storeImg: storeSignature,
+        storeSignerName: storeSignerName || 'Gerência da Loja',
+        signedAt: new Date().toISOString()
+      } : null
     };
 
     const savedVisit = addVisit(newVisit);
@@ -219,7 +241,7 @@ export default function NewVisitForm() {
     <div>
       <div className="section-header">
         <div>
-          <h1 className="section-title">Prancheta Digital de Visita de Negócios</h1>
+          <h1 className="section-title">Visita de Consultoria</h1>
           <p className="section-subtitle">Realize o diagnóstico operacional Spoleto e gere o Plano de Ação oficial da rede.</p>
         </div>
       </div>
@@ -359,12 +381,26 @@ export default function NewVisitForm() {
 
             <div className="form-group">
               <label className="form-label">Data da Visita *</label>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+              <DateInput value={date} onChange={setDate} required />
             </div>
 
             <div className="form-group">
               <label className="form-label">Horário de Início</label>
-              <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+              <input 
+                type="time" 
+                value={time} 
+                onChange={(e) => setTime(e.target.value)} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Horário de Fim (Término)</label>
+              <input 
+                type="time" 
+                value={endTime} 
+                onChange={(e) => setEndTime(e.target.value)} 
+                placeholder="--:--"
+              />
             </div>
 
             {/* Compact Tipo de Visita Pill Toggle */}
@@ -415,10 +451,10 @@ export default function NewVisitForm() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-brown)' }}>
-                <ClipboardCheck size={22} /> 2. Diagnóstico Operacional por Tema / Causa
+                <ClipboardCheck size={22} /> 2. Diagnóstico Operacional por Tópico / Causa
               </h2>
               <p className="section-subtitle">
-                Selecione o tema/causa principal e o subproblema correspondente. Adicione quantos problemas forem necessários.
+                Selecione o tópico/causa principal e o subtópico correspondente. Adicione quantos tópicos forem necessários.
               </p>
             </div>
 
@@ -428,19 +464,19 @@ export default function NewVisitForm() {
               onClick={handleAddDiagnosticRow}
               style={{ padding: '0.6rem 1.25rem', fontSize: '0.88rem' }}
             >
-              <Plus size={16} /> Adicionar Outro Problema
+              <Plus size={16} /> Adicionar Outro Tópico
             </button>
           </div>
 
           {diagnostics.length === 0 ? (
             <div style={{ padding: '2.5rem', textAlign: 'center', background: '#FAF8F5', borderRadius: 'var(--radius-lg)', border: '2px dashed var(--border-strong)' }}>
               <CheckCircle2 size={36} color="var(--success)" style={{ margin: '0 auto 0.5rem' }} />
-              <h3 style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>Nenhum problema adicionado</h3>
+              <h3 style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>Nenhum tópico adicionado</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
                 Se a loja apresentou não-conformidades no giro, clique no botão abaixo para adicionar.
               </p>
               <button type="button" className="btn-primary" onClick={handleAddDiagnosticRow}>
-                <Plus size={16} /> Adicionar Problema
+                <Plus size={16} /> Adicionar Tópico
               </button>
             </div>
           ) : (
@@ -464,22 +500,22 @@ export default function NewVisitForm() {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #F0ECE6', paddingBottom: '0.6rem' }}>
                       <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Problema #{index + 1}
+                        Tópico #{index + 1}
                       </span>
                       <button 
                         type="button" 
                         onClick={() => handleRemoveDiagnosticRow(diag.id)}
                         style={{ color: 'var(--danger)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', padding: '0.2rem 0.5rem' }}
-                        title="Remover este problema"
+                        title="Remover este tópico"
                       >
                         <Trash2 size={15} /> Remover
                       </button>
                     </div>
 
                     <div className="form-grid" style={{ marginBottom: '0.75rem' }}>
-                      {/* Seletor do Tema / Causa Principal */}
+                      {/* Seletor do Tópico / Causa Principal */}
                       <div className="form-group">
-                        <label className="form-label">Tema / Causa Principal *</label>
+                        <label className="form-label">Tópico / Causa Principal *</label>
                         <select 
                           value={diag.categoryId} 
                           onChange={(e) => handleCategoryChange(diag.id, e.target.value)}
@@ -495,9 +531,9 @@ export default function NewVisitForm() {
                         <span className="form-help">Ex: GOOGLE, PLATAFORMA DO PRATO, FIDELIDADE, TEMPOS, DELIVERY...</span>
                       </div>
 
-                      {/* Seletor do Subproblema Específico */}
+                      {/* Seletor do Subtópico Específico */}
                       <div className="form-group">
-                        <label className="form-label">Subproblema Específico *</label>
+                        <label className="form-label">Subtópico Específico *</label>
                         <select 
                           value={diag.subproblemId} 
                           onChange={(e) => handleSubproblemChange(diag.id, e.target.value)}
@@ -513,7 +549,7 @@ export default function NewVisitForm() {
                         <span className="form-help">Escolha o diagnóstico exato verificado na loja</span>
                       </div>
 
-                      {/* Severidade do Problema */}
+                      {/* Severidade do Tópico */}
                       <div className="form-group">
                         <label className="form-label">Grau de Severidade</label>
                         <select 
@@ -550,7 +586,7 @@ export default function NewVisitForm() {
                   onClick={handleAddDiagnosticRow}
                   style={{ borderStyle: 'dashed', padding: '0.7rem 1.5rem' }}
                 >
-                  <Plus size={16} /> Adicionar Outro Problema à Lista
+                  <Plus size={16} /> Adicionar Outro Tópico à Lista
                 </button>
               </div>
             </div>
@@ -568,7 +604,7 @@ export default function NewVisitForm() {
                 3. Detalhamento de Ações a serem executadas e acompanhadas
               </h2>
               <p className="section-subtitle">
-                Para cada subproblema, você pode escolher uma das 3 sugestões oficiais ou editar livremente o texto da ação.
+                Para cada subtópico, você pode escolher uma das 3 sugestões oficiais ou editar livremente o texto da ação.
               </p>
             </div>
 
@@ -594,7 +630,7 @@ export default function NewVisitForm() {
                           Item #{index + 1} &bull; {category?.name}
                         </div>
                         <h4 style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginTop: '0.2rem' }}>
-                          {sub?.title || 'Problema selecionado'}
+                          {sub?.title || 'Tópico selecionado'}
                         </h4>
                       </div>
 
@@ -670,6 +706,8 @@ export default function NewVisitForm() {
                           <option value="COLABORADORES">COLABORADORES</option>
                           <option value="EMBAIXADOR">EMBAIXADOR</option>
                           <option value="GERENTE">GERENTE</option>
+                          <option value="CONSULTOR">CONSULTOR</option>
+                          <option value="ÁREAS INTERNAS DO TRIGO">ÁREAS INTERNAS DO TRIGO</option>
                         </select>
                       </div>
 
@@ -714,20 +752,71 @@ export default function NewVisitForm() {
           </div>
         )}
 
-        {/* Bloco 4: Parecer Geral */}
+        {/* Bloco 4: Diagnóstico Geral */}
         <div className="card-panel">
           <h2 style={{ fontSize: '1.15rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary-brown)' }}>
-            <FileCheck2 size={20} /> 4. Parecer Geral da Visita
+            <FileCheck2 size={20} /> 4. Diagnóstico Geral da Visita
           </h2>
 
           <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-            <label className="form-label">Parecer do Consultor de Negócios</label>
+            <label className="form-label">Diagnóstico do Consultor de Negócios</label>
             <textarea 
               rows="3"
               value={generalNotes}
               onChange={(e) => setGeneralNotes(e.target.value)}
               placeholder="Resumo geral da postura da equipe, clima da loja, limpeza, atendimento e principais recomendações..."
             />
+          </div>
+
+          {/* Bloco 5: Assinatura Digital do Laudo (Opcional) */}
+          <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', borderTop: '1px solid #E8DFD8', paddingTop: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.05rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <PenTool size={18} color="var(--accent-gold-dark)" /> 5. Coleta de Assinatura Digital (Opcional)
+                </h3>
+                <p className="section-subtitle">
+                  Você pode coletar a assinatura da gerência agora ou a qualquer momento após gerar o laudo.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setShowSignatureSection(prev => !prev)}
+                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              >
+                {showSignatureSection ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                {showSignatureSection ? 'Ocultar Quadros de Assinatura' : storeSignature || consultantSignature ? 'Ver Assinaturas Coletadas ✅' : '+ Abrir Quadros de Assinatura'}
+              </button>
+            </div>
+
+            {showSignatureSection && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', background: '#FFFFFF', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                {/* Assinatura da Loja */}
+                <SignaturePad
+                  value={storeSignature}
+                  onChange={setStoreSignature}
+                  title="Assinatura do Franqueado / Gerente"
+                  subtitle="Passe o celular/tablet para o responsável assinar"
+                  signerName={storeSignerName}
+                  onSignerNameChange={setStoreSignerName}
+                  signerNameLabel="Nome de quem está recebendo a consultoria"
+                  signerRole="Responsável pela Unidade Spoleto"
+                  height={150}
+                />
+
+                {/* Assinatura do Consultor */}
+                <SignaturePad
+                  value={consultantSignature}
+                  onChange={setConsultantSignature}
+                  title="Assinatura do Consultor(a)"
+                  subtitle="Rubrica do consultor técnico Grupo Trigo"
+                  signerRole="Consultor(a) de Negócios • Grupo Trigo"
+                  height={150}
+                />
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>

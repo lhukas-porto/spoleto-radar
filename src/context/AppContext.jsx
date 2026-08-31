@@ -142,9 +142,11 @@ export function AppProvider({ children }) {
             consultantId: v.consultant_id || v.consultantId,
             date: v.date,
             time: v.time,
+            endTime: v.end_time || v.endTime || '',
             visitType: v.visit_type || v.visitType,
             generalNotes: v.general_notes || v.generalNotes,
-            diagnostics: v.diagnostics || []
+            diagnostics: v.diagnostics || [],
+            signatures: v.signatures || null
           }));
           setVisits(mappedVisits);
         }
@@ -207,9 +209,11 @@ export function AppProvider({ children }) {
           consultant_id: newVisit.consultantId,
           date: newVisit.date,
           time: newVisit.time,
+          end_time: newVisit.endTime || null,
           visit_type: newVisit.visitType,
           general_notes: newVisit.generalNotes,
-          diagnostics: newVisit.diagnostics
+          diagnostics: newVisit.diagnostics,
+          signatures: newVisit.signatures || null
         }]);
       } catch (e) {
         console.error('Supabase visit sync error:', e);
@@ -217,6 +221,43 @@ export function AppProvider({ children }) {
     }
 
     return newVisit;
+  };
+
+  // Update Visit (para Assinaturas Digitais e Edições)
+  const updateVisit = async (visitId, updatedData) => {
+    let updatedObj = null;
+    setVisits(prev => {
+      return prev.map(v => {
+        if (v.id !== visitId) return v;
+        updatedObj = {
+          ...v,
+          ...updatedData
+        };
+        return updatedObj;
+      });
+    });
+
+    if (selectedVisitForReport && selectedVisitForReport.id === visitId) {
+      setSelectedVisitForReport(prev => ({
+        ...prev,
+        ...updatedData
+      }));
+    }
+
+    if (isSupabaseConfigured && supabase && updatedObj) {
+      try {
+        await supabase.from('visits').update({
+          signatures: updatedObj.signatures || null,
+          general_notes: updatedObj.generalNotes,
+          diagnostics: updatedObj.diagnostics
+        }).eq('id', visitId);
+      } catch (e) {
+        console.error('Supabase visit update error:', e);
+      }
+    }
+
+    showToast('Assinaturas salvas no laudo com sucesso!');
+    return updatedObj;
   };
 
   // Update Action Plan Status
@@ -574,7 +615,7 @@ export function AppProvider({ children }) {
       }
     }
 
-    showToast('Novo Subproblema cadastrado com sucesso!');
+    showToast('Novo Subtópico cadastrado com sucesso!');
   };
 
   const updateSubproblem = async (categoryId, subproblemId, updatedData) => {
@@ -609,7 +650,7 @@ export function AppProvider({ children }) {
       }
     }
 
-    showToast('Subproblema atualizado com sucesso!');
+    showToast('Subtópico atualizado com sucesso!');
   };
 
   const deleteSubproblem = async (categoryId, subproblemId) => {
@@ -635,7 +676,7 @@ export function AppProvider({ children }) {
       }
     }
 
-    showToast('Subproblema removido da matriz.');
+    showToast('Subtópico removido da matriz.');
   };
 
   // Reset to Demo Data
@@ -663,6 +704,7 @@ export function AppProvider({ children }) {
       toastMessage,
       showToast,
       addVisit,
+      updateVisit,
       updateActionPlanStatus,
       assignStoresToConsultant,
       addConsultant,

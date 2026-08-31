@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import SpoletoRadarLogo from './SpoletoRadarLogo';
+import DigitalSignatureModal from './DigitalSignatureModal';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { 
@@ -24,13 +25,16 @@ import {
   FileDown,
   Loader2,
   Paperclip,
-  Info
+  Info,
+  PenTool,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function VisitReportModal() {
-  const { selectedVisitForReport, setSelectedVisitForReport, stores, consultants, categories, showToast } = useApp();
+  const { selectedVisitForReport, setSelectedVisitForReport, stores, consultants, categories, showToast, updateVisit } = useApp();
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [shareChannel, setShareChannel] = useState('whatsapp'); // 'whatsapp' | 'email' | 'both'
   const [recipientPhone, setRecipientPhone] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
@@ -239,6 +243,27 @@ export default function VisitReportModal() {
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button 
+              type="button"
+              className="btn-secondary" 
+              onClick={() => setIsSignatureModalOpen(true)}
+              style={{ 
+                fontSize: '0.82rem', 
+                padding: '0.45rem 0.85rem', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.35rem',
+                borderColor: visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#86EFAC' : 'var(--border-strong)',
+                backgroundColor: visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#F0FDF4' : '#FFFFFF',
+                color: visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#166534' : 'var(--text-main)',
+                fontWeight: 700
+              }}
+              title="Coletar assinaturas digitais na tela com o dedo ou mouse"
+            >
+              <PenTool size={15} color={visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#16A34A' : 'var(--accent-gold-dark)'} />
+              {visit.signatures?.consultantImg || visit.signatures?.storeImg ? 'Assinado Digitalmente ✍️' : 'Coletar Assinaturas ✍️'}
+            </button>
+
             {/* Native Share button if supported */}
             {typeof navigator !== 'undefined' && navigator.canShare && (
               <button 
@@ -365,7 +390,9 @@ export default function VisitReportModal() {
             <div>
               <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Dados da Consultoria</div>
               <div>Consultor(a): <strong>{consultant?.name}</strong> ({consultant?.region})</div>
-              <div>Data da Visita: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong> às {visit.time || '14:00'}</div>
+              <div>
+                Data da Visita: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong> &bull; Horário: <strong>{visit.time ? (visit.endTime ? `${visit.time} às ${visit.endTime}` : `${visit.time}`) : '14:00'}</strong>
+              </div>
               <div style={{ marginTop: '0.2rem' }}>
                 Tipo de Visita: <strong style={{ color: visit.visitType === 'Visita surpresa' ? 'var(--primary-brown)' : '#0F172A' }}>{visit.visitType || 'Visita agendada'}</strong>
               </div>
@@ -447,11 +474,11 @@ export default function VisitReportModal() {
             )}
           </div>
 
-          {/* Parecer do Consultor */}
+          {/* Diagnóstico do Consultor */}
           {visit.generalNotes && (
             <div style={{ marginBottom: '1.5rem' }}>
               <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.35rem', color: '#5D3826', textTransform: 'uppercase' }}>
-                Observações Gerais do Consultor
+                Diagnóstico Geral do Consultor
               </h3>
               <div style={{ background: '#F8FAFC', border: '1px solid #CBD5E1', padding: '0.8rem', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', color: '#334155', fontStyle: 'italic' }}>
                 "{visit.generalNotes}"
@@ -459,18 +486,81 @@ export default function VisitReportModal() {
             </div>
           )}
 
-          {/* Assinaturas Oficiais */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4rem', marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid #94A3B8' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ borderBottom: '1px solid #000', marginBottom: '0.4rem', height: '24px' }} />
-              <strong style={{ fontSize: '0.82rem', display: 'block' }}>{consultant?.name}</strong>
-              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Consultor(a) de Negócios &bull; Grupo Trigo</span>
+          {/* Assinaturas Oficiais com Suporte a Assinatura Digital */}
+          <div style={{ marginTop: '2.5rem', paddingTop: '1.25rem', borderTop: '1px solid #94A3B8' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#5D3826', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Validação e Assinaturas do Laudo
+              </span>
+              
+              {visit.signatures?.signedAt ? (
+                <div style={{ fontSize: '0.72rem', color: '#166534', background: '#DCFCE7', border: '1px solid #86EFAC', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
+                  <ShieldCheck size={13} color="#16A34A" /> Assinado em {new Date(visit.signatures.signedAt).toLocaleDateString('pt-BR')} às {new Date(visit.signatures.signedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="no-print btn-secondary"
+                  onClick={() => setIsSignatureModalOpen(true)}
+                  style={{ fontSize: '0.74rem', padding: '0.25rem 0.6rem', color: 'var(--primary-brown)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                >
+                  <PenTool size={12} /> Assinar com o dedo / mouse
+                </button>
+              )}
             </div>
 
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ borderBottom: '1px solid #000', marginBottom: '0.4rem', height: '24px' }} />
-              <strong style={{ fontSize: '0.82rem', display: 'block' }}>Gerência da Loja</strong>
-              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Responsável pela Unidade Spoleto</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4rem' }}>
+              {/* Assinatura do Consultor */}
+              <div 
+                style={{ textAlign: 'center', cursor: 'pointer' }}
+                onClick={() => setIsSignatureModalOpen(true)}
+                title="Clique para assinar ou editar assinatura do consultor"
+              >
+                <div style={{ height: '55px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '0.25rem' }}>
+                  {visit.signatures?.consultantImg ? (
+                    <img 
+                      src={visit.signatures.consultantImg} 
+                      alt="Assinatura do Consultor" 
+                      style={{ maxHeight: '50px', maxWidth: '220px', objectFit: 'contain' }} 
+                    />
+                  ) : (
+                    <span className="no-print" style={{ fontSize: '0.72rem', color: '#94A3B8', border: '1px dashed #CBD5E1', padding: '0.3rem 0.75rem', borderRadius: '4px' }}>
+                      ✍️ Toque para assinar
+                    </span>
+                  )}
+                </div>
+                <div style={{ borderBottom: '1px solid #000', marginBottom: '0.4rem' }} />
+                <strong style={{ fontSize: '0.82rem', display: 'block' }}>
+                  {visit.signatures?.consultantName || consultant?.name || 'Consultor(a) de Negócios'}
+                </strong>
+                <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Consultor(a) de Negócios &bull; Grupo Trigo</span>
+              </div>
+
+              {/* Assinatura da Gerência / Franqueado */}
+              <div 
+                style={{ textAlign: 'center', cursor: 'pointer' }}
+                onClick={() => setIsSignatureModalOpen(true)}
+                title="Clique para assinar ou editar assinatura do responsável da loja"
+              >
+                <div style={{ height: '55px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '0.25rem' }}>
+                  {visit.signatures?.storeImg ? (
+                    <img 
+                      src={visit.signatures.storeImg} 
+                      alt="Assinatura da Gerência" 
+                      style={{ maxHeight: '50px', maxWidth: '220px', objectFit: 'contain' }} 
+                    />
+                  ) : (
+                    <span className="no-print" style={{ fontSize: '0.72rem', color: '#94A3B8', border: '1px dashed #CBD5E1', padding: '0.3rem 0.75rem', borderRadius: '4px' }}>
+                      ✍️ Toque para assinar
+                    </span>
+                  )}
+                </div>
+                <div style={{ borderBottom: '1px solid #000', marginBottom: '0.4rem' }} />
+                <strong style={{ fontSize: '0.82rem', display: 'block' }}>
+                  {visit.signatures?.storeSignerName || 'Gerência da Loja'}
+                </strong>
+                <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Responsável pela Unidade Spoleto</span>
+              </div>
             </div>
           </div>
         </div>
@@ -618,6 +708,22 @@ export default function VisitReportModal() {
           </div>
         </div>
       )}
+
+      {/* =========================================================================
+          MODAL DE COLETA DE ASSINATURAS DIGITAIS
+          ========================================================================= */}
+      <DigitalSignatureModal
+        isOpen={isSignatureModalOpen}
+        onClose={() => setIsSignatureModalOpen(false)}
+        visit={visit}
+        consultant={consultant}
+        store={store}
+        onSave={(newSignatures) => {
+          updateVisit(visit.id, {
+            signatures: newSignatures
+          });
+        }}
+      />
     </div>
   );
 }

@@ -27,15 +27,15 @@ O **Spoleto Radar** foi desenvolvido para transformar o trabalho dos **Consultor
 
 ### 1. 📊 Painel Executivo (Dashboard)
 - **KPIs em Tempo Real**: Total de visitas, planos de ação pendentes, taxa de resolução e lojas auditadas.
-- **Gráfico de Pizza Interativo**: Matriz de Gargalos Operacionais com percentuais e fatias destacáveis.
+- **Gráfico de Pizza Interativo**: Itens de Oportunidade com percentuais e fatias destacáveis.
 - **Feed de Visitas Recentes**: Acesso direto ao laudo de cada visita.
 
 ### 2. 📝 Nova Visita & Diagnóstico Modular
 - **Seleção de Loja Inteligente**: Busca com autocompletar entre todas as **409 unidades Spoleto** cadastradas.
 - **Tipo de Visita Compacto**: Alternador rápido entre *Visita Agendada* e *Visita Surpresa*.
-- **Construtor Dinâmico de Problemas**: Adicione quantos problemas e subproblemas desejar na mesma visita com `+ Adicionar Outro Problema`.
+- **Construtor Dinâmico de Tópicos**: Adicione quantos tópicos e subtópicos desejar na mesma visita com `+ Adicionar Outro Tópico`.
 - **3 Planos de Ação Rápidos**: Pílulas de seleção de 1-clique com ações pré-configuradas ou campo livre de edição.
-- **Definição de Responsável e Prazo**: Seletor de cargo (Gerente, Colaboradores, Cozinha, Líder) e prazo (Imediato, 24h, 48h, 7 dias, 15 dias, 30 dias).
+- **Definição de Responsável e Prazo**: Seletor de responsável (*Gerente e Equipe, Franqueado, Gerente e Franqueado, Colaboradores, Embaixador, Gerente, Consultor, Áreas Internas do Trigo*) e prazo (*Imediato, 24h, 48h, 7 dias, 15 dias, 30 dias*).
 
 ### 3. 📑 Laudo Oficial & Gerador de PDF
 - Tabela idêntica à planilha oficial da rede Spoleto (*Data, Tema, Ação, Quem, Status, Prazo e Observação*).
@@ -62,11 +62,11 @@ O **Spoleto Radar** foi desenvolvido para transformar o trabalho dos **Consultor
   - Lojas atribuídas a outros consultores aparecem bloqueadas (`🔒`).
   - Ao desmarcar uma loja, ela fica imediatamente disponível (`🔓 Disponível`) para outros consultores.
 
-### 6. ⚙️ Matriz de Temas & Edição Completa de Taxonomia
-- **20 Problemas Principais** oficiais consolidados.
-- **100 Subproblemas** com severidades (*Leve, Média, Alta, Crítica*).
+### 6. ⚙️ Matriz de Tópicos & Edição Completa de Taxonomia
+- **20 Tópicos Principais** oficiais consolidados.
+- **100 Subtópicos** com severidades (*Leve, Média, Alta, Crítica*).
 - **300 Planos de Ação Oficiais** pré-configurados.
-- Ferramenta completa de **Edição e Exclusão** (`✏️ Editar Tema` e `✏️ Editar Subproblema`).
+- Ferramenta completa de **Edição e Exclusão** (`✏️ Editar Tópico` e `✏️ Editar Subtópico`).
 
 ---
 

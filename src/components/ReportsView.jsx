@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import DateInput from './DateInput';
 import { 
   FileText, 
   Search, 
@@ -228,21 +229,19 @@ export default function ReportsView() {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)' }}>De:</label>
-              <input 
-                type="date" 
+              <DateInput 
                 value={customStartDate} 
-                onChange={(e) => setCustomStartDate(e.target.value)}
-                style={{ width: 'auto', padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
+                onChange={setCustomStartDate}
+                style={{ width: '140px' }}
               />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Até:</label>
-              <input 
-                type="date" 
+              <DateInput 
                 value={customEndDate} 
-                onChange={(e) => setCustomEndDate(e.target.value)}
-                style={{ width: 'auto', padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
+                onChange={setCustomEndDate}
+                style={{ width: '140px' }}
               />
             </div>
 

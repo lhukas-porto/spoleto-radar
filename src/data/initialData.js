@@ -6752,7 +6752,7 @@ export const INITIAL_VISITS = [
     "visitType": "Auditoria Crítica",
     "generalScore": 7.2,
     "status": "Finalizada",
-    "generalNotes": "Problemas recorrentes no delivery iFood e controle de validade dos ingredientes.",
+    "generalNotes": "Tópicos recorrentes no delivery iFood e controle de validade dos ingredientes.",
     "diagnostics": [
       {
         "id": "diag-3",
