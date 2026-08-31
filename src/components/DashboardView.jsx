@@ -24,36 +24,6 @@ export default function DashboardView() {
   const totalConsultants = consultants.length;
   const totalVisits = visits.length;
   
-  // Calculate bottlenecks by category
-  const categoryBottlenecks = categories.map(cat => {
-    let count = 0;
-    visits.forEach(v => {
-      v.diagnostics.forEach(d => {
-        if (d.categoryId === cat.id) {
-          count++;
-        }
-      });
-    });
-    return {
-      id: cat.id,
-      name: cat.name.split('(')[0].trim(),
-      color: cat.color || '#C8102E',
-      count
-    };
-  }).filter(c => c.count > 0).sort((a, b) => b.count - a.count);
-
-  const totalBottlenecks = categoryBottlenecks.reduce((sum, c) => sum + c.count, 0);
-
-  // Delivery specific metric
-  const deliveryVisitsWithIssues = visits.filter(v => 
-    v.diagnostics.some(d => d.categoryId === 'cat-delivery' || d.categoryId === 'cat-ifood')
-  ).length;
-
-  // Donut SVG Math
-  const radius = 65;
-  const circumference = 2 * Math.PI * radius; // ~408.4
-  let accumulatedPercent = 0;
-
   // Colors palette for slices
   const chartColors = [
     '#C8102E', // Spoleto Red
@@ -67,6 +37,39 @@ export default function DashboardView() {
     '#14B8A6', // Teal
     '#D97706'  // Brown-Amber
   ];
+
+  // Calculate bottlenecks by aggregating all diagnostics from all visits
+  const categoryCounts = {};
+  
+  visits.forEach(v => {
+    (v.diagnostics || []).forEach(d => {
+      const catId = d.categoryId || d.category_id || 'outros';
+      categoryCounts[catId] = (categoryCounts[catId] || 0) + 1;
+    });
+  });
+
+  const categoryBottlenecks = Object.entries(categoryCounts).map(([catId, count], index) => {
+    const cat = categories.find(c => c.id === catId);
+    let displayName = cat ? cat.name.split('(')[0].trim() : catId.replace('cat-', '').replace(/-/g, ' ').toUpperCase();
+    return {
+      id: catId,
+      name: displayName,
+      color: (cat && cat.color && cat.color !== '#5D3826') ? cat.color : chartColors[index % chartColors.length],
+      count
+    };
+  }).sort((a, b) => b.count - a.count);
+
+  const totalBottlenecks = categoryBottlenecks.reduce((sum, c) => sum + c.count, 0);
+
+  // Delivery specific metric
+  const deliveryVisitsWithIssues = visits.filter(v => 
+    (v.diagnostics || []).some(d => d.categoryId === 'cat-delivery' || d.categoryId === 'cat-ifood')
+  ).length;
+
+  // Donut SVG Math
+  const radius = 65;
+  const circumference = 2 * Math.PI * radius; // ~408.4
+  let accumulatedPercent = 0;
 
   return (
     <div>
