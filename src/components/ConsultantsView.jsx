@@ -153,6 +153,9 @@ export default function ConsultantsView() {
             s.consultantId === consultant.id || 
             (consultant.assignedStores && Array.isArray(consultant.assignedStores) && consultant.assignedStores.includes(s.id))
           );
+          const storeCount = (consultant.assignedStores && consultant.assignedStores.length > 0) 
+            ? consultant.assignedStores.length 
+            : assignedStores.length;
 
           return (
             <div 
@@ -195,7 +198,7 @@ export default function ConsultantsView() {
                   </div>
 
                   <span style={{ fontSize: '0.78rem', background: '#F3F4F6', color: '#374151', padding: '0.25rem 0.6rem', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>
-                    {assignedStores.length} loja{assignedStores.length !== 1 ? 's' : ''}
+                    {storeCount} loja{storeCount !== 1 ? 's' : ''}
                   </span>
                 </div>
 
@@ -214,7 +217,7 @@ export default function ConsultantsView() {
                 <div style={{ background: 'var(--bg-warm)', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                      Carteira Exclusiva ({assignedStores.length})
+                      Carteira Exclusiva ({storeCount})
                     </span>
                     <button
                       type="button"
@@ -257,7 +260,7 @@ export default function ConsultantsView() {
                   style={{ fontSize: '0.8rem', padding: '0.45rem 0.9rem', flex: 1, justifyContent: 'center' }}
                   onClick={() => handleOpenManageStores(consultant)}
                 >
-                  <CheckSquare size={15} /> Alterar Lojas ({assignedStores.length})
+                  <CheckSquare size={15} /> Alterar Lojas ({storeCount})
                 </button>
 
                 <button 
