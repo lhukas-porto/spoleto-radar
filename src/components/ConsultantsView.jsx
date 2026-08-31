@@ -43,7 +43,10 @@ export default function ConsultantsView() {
 
   const handleOpenManageStores = (consultant) => {
     setManagingConsultant(consultant);
-    const currentStoreIds = stores.filter(s => s.consultantId === consultant.id).map(s => s.id);
+    const currentStoreIds = stores.filter(s => 
+      s.consultantId === consultant.id || 
+      (consultant.assignedStores && Array.isArray(consultant.assignedStores) && consultant.assignedStores.includes(s.id))
+    ).map(s => s.id);
     setAssignedStoreIds(currentStoreIds);
     setStoreSearch('');
     setStateFilter('Todos');
@@ -146,7 +149,10 @@ export default function ConsultantsView() {
       {/* Grid de Consultores */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.5rem' }}>
         {consultants.map(consultant => {
-          const assignedStores = stores.filter(s => s.consultantId === consultant.id);
+          const assignedStores = stores.filter(s => 
+            s.consultantId === consultant.id || 
+            (consultant.assignedStores && Array.isArray(consultant.assignedStores) && consultant.assignedStores.includes(s.id))
+          );
 
           return (
             <div 

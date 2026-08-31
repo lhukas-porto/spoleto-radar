@@ -83,8 +83,13 @@ export default function NewVisitForm() {
     setStoreSearchQuery(store.name + ' (' + store.city + '/' + store.state + ')');
     setIsStoreDropdownOpen(false);
 
-    if (store.consultantId) {
-      setSelectedConsultantId(store.consultantId);
+    const matchedCons = consultants.find(c => 
+      c.id === store.consultantId || 
+      (c.assignedStores && Array.isArray(c.assignedStores) && c.assignedStores.includes(store.id))
+    );
+
+    if (matchedCons) {
+      setSelectedConsultantId(matchedCons.id);
     }
   };
 

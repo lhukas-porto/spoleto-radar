@@ -13,39 +13,52 @@ export function AppProvider({ children }) {
   // Navigation State
   const [activeTab, setActiveTab] = useState('dashboard');
   
-  // Data States (Local + Cloud Sincronizado)
+  // Data States (Local + Cloud Sincronizado com migração automática v2)
   const [stores, setStores] = useState(() => {
-    const saved = localStorage.getItem('trigo_stores');
+    if (localStorage.getItem('trigo_stores') && !localStorage.getItem('trigo_stores_v2')) {
+      localStorage.removeItem('trigo_stores');
+      localStorage.removeItem('trigo_consultants');
+    }
+    const saved = localStorage.getItem('trigo_stores_v2');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      // Migrate to new official stores if old mock assignments were present
-      if (parsed.length >= 400 && parsed.some(s => s.consultantId === 'cons-1' && s.name.includes('MAG SHOPPING'))) return parsed;
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.length >= 400 && parsed.some(s => s.consultantId === 'cons-1')) return parsed;
+      } catch (e) {}
     }
     return INITIAL_STORES;
   });
 
   const [consultants, setConsultants] = useState(() => {
-    const saved = localStorage.getItem('trigo_consultants');
+    const saved = localStorage.getItem('trigo_consultants_v2');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      // Migrate if old 5 mock consultants
-      if (parsed.length >= 16) return parsed;
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.length >= 16 && parsed.some(c => c.assignedStores && c.assignedStores.length > 0)) return parsed;
+      } catch (e) {}
     }
     return INITIAL_CONSULTANTS;
   });
 
   const [categories, setCategories] = useState(() => {
-    const saved = localStorage.getItem('trigo_categories');
+    const saved = localStorage.getItem('trigo_categories_v2');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.length >= 18) return parsed;
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.length >= 18) return parsed;
+      } catch (e) {}
     }
     return INITIAL_CATEGORIES;
   });
 
   const [visits, setVisits] = useState(() => {
-    const saved = localStorage.getItem('trigo_visits');
-    return saved ? JSON.parse(saved) : INITIAL_VISITS;
+    const saved = localStorage.getItem('trigo_visits_v2');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return INITIAL_VISITS;
   });
 
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
@@ -133,21 +146,21 @@ export function AppProvider({ children }) {
     loadFromSupabase();
   }, []);
 
-  // Save to LocalStorage
+  // Save to LocalStorage (v2 keys)
   useEffect(() => {
-    localStorage.setItem('trigo_stores', JSON.stringify(stores));
+    localStorage.setItem('trigo_stores_v2', JSON.stringify(stores));
   }, [stores]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_consultants', JSON.stringify(consultants));
+    localStorage.setItem('trigo_consultants_v2', JSON.stringify(consultants));
   }, [consultants]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_categories', JSON.stringify(categories));
+    localStorage.setItem('trigo_categories_v2', JSON.stringify(categories));
   }, [categories]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_visits', JSON.stringify(visits));
+    localStorage.setItem('trigo_visits_v2', JSON.stringify(visits));
   }, [visits]);
 
   // Toast Helper

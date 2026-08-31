@@ -107,7 +107,10 @@ export default function StoresView() {
       {/* Grid de Cards de Lojas */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
         {filteredStores.map(store => {
-          const consultant = consultants.find(c => c.id === store.consultantId);
+          const consultant = consultants.find(c => 
+            c.id === store.consultantId || 
+            (c.assignedStores && Array.isArray(c.assignedStores) && c.assignedStores.includes(store.id))
+          );
           const storeVisits = visits.filter(v => v.storeId === store.id);
           const lastVisit = storeVisits[0];
 
