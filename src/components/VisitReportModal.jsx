@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import SpoletoRadarLogo from './SpoletoRadarLogo';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { 
@@ -338,14 +339,17 @@ export default function VisitReportModal() {
             PRINTABLE & EXPORTABLE PDF CONTAINER
             ========================================================================= */}
         <div ref={reportRef} style={{ background: '#FFFFFF', padding: '1rem' }}>
-          {/* Printable Report Header */}
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2px solid #5D3826', paddingBottom: '1rem' }}>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#5D3826', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-              PLANO DE AÇÃO
-            </h1>
-            <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: '#334155' }}>
-              Detalhamento de Ações a serem executadas e acompanhadas nas áreas de Qualidade, Padrão, Imagem, MKT e Indicadores.
-            </p>
+          {/* Printable Report Header com Logo Oficial */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #5D3826', paddingBottom: '0.85rem' }}>
+            <SpoletoRadarLogo variant="light" size="md" />
+            <div style={{ textAlign: 'right' }}>
+              <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#5D3826', letterSpacing: '0.5px', textTransform: 'uppercase', margin: 0 }}>
+                PLANO DE AÇÃO OFICIAL
+              </h1>
+              <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, marginTop: '2px' }}>
+                Consultoria de Negócios &bull; Grupo Trigo
+              </p>
+            </div>
           </div>
 
           {/* Store & Visit Metadata Header */}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import SpoletoRadarLogo from './SpoletoRadarLogo';
 import { 
   LayoutDashboard, 
   ClipboardCheck, 
@@ -17,31 +18,21 @@ export default function Header() {
   return (
     <header className="navbar">
       <div className="navbar-container">
-        {/* Brand */}
-        <div className="brand-wrapper" onClick={() => setActiveTab('dashboard')}>
-          <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: 'var(--radius-sm)',
-            background: 'var(--accent-gold)',
-            color: 'var(--primary-brown)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.4rem',
-            fontWeight: 900,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-          }}>
-            🍝
+        {/* Brand com o Logo Oficial Spoleto Radar */}
+        <div 
+          className="brand-wrapper" 
+          onClick={() => setActiveTab('dashboard')} 
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', cursor: 'pointer' }}
+          title="Ir para o Painel Executivo"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <SpoletoRadarLogo variant="navbar" size="md" />
+            <span className="brand-badge" style={{ fontSize: '0.68rem', padding: '0.2rem 0.5rem' }}>
+              CONSULTORIA
+            </span>
           </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span className="brand-title">Spoleto Radar</span>
-              <span className="brand-badge">OFICIAL</span>
-            </div>
-            <div className="brand-subtitle">
-              Consultoria de Negócios &bull; Grupo Trigo ({stores.length} Lojas)
-            </div>
+          <div className="brand-subtitle" style={{ fontSize: '0.74rem', opacity: 0.85, paddingLeft: '2px' }}>
+            Grupo Trigo &bull; {stores.length} Lojas Ativas
           </div>
         </div>
 
