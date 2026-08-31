@@ -44,12 +44,22 @@ export default function TaxonomyView() {
   const [editCatName, setEditCatName] = useState('');
   const [editCatDesc, setEditCatDesc] = useState('');
 
-  // Subproblem Form State (New & Edit)
+  // Subproblem Form State (New & Edit - Totalmente Dinâmico e Ilimitado)
   const [subTitle, setSubTitle] = useState('');
   const [subSeverity, setSubSeverity] = useState('Alta');
-  const [subAction1, setSubAction1] = useState('');
-  const [subAction2, setSubAction2] = useState('');
-  const [subAction3, setSubAction3] = useState('');
+  const [subActions, setSubActions] = useState(['', '', '']);
+
+  const handleAddActionField = () => {
+    setSubActions(prev => [...prev, '']);
+  };
+
+  const handleRemoveActionField = (index) => {
+    setSubActions(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateActionField = (index, value) => {
+    setSubActions(prev => prev.map((a, i) => i === index ? value : a));
+  };
 
   const selectedCategory = categories.find(c => c.id === selectedCatId) || categories[0];
 
@@ -88,10 +98,10 @@ export default function TaxonomyView() {
     setEditingSubproblem(sub);
     setSubTitle(sub.title);
     setSubSeverity(sub.defaultSeverity || 'Alta');
-    const actions = sub.suggestedActions || [sub.suggestedAction || ''];
-    setSubAction1(actions[0] || '');
-    setSubAction2(actions[1] || '');
-    setSubAction3(actions[2] || '');
+    const actions = sub.suggestedActions?.length > 0 
+      ? [...sub.suggestedActions] 
+      : [sub.suggestedAction || ''];
+    setSubActions(actions.length > 0 ? actions : ['', '', '']);
   };
 
   const handleSaveEditSubproblem = (e) => {
@@ -101,12 +111,12 @@ export default function TaxonomyView() {
       return;
     }
 
-    const actions = [subAction1, subAction2, subAction3].filter(a => a.trim().length > 0);
+    const validActions = subActions.map(a => a.trim()).filter(a => a.length > 0);
 
     updateSubproblem(selectedCategory.id, editingSubproblem.id, {
-      title: subTitle,
+      title: subTitle.trim(),
       defaultSeverity: subSeverity,
-      suggestedActions: actions.length > 0 ? actions : ['Definir ação corretiva na visita.']
+      suggestedActions: validActions.length > 0 ? validActions : ['Definir ação corretiva na visita.']
     });
 
     setEditingSubproblem(null);
@@ -119,37 +129,25 @@ export default function TaxonomyView() {
   };
 
   // Save New Subproblem
-  const handleSaveNewSubproblem = (e) => {
+  const handleSaveNewSubproblem = async (e) => {
     e.preventDefault();
     if (!subTitle.trim()) {
       alert('Informe o título do subtópico.');
       return;
     }
 
-    const actions = [subAction1, subAction2, subAction3].filter(a => a.trim().length > 0);
+    const validActions = subActions.map(a => a.trim()).filter(a => a.length > 0);
 
-    addSubproblem(selectedCatId, subTitle, subSeverity, actions[0] || 'Ação a definir');
-
-    if (actions.length > 1) {
-      // update with full 3 actions
-      setTimeout(() => {
-        const cat = categories.find(c => c.id === selectedCatId);
-        const lastSub = cat?.subproblems[cat.subproblems.length - 1];
-        if (lastSub) {
-          updateSubproblem(selectedCatId, lastSub.id, {
-            title: subTitle,
-            defaultSeverity: subSeverity,
-            suggestedActions: actions
-          });
-        }
-      }, 50);
-    }
+    await addSubproblem(
+      selectedCatId, 
+      subTitle.trim(), 
+      subSeverity, 
+      validActions.length > 0 ? validActions : ['Definir plano de ação na visita técnica.']
+    );
 
     setIsNewSubModalOpen(false);
     setSubTitle('');
-    setSubAction1('');
-    setSubAction2('');
-    setSubAction3('');
+    setSubActions(['', '', '']);
   };
 
   // Save New Category (Criar apenas com o nome)
@@ -405,10 +403,10 @@ export default function TaxonomyView() {
                         </div>
                       </div>
 
-                      {/* Caixa com os 3 Planos de Ação */}
+                      {/* Caixa com os Planos de Ação Dinâmicos */}
                       <div style={{ background: 'var(--bg-warm)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', marginTop: '0.5rem' }}>
                         <div style={{ fontSize: '0.76rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                          <Lightbulb size={13} color="var(--accent-gold-dark)" /> 3 Planos de Ação Pré-configurados:
+                          <Lightbulb size={13} color="var(--accent-gold-dark)" /> {(sub.suggestedActions || [sub.suggestedAction || 'Definir ação']).length} {(sub.suggestedActions || [sub.suggestedAction || '']).length === 1 ? 'Plano de Ação Oficial' : 'Planos de Ação Oficiais'}:
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                           {(sub.suggestedActions || [sub.suggestedAction || 'Definir ação']).map((action, aIdx) => (
@@ -523,38 +521,49 @@ export default function TaxonomyView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1', borderTop: '1px solid #E8DFD8', paddingTop: '0.85rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
-                    3 Planos de Ação Oficiais Sugeridos
-                  </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase' }}>
+                      Planos de Ação Oficiais Sugeridos ({subActions.length})
+                    </span>
+                    <button 
+                      type="button" 
+                      onClick={handleAddActionField}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: 'var(--primary-brown)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                    >
+                      <Plus size={13} /> + Adicionar Plano de Ação
+                    </button>
+                  </div>
 
-                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Opção 1 (Ação Principal Recomendada)</label>
-                  <textarea 
-                    rows="2"
-                    value={subAction1} 
-                    onChange={(e) => setSubAction1(e.target.value)} 
-                    placeholder="Primeira ação corretiva sugerida..." 
-                    required
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Opção 2 (Ação Alternativa)</label>
-                  <textarea 
-                    rows="2"
-                    value={subAction2} 
-                    onChange={(e) => setSubAction2(e.target.value)} 
-                    placeholder="Segunda ação corretiva sugerida..." 
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Opção 3 (Ação Alternativa)</label>
-                  <textarea 
-                    rows="2"
-                    value={subAction3} 
-                    onChange={(e) => setSubAction3(e.target.value)} 
-                    placeholder="Terceira ação corretiva sugerida..." 
-                  />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {subActions.map((actionText, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                        <div style={{ flex: 1 }}>
+                          <label className="form-label" style={{ fontSize: '0.74rem', marginBottom: '0.2rem' }}>
+                            Opção {idx + 1} {idx === 0 ? '(Ação Principal Recomendada)' : '(Ação Alternativa)'}
+                          </label>
+                          <textarea 
+                            rows="2"
+                            value={actionText} 
+                            onChange={(e) => handleUpdateActionField(idx, e.target.value)} 
+                            placeholder={`Descreva a opção ${idx + 1} de plano de ação...`} 
+                            required={idx === 0}
+                            style={{ width: '100%' }}
+                          />
+                        </div>
+                        {subActions.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveActionField(idx)}
+                            style={{ marginTop: '1.4rem', color: '#EF4444', padding: '0.35rem', background: '#FEE2E2', border: '1px solid #FCA5A5', borderRadius: '4px', cursor: 'pointer' }}
+                            title="Remover esta opção de plano de ação"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -621,7 +630,7 @@ export default function TaxonomyView() {
       )}
 
       {/* =========================================================================
-          MODAL: NOVO SUBTÓPICO
+          MODAL: NOVO SUBTÓPICO (TOTALMENTE DINÂMICO E ILIMITADO)
           ========================================================================= */}
       {isNewSubModalOpen && (
         <div className="modal-overlay" onClick={() => setIsNewSubModalOpen(false)}>
@@ -668,38 +677,49 @@ export default function TaxonomyView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1', borderTop: '1px solid #E8DFD8', paddingTop: '0.85rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
-                    3 Planos de Ação Oficiais Sugeridos
-                  </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase' }}>
+                      Planos de Ação Oficiais Sugeridos ({subActions.length})
+                    </span>
+                    <button 
+                      type="button" 
+                      onClick={handleAddActionField}
+                      className="btn-secondary"
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', color: 'var(--primary-brown)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                    >
+                      <Plus size={13} /> + Adicionar Plano de Ação
+                    </button>
+                  </div>
 
-                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Opção 1 (Ação Principal Recomendada)</label>
-                  <textarea 
-                    rows="2"
-                    value={subAction1} 
-                    onChange={(e) => setSubAction1(e.target.value)} 
-                    placeholder="Primeira ação corretiva sugerida..." 
-                    required
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Opção 2 (Ação Alternativa)</label>
-                  <textarea 
-                    rows="2"
-                    value={subAction2} 
-                    onChange={(e) => setSubAction2(e.target.value)} 
-                    placeholder="Segunda ação corretiva sugerida..." 
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Opção 3 (Ação Alternativa)</label>
-                  <textarea 
-                    rows="2"
-                    value={subAction3} 
-                    onChange={(e) => setSubAction3(e.target.value)} 
-                    placeholder="Terceira ação corretiva sugerida..." 
-                  />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {subActions.map((actionText, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+                        <div style={{ flex: 1 }}>
+                          <label className="form-label" style={{ fontSize: '0.74rem', marginBottom: '0.2rem' }}>
+                            Opção {idx + 1} {idx === 0 ? '(Ação Principal Recomendada)' : '(Ação Alternativa)'}
+                          </label>
+                          <textarea 
+                            rows="2"
+                            value={actionText} 
+                            onChange={(e) => handleUpdateActionField(idx, e.target.value)} 
+                            placeholder={`Descreva a opção ${idx + 1} de plano de ação...`} 
+                            required={idx === 0}
+                            style={{ width: '100%' }}
+                          />
+                        </div>
+                        {subActions.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveActionField(idx)}
+                            style={{ marginTop: '1.4rem', color: '#EF4444', padding: '0.35rem', background: '#FEE2E2', border: '1px solid #FCA5A5', borderRadius: '4px', cursor: 'pointer' }}
+                            title="Remover esta opção de plano de ação"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 

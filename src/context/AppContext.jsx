@@ -587,12 +587,16 @@ export function AppProvider({ children }) {
     showToast('Tema Principal removido da matriz.');
   };
 
-  const addSubproblem = async (categoryId, title, defaultSeverity = 'Alta', suggestedAction = '') => {
+  const addSubproblem = async (categoryId, title, defaultSeverity = 'Alta', suggestedActions = []) => {
+    const actionsArray = Array.isArray(suggestedActions) 
+      ? suggestedActions.filter(a => typeof a === 'string' && a.trim().length > 0)
+      : [suggestedActions].filter(Boolean);
+
     const newSubproblem = {
-      id: 'sub-' + Date.now(),
-      title,
+      id: 'sub-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      title: title.trim(),
       defaultSeverity,
-      suggestedActions: [suggestedAction || 'Definir plano de ação na visita técnica.']
+      suggestedActions: actionsArray.length > 0 ? actionsArray : ['Definir plano de ação na visita técnica.']
     };
 
     let updatedCat = null;
@@ -601,7 +605,7 @@ export function AppProvider({ children }) {
         if (cat.id !== categoryId) return cat;
         updatedCat = {
           ...cat,
-          subproblems: [...cat.subproblems, newSubproblem]
+          subproblems: [...(cat.subproblems || []), newSubproblem]
         };
         return updatedCat;
       });
@@ -618,6 +622,7 @@ export function AppProvider({ children }) {
     }
 
     showToast('Novo Subtópico cadastrado com sucesso!');
+    return newSubproblem;
   };
 
   const updateSubproblem = async (categoryId, subproblemId, updatedData) => {
