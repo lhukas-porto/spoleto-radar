@@ -1,55 +1,591 @@
-// Dados Iniciais do Ecossistema Spoleto / Grupo Trigo - Spoleto Radar
+// Dados Oficiais do Ecossistema Spoleto / Grupo Trigo - Spoleto Radar
+// Base Oficial Atualizada com os 16 Consultores de Negócios e 409 Restaurantes
 
 export const INITIAL_CONSULTANTS = [
   {
-    id: 'cons-1',
-    name: 'Carlos Silveira',
-    email: 'carlos.silveira@grupotrigo.com.br',
-    phone: '(21) 99876-1234',
-    region: 'RJ - Zona Sul & Barra',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    active: true,
-    storesCount: 4
+    "id": "cons-1",
+    "name": "ALEX DE BRISTO",
+    "email": "alex.bristo@grupotrigo.com.br",
+    "phone": "(21) 95400-9044",
+    "region": "Nordeste (PB, PE, AL, BA, RN)",
+    "active": true,
+    "assignedStores": [
+      "store-1",
+      "store-2",
+      "store-3",
+      "store-4",
+      "store-5",
+      "store-6",
+      "store-7",
+      "store-8",
+      "store-9",
+      "store-10",
+      "store-11",
+      "store-12",
+      "store-13",
+      "store-14",
+      "store-15",
+      "store-16",
+      "store-17",
+      "store-18",
+      "store-19",
+      "store-20",
+      "store-21",
+      "store-22"
+    ],
+    "storesCount": 22
   },
   {
-    id: 'cons-2',
-    name: 'Mariana Albuquerque',
-    email: 'mariana.albuquerque@grupotrigo.com.br',
-    phone: '(11) 98765-4321',
-    region: 'SP - Capital & ABC',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-    active: true,
-    storesCount: 3
+    "id": "cons-2",
+    "name": "ALEXANDRE DE PAULA",
+    "email": "alexandre.paula@grupotrigo.com.br",
+    "phone": "(11) 93206-2523",
+    "region": "SP Interior & Sul de Minas",
+    "active": true,
+    "assignedStores": [
+      "store-23",
+      "store-24",
+      "store-25",
+      "store-26",
+      "store-27",
+      "store-28",
+      "store-29",
+      "store-30",
+      "store-31",
+      "store-32",
+      "store-33",
+      "store-34",
+      "store-35",
+      "store-36",
+      "store-37",
+      "store-38",
+      "store-39",
+      "store-40",
+      "store-41",
+      "store-42",
+      "store-43",
+      "store-44",
+      "store-45",
+      "store-46",
+      "store-47",
+      "store-48",
+      "store-49",
+      "store-50",
+      "store-51"
+    ],
+    "storesCount": 29
   },
   {
-    id: 'cons-3',
-    name: 'Rodrigo Mendes',
-    email: 'rodrigo.mendes@grupotrigo.com.br',
-    phone: '(31) 99123-4567',
-    region: 'MG - Belo Horizonte & Região',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    active: true,
-    storesCount: 2
+    "id": "cons-3",
+    "name": "CHRISTIANE RAMOS PEREIRA DE SOUZA",
+    "email": "christiane.souza@grupotrigo.com.br",
+    "phone": "(11) 96030-3783",
+    "region": "SP Capital, Campinas & Região",
+    "active": true,
+    "assignedStores": [
+      "store-52",
+      "store-53",
+      "store-54",
+      "store-55",
+      "store-56",
+      "store-57",
+      "store-58",
+      "store-59",
+      "store-60",
+      "store-61",
+      "store-62",
+      "store-63",
+      "store-64",
+      "store-65",
+      "store-66",
+      "store-67",
+      "store-68",
+      "store-69",
+      "store-70",
+      "store-71",
+      "store-72",
+      "store-73",
+      "store-74",
+      "store-75",
+      "store-76",
+      "store-77",
+      "store-78",
+      "store-79",
+      "store-80"
+    ],
+    "storesCount": 29
   },
   {
-    id: 'cons-4',
-    name: 'Juliana Castro',
-    email: 'juliana.castro@grupotrigo.com.br',
-    phone: '(41) 98456-7890',
-    region: 'PR/SC - Região Sul',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-    active: true,
-    storesCount: 1
+    "id": "cons-4",
+    "name": "CINTHIA MILLIOLE",
+    "email": "cinthia.milliole@grupotrigo.com.br",
+    "phone": "(21) 96670-5669",
+    "region": "RJ Capital & Sul Fluminense",
+    "active": true,
+    "assignedStores": [
+      "store-81",
+      "store-82",
+      "store-83",
+      "store-84",
+      "store-85",
+      "store-86",
+      "store-87",
+      "store-88",
+      "store-89",
+      "store-90",
+      "store-91",
+      "store-92",
+      "store-93",
+      "store-94",
+      "store-95",
+      "store-96",
+      "store-97",
+      "store-98",
+      "store-99",
+      "store-100",
+      "store-101",
+      "store-102",
+      "store-103",
+      "store-104",
+      "store-105",
+      "store-106",
+      "store-107",
+      "store-108",
+      "store-109",
+      "store-110",
+      "store-111"
+    ],
+    "storesCount": 31
   },
   {
-    id: 'cons-5',
-    name: 'Felipe Moreira',
-    email: 'felipe.moreira@grupotrigo.com.br',
-    phone: '(61) 98111-2233',
-    region: 'DF/GO - Centro-Oeste',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-    active: true,
-    storesCount: 1
+    "id": "cons-5",
+    "name": "EDUARDO SPISLA",
+    "email": "eduardo.spisla@grupotrigo.com.br",
+    "phone": "(41) 91021-2616",
+    "region": "Região Sul (PR, SC, RS)",
+    "active": true,
+    "assignedStores": [
+      "store-112",
+      "store-113",
+      "store-114",
+      "store-115",
+      "store-116",
+      "store-117",
+      "store-118",
+      "store-119",
+      "store-120",
+      "store-121",
+      "store-122",
+      "store-123",
+      "store-124",
+      "store-125",
+      "store-126",
+      "store-127",
+      "store-128",
+      "store-129",
+      "store-130",
+      "store-131",
+      "store-132",
+      "store-133",
+      "store-134",
+      "store-135",
+      "store-136",
+      "store-137",
+      "store-138",
+      "store-139",
+      "store-140"
+    ],
+    "storesCount": 29
+  },
+  {
+    "id": "cons-6",
+    "name": "FABIO FAUSTINO DO CARMO",
+    "email": "fabio.carmo@grupotrigo.com.br",
+    "phone": "(19) 97156-9418",
+    "region": "SP Capital, Campinas & Interior",
+    "active": true,
+    "assignedStores": [
+      "store-141",
+      "store-142",
+      "store-143",
+      "store-144",
+      "store-145",
+      "store-146",
+      "store-147",
+      "store-148",
+      "store-149",
+      "store-150",
+      "store-151",
+      "store-152"
+    ],
+    "storesCount": 12
+  },
+  {
+    "id": "cons-7",
+    "name": "FABRÍCIO GUEDES",
+    "email": "fabricio.guedes@grupotrigo.com.br",
+    "phone": "(61) 94194-3876",
+    "region": "Centro-Oeste (DF, GO, MT, MS, TO)",
+    "active": true,
+    "assignedStores": [
+      "store-153",
+      "store-154",
+      "store-155",
+      "store-156",
+      "store-157",
+      "store-158",
+      "store-159",
+      "store-160",
+      "store-161",
+      "store-162",
+      "store-163",
+      "store-164",
+      "store-165",
+      "store-166",
+      "store-167",
+      "store-168",
+      "store-169",
+      "store-170",
+      "store-171",
+      "store-172",
+      "store-173",
+      "store-174",
+      "store-175",
+      "store-176"
+    ],
+    "storesCount": 24
+  },
+  {
+    "id": "cons-8",
+    "name": "ISRAEL LOMARDES ROCHA DA SILVA",
+    "email": "israel.silva@grupotrigo.com.br",
+    "phone": "(21) 93422-6070",
+    "region": "RJ Capital & Espírito Santo",
+    "active": true,
+    "assignedStores": [
+      "store-177",
+      "store-178",
+      "store-179",
+      "store-180",
+      "store-181",
+      "store-182",
+      "store-183",
+      "store-184",
+      "store-185",
+      "store-186",
+      "store-187",
+      "store-188",
+      "store-189",
+      "store-190",
+      "store-191",
+      "store-192",
+      "store-193",
+      "store-194",
+      "store-195",
+      "store-196",
+      "store-197",
+      "store-198",
+      "store-199",
+      "store-200",
+      "store-201",
+      "store-202",
+      "store-203",
+      "store-204",
+      "store-205",
+      "store-206",
+      "store-207"
+    ],
+    "storesCount": 31
+  },
+  {
+    "id": "cons-9",
+    "name": "KATARINY GOULART",
+    "email": "katariny.goulart@grupotrigo.com.br",
+    "phone": "(71) 96276-6020",
+    "region": "Nordeste (CE, BA)",
+    "active": true,
+    "assignedStores": [
+      "store-208",
+      "store-209",
+      "store-210",
+      "store-211",
+      "store-212",
+      "store-213",
+      "store-214",
+      "store-215",
+      "store-216",
+      "store-217",
+      "store-218",
+      "store-219",
+      "store-220",
+      "store-221",
+      "store-222",
+      "store-223",
+      "store-224",
+      "store-225",
+      "store-226",
+      "store-227"
+    ],
+    "storesCount": 20
+  },
+  {
+    "id": "cons-10",
+    "name": "MARCELO CORA SILVA DIAS",
+    "email": "marcelo.dias@grupotrigo.com.br",
+    "phone": "(11) 94832-1886",
+    "region": "SP Capital, Campinas & Piracicaba",
+    "active": true,
+    "assignedStores": [
+      "store-228",
+      "store-229",
+      "store-230",
+      "store-231",
+      "store-232",
+      "store-233",
+      "store-234",
+      "store-235",
+      "store-236",
+      "store-237",
+      "store-238",
+      "store-239",
+      "store-240"
+    ],
+    "storesCount": 13
+  },
+  {
+    "id": "cons-11",
+    "name": "MAYARA MOREIRA DAMASCO",
+    "email": "mayara.damasco@grupotrigo.com.br",
+    "phone": "(21) 99496-9677",
+    "region": "RJ Capital, Serrana, Lagos & Norte",
+    "active": true,
+    "assignedStores": [
+      "store-241",
+      "store-242",
+      "store-243",
+      "store-244",
+      "store-245",
+      "store-246",
+      "store-247",
+      "store-248",
+      "store-249",
+      "store-250",
+      "store-251",
+      "store-252",
+      "store-253",
+      "store-254",
+      "store-255",
+      "store-256",
+      "store-257",
+      "store-258",
+      "store-259",
+      "store-260",
+      "store-261",
+      "store-262",
+      "store-263",
+      "store-264",
+      "store-265",
+      "store-266",
+      "store-267",
+      "store-268",
+      "store-269",
+      "store-270",
+      "store-271",
+      "store-272",
+      "store-379"
+    ],
+    "storesCount": 33
+  },
+  {
+    "id": "cons-12",
+    "name": "PABLO HENRIQUE FERREIRA SIMPLICIO",
+    "email": "pablo.simplicio@grupotrigo.com.br",
+    "phone": "(91) 95798-3831",
+    "region": "Norte & Nordeste (AM, PA, AP, RR, RO, MA, PI)",
+    "active": true,
+    "assignedStores": [
+      "store-273",
+      "store-274",
+      "store-275",
+      "store-276",
+      "store-277",
+      "store-278",
+      "store-279",
+      "store-280",
+      "store-281",
+      "store-282",
+      "store-283",
+      "store-284",
+      "store-285",
+      "store-286",
+      "store-287",
+      "store-288",
+      "store-289",
+      "store-290",
+      "store-291",
+      "store-292",
+      "store-293",
+      "store-294",
+      "store-295"
+    ],
+    "storesCount": 23
+  },
+  {
+    "id": "cons-13",
+    "name": "PERCY PINHEIRO",
+    "email": "percy.pinheiro@grupotrigo.com.br",
+    "phone": "(11) 98267-3531",
+    "region": "SP Capital, ABC, Litoral & Vale",
+    "active": true,
+    "assignedStores": [
+      "store-297",
+      "store-298",
+      "store-299",
+      "store-300",
+      "store-301",
+      "store-302",
+      "store-303",
+      "store-304",
+      "store-305",
+      "store-306",
+      "store-307",
+      "store-308",
+      "store-309",
+      "store-310",
+      "store-311",
+      "store-312",
+      "store-313",
+      "store-314",
+      "store-315",
+      "store-316",
+      "store-317",
+      "store-318",
+      "store-319",
+      "store-320",
+      "store-321",
+      "store-322",
+      "store-323",
+      "store-324",
+      "store-325"
+    ],
+    "storesCount": 29
+  },
+  {
+    "id": "cons-14",
+    "name": "RENE SANTOS DO VALE",
+    "email": "rene.vale@grupotrigo.com.br",
+    "phone": "(16) 97694-3514",
+    "region": "SP Capital, Osasco, Alto Tietê & Interior",
+    "active": true,
+    "assignedStores": [
+      "store-326",
+      "store-327",
+      "store-328",
+      "store-329",
+      "store-330",
+      "store-331",
+      "store-332",
+      "store-333",
+      "store-334",
+      "store-335",
+      "store-336",
+      "store-337",
+      "store-338",
+      "store-339",
+      "store-340",
+      "store-341",
+      "store-342",
+      "store-343",
+      "store-344",
+      "store-345",
+      "store-346",
+      "store-347",
+      "store-348",
+      "store-349",
+      "store-350",
+      "store-351",
+      "store-352",
+      "store-353",
+      "store-354"
+    ],
+    "storesCount": 29
+  },
+  {
+    "id": "cons-15",
+    "name": "ROSA ALICE GUEDES DE SOUZA",
+    "email": "rosa.souza@grupotrigo.com.br",
+    "phone": "(61) 97902-1790",
+    "region": "DF, GO, MT, AC & BA",
+    "active": true,
+    "assignedStores": [
+      "store-296",
+      "store-355",
+      "store-356",
+      "store-357",
+      "store-358",
+      "store-359",
+      "store-360",
+      "store-361",
+      "store-362",
+      "store-363",
+      "store-364",
+      "store-365",
+      "store-366",
+      "store-367",
+      "store-368",
+      "store-369",
+      "store-370",
+      "store-371",
+      "store-372",
+      "store-373",
+      "store-374",
+      "store-375",
+      "store-376",
+      "store-377",
+      "store-378"
+    ],
+    "storesCount": 25
+  },
+  {
+    "id": "cons-16",
+    "name": "TEREZA CRISTINA",
+    "email": "tereza.cristina@grupotrigo.com.br",
+    "phone": "(31) 94414-9812",
+    "region": "Minas Gerais (BH & Interior)",
+    "active": true,
+    "assignedStores": [
+      "store-380",
+      "store-381",
+      "store-382",
+      "store-383",
+      "store-384",
+      "store-385",
+      "store-386",
+      "store-387",
+      "store-388",
+      "store-389",
+      "store-390",
+      "store-391",
+      "store-392",
+      "store-393",
+      "store-394",
+      "store-395",
+      "store-396",
+      "store-397",
+      "store-398",
+      "store-399",
+      "store-400",
+      "store-401",
+      "store-402",
+      "store-403",
+      "store-404",
+      "store-405",
+      "store-406",
+      "store-407",
+      "store-408",
+      "store-409"
+    ],
+    "storesCount": 30
   }
 ];
 
@@ -254,7 +790,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE SHOPPING BAHIA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-1",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -290,7 +826,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DA BAHIA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-1",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -422,7 +958,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING COLINAS - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-2",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -638,7 +1174,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SERRA SUL MM - Pouso Alegre/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-2",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -650,7 +1186,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO PARTAGE POÇOS DE CALDAS - Poços de Caldas/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-2",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -662,7 +1198,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO CANTAREIRA NORTE SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-2",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -674,7 +1210,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BURITI MOGI GUACU - Mogi Guaçu/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -686,7 +1222,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BRAGANCA GARDEN - Bragança Paulista/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -698,7 +1234,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Aeroporto",
     "address": "SPOLETO AEROPORTO VIRACOPOS - Campinas/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -710,7 +1246,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE SHOPPING BARUERI - Barueri/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -722,7 +1258,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING TOP CENTER - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -734,7 +1270,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO GRAND PLAZA SHOPPING - Santo André/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -746,7 +1282,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PAMPLONA SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -758,7 +1294,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PARK SHOPPING SAO CAETANO - São Caetano do Sul/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -770,7 +1306,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING JARDIM SUL - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -782,7 +1318,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METRO TATUAPE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -794,7 +1330,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METRO TUCURUVI - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -806,7 +1342,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE DAS BANDEIRAS - Campinas/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -818,7 +1354,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VILA OLIMPIA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -830,7 +1366,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VILLA LOBOS MM - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -842,7 +1378,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO TIETE PLAZA SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -854,7 +1390,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ANHANGUERA CAJAMAR - Cajamar/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -866,7 +1402,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARKCITY SUMARÉ - Sumaré/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -878,7 +1414,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GALLERIA CAMPINAS - Campinas/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -890,7 +1426,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MARKET PLACE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -902,7 +1438,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE DA CIDADE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -914,7 +1450,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI ALPHAVILLE - Barueri/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -926,7 +1462,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO MORUMBI TOWN - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -938,7 +1474,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING HIGIENOPOLIS - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -950,7 +1486,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO CAMPINAS SHOPPING - Campinas/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -962,7 +1498,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING LIGHT - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -974,7 +1510,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING JK IGUATEMI - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -986,7 +1522,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOULEVARD TATUAPE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -998,7 +1534,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MORUMBI - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -1010,7 +1546,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO HORTOLÂNDIA - Hortolândia/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-3",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -1022,7 +1558,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO ROSARIO MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -1034,7 +1570,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO RESENDE SHOPPING - Resende/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -1046,7 +1582,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METROPOLITANO - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -1058,7 +1594,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARK SUL VR - Volta Redonda/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -1070,7 +1606,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO VOLTA REDONDA MM - Volta Redonda/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -1082,7 +1618,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Aeroporto",
     "address": "SPOLETO AEROPORTO TOM JOBIM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -1094,7 +1630,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO TAQUARA PLAZA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -1106,7 +1642,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Outlet",
     "address": "SPOLETO OUTLET WASHINGTON LUIZ MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -1118,7 +1654,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA BUENOS AIRES - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -1130,7 +1666,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING AMERICAS - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -1142,7 +1678,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO TERMINAL RODOVIARIO NOVO RIO - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -1154,7 +1690,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO GUANABARA RECREI - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-4",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -1166,7 +1702,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA RB1 - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -1178,7 +1714,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO CARIOCA SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -1190,7 +1726,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GAVEA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -1202,7 +1738,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO NOVA IGUACU RUA MM - Nova Iguaçu/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -1214,7 +1750,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO CAXIAS SHOPPING 2 MM - Duque de Caxias/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -1226,7 +1762,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA MARIZ E BARROS - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -1238,7 +1774,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVA IGUACU - Nova Iguaçu/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -1250,7 +1786,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO TOP SHOPPING MM - Nova Iguaçu/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -1262,7 +1798,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING JACAREPAGUA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -1274,7 +1810,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VOLTA REDONDA - Volta Redonda/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -1286,7 +1822,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO BONSUCESSO RUA MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -1298,7 +1834,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO CAXIAS RUA - Duque de Caxias/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -1310,7 +1846,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO ILHA PLAZA SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -1322,7 +1858,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING SULACAP - Valparaíso de Goiás/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-4",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -1334,7 +1870,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO CASA SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -1346,7 +1882,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO JARDIM GUADALUPE 2 - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -1358,7 +1894,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVO LEBLON - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -1370,7 +1906,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO GUANABARA BARRA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -1382,7 +1918,7 @@ export const INITIAL_STORES = [
     "state": "PE",
     "locationType": "Shopping",
     "address": "SPOLETO ARCOVERDE - Arcoverde/PE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-4",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -1394,7 +1930,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO CATARATAS JL SHOPPING - Foz do Iguaçu/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -1406,7 +1942,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO ATLANTICO - Balneário Camboriú/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -1418,7 +1954,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO AURORA SHOPPING LONDRINA - Londrina/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -1430,7 +1966,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO BLUMENAU - Blumenau/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -1442,7 +1978,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO CONTINENTE PARK SHOPPING - São José/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -1454,7 +1990,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO FLORIPA SHOPPING - Florianópolis/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -1466,7 +2002,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO ITAJAÍ MM - Itajaí/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -1478,7 +2014,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO J L SHOPPING CASCAVEL - Cascavel/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -1490,7 +2026,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BEIRA MAR - Florianópolis/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -1502,7 +2038,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CATUAÍ MARINGÁ - Maringá/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -1514,7 +2050,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CIDADE DOS LAGOS - Guarapuava/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -1526,7 +2062,7 @@ export const INITIAL_STORES = [
     "state": "RS",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI PORTO ALEGRE - Porto Alegre/RS",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -1538,7 +2074,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MARINGA - Maringá/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -1550,7 +2086,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PATIO CHAPECO - Chapecó/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -1562,7 +2098,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO UMUARAMA - Umuarama/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -1574,7 +2110,7 @@ export const INITIAL_STORES = [
     "state": "RS",
     "locationType": "Shopping",
     "address": "SPOLETO BOURBON SHOPPING IPIRANGA - Porto Alegre/RS",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -1586,7 +2122,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO CATUAÍ CASCAVEL - Cascavel/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -1598,7 +2134,7 @@ export const INITIAL_STORES = [
     "state": "RS",
     "locationType": "Shopping",
     "address": "SPOLETO PARK SHOPPING CANOAS - Canoas/RS",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -1610,7 +2146,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO PB SHOPPING PATO BRANCO - Pato Branco/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -1622,7 +2158,7 @@ export const INITIAL_STORES = [
     "state": "RS",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVO HAMBURGO - Novo Hamburgo/RS",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -1634,7 +2170,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CAMPO MOURÃO - Campo Mourão/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -1646,7 +2182,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MUELLER - Curitiba/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -1658,7 +2194,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO PARK SHOPPING BARIGUI - Curitiba/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -1670,7 +2206,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ESTAÇÃO CURITIBA - Curitiba/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -1682,7 +2218,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO PALLADIUM CURITIBA - Curitiba/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -1694,7 +2230,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO JOINVILLE MM (DELIVERY) - Joinville/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -1706,7 +2242,7 @@ export const INITIAL_STORES = [
     "state": "SC",
     "locationType": "Shopping",
     "address": "SPOLETO VILLA ROMANA - Florianópolis/SC",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -1718,7 +2254,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Shopping",
     "address": "SPOLETO CAMPO GERAIS PONTA GROSSA - Ponta Grossa/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -1730,7 +2266,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Rua",
     "address": "SPOLETO RUA MARINGÁ - Maringá/PR",
-    "consultantId": "cons-4",
+    "consultantId": "cons-5",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -1742,7 +2278,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING FREI CANECA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -1754,7 +2290,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING D - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -1766,7 +2302,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO LIMEIRA - Limeira/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -1778,7 +2314,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO AMERICANA - Americana/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -1790,7 +2326,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOAVISTA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -1802,7 +2338,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO TRIMAIS PLACES - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -1814,7 +2350,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DOM PEDRO - Campinas/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -1826,7 +2362,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO CARREFOUR MARGINAL PINHEIROS - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -1838,7 +2374,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GRANJA VIANNA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -1850,7 +2386,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO POSTO LAGO AZUL - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -1862,7 +2398,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO EXTRA ANHANGUERA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -1874,7 +2410,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Outlet",
     "address": "SPOLETO OUTLET PREMIUM ITUPEVA - Itupeva/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-6",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -1886,7 +2422,7 @@ export const INITIAL_STORES = [
     "state": "MS",
     "locationType": "Shopping",
     "address": "SPOLETO CAMPO GRANDE MS - Campo Grande/MS",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -1898,7 +2434,7 @@ export const INITIAL_STORES = [
     "state": "MS",
     "locationType": "Shopping",
     "address": "SPOLETO NORTE SUL PLAZA - Campo Grande/MS",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -1910,7 +2446,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO TAGUATINGA PISTAO SUL - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -1922,7 +2458,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO ÁGUAS LINDAS SHOPPING PICCOLO - Águas Lindas de Goiás/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -1934,7 +2470,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CEILANDIA - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -1946,7 +2482,7 @@ export const INITIAL_STORES = [
     "state": "MS",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOSQUE DOS IPES - Campo Grande/MS",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -1958,7 +2494,7 @@ export const INITIAL_STORES = [
     "state": "MS",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CAMPO GRANDE - Campo Grande/MS",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -1970,7 +2506,7 @@ export const INITIAL_STORES = [
     "state": "MT",
     "locationType": "Shopping",
     "address": "SPOLETO SINOP MT MM - Sinop/MT",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -1982,7 +2518,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO VILA SÃO TOMAZ - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-7",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -1994,7 +2530,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO PASSEIO DAS AGUAS SHOPPING - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -2006,7 +2542,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO BUENA VISTA - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -2018,7 +2554,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI DF - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -2030,7 +2566,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO PARK SHOPPING DF - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -2042,7 +2578,7 @@ export const INITIAL_STORES = [
     "state": "TO",
     "locationType": "Shopping",
     "address": "SPOLETO PALMAS SHOPPING - Palmas/TO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -2054,7 +2590,7 @@ export const INITIAL_STORES = [
     "state": "TO",
     "locationType": "Shopping",
     "address": "SPOLETO 307 SUL - Palmas/TO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -2066,7 +2602,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOUGAINVILLE - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -2078,7 +2614,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO BRASILIA SHOPPING - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -2090,7 +2626,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO FLAMBOYANT SHOPPING - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -2102,7 +2638,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO AGUAS CLARAS MM - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -2114,7 +2650,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO TAGUATINGA SHOPPING - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -2126,7 +2662,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO TERRACO SHOPPING - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -2138,7 +2674,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO PATIO BRASIL SHOPPING - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -2150,7 +2686,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DF PLAZA - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -2162,7 +2698,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO NOROESTE MM - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-7",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -2174,7 +2710,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BARRA SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -2186,7 +2722,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DOWNTOWN - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -2198,7 +2734,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING TIJUCA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -2210,7 +2746,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO PARK JACAREPAGUA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -2222,7 +2758,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VIA PARQUE - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -2234,7 +2770,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA LARGO DO MACHADO - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -2246,7 +2782,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO MADUREIRA SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -2258,7 +2794,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO COPACABANA MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -2270,7 +2806,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD SHOPPING VILA VELHA - Vila Velha/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -2282,7 +2818,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO CACHOEIRO - Cachoeiro de Itapemirim/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -2294,7 +2830,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO MASTER PLACE MALL - Vitória/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -2306,7 +2842,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MESTRE ALVARO - Serra/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -2318,7 +2854,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MONTSERRAT - Serra/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -2330,7 +2866,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MOXUARA - Cariacica/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -2342,7 +2878,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PRAIA DA COSTA - Vitória/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -2354,7 +2890,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VILA VELHA MM - Vila Velha/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -2366,7 +2902,7 @@ export const INITIAL_STORES = [
     "state": "ES",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VITORIA - Vitória/ES",
-    "consultantId": "cons-3",
+    "consultantId": "cons-8",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -2378,7 +2914,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO RECREIO SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -2390,7 +2926,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BARRA SHOPPING 2 - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -2402,7 +2938,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GRANDE RIO - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-8",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -2414,7 +2950,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI RIO - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-8",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -2426,7 +2962,7 @@ export const INITIAL_STORES = [
     "state": "MS",
     "locationType": "Shopping",
     "address": "SPOLETO PARK SHOPPING CAMPO GRANDE - Campo Grande/MS",
-    "consultantId": "cons-5",
+    "consultantId": "cons-8",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -2438,7 +2974,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO WEST SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-8",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -2450,7 +2986,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO ALDEIA DA SERRA MM - Barueri/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-8",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -2462,7 +2998,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BANGU SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -2474,7 +3010,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BARRA SQUARE - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -2486,7 +3022,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA ICARAI - Niterói/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -2498,7 +3034,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA TIJUCA MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -2510,7 +3046,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO SHOPPING VIA BRASIL PICCOLO - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -2522,7 +3058,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA ENSEADA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -2534,7 +3070,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA CRUZ VERMELHA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-8",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -2546,7 +3082,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Aeroporto",
     "address": "SPOLETO AEROPORTO SALVADOR - Salvador/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -2558,7 +3094,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BELA VISTA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-9",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -2570,7 +3106,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO MARACANAÚ MM - Maracanaú/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -2582,7 +3118,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO CARIRI SHOPPING - Juazeiro do Norte/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -2594,7 +3130,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO NORTH SHOPPING SOBRAL II - Sobral/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -2606,7 +3142,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD VITORIA DA CONQUISTA - Vitória da Conquista/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -2618,7 +3154,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO COMPACTO SHOPPING VIA SUL - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -2630,7 +3166,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO RIOMAR KENNEDY - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -2642,7 +3178,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIOMAR FORTALEZA MM - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -2654,7 +3190,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BENFICA - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -2666,7 +3202,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI FORTALEZA - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -2678,7 +3214,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DEL PASEO - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -2690,7 +3226,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO TERRAZO SHOPPING - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -2702,7 +3238,7 @@ export const INITIAL_STORES = [
     "state": "CE",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARANGABA - Fortaleza/CE",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -2714,7 +3250,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Shopping",
     "address": "SPOLETO JEQUITIBA PLAZA SHOPPING - Itabuna/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -2726,7 +3262,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CONQUISTA SUL - Vitória da Conquista/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -2738,7 +3274,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO RODOVIARIA SALVADOR - Salvador/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -2750,7 +3286,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING FEIRA DE SANTANA - Feira de Santana/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -2762,7 +3298,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO CAMAÇARI - Camaçari/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -2774,7 +3310,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Shopping",
     "address": "SPOLETO PRAIA HOTEL ILHEUS - Ilhéus/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-9",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -2786,7 +3322,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI CAMPINAS - Campinas/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -2798,7 +3334,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PAULISTA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -2810,7 +3346,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CIDADE SAO PAULO - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -2822,7 +3358,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ELDORADO - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -2834,7 +3370,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOSQUE MAIA - Guarulhos/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -2846,7 +3382,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GUARULHOS - Guarulhos/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -2858,7 +3394,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING WEST PLAZA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -2870,7 +3406,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CENTER 3 - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -2882,7 +3418,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO BOURBON SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -2894,7 +3430,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METRO SANTA CRUZ - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -2906,7 +3442,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO COMPACTO CARREFOUR LIMAO - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -2918,7 +3454,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PARQUE PRADO SP PICCOLO - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-10",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -2930,7 +3466,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PIRACICABA - Piracicaba/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-10",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -2942,7 +3478,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Eventos / Food Truck",
     "address": "SPOLETO EVENTOS - RIO - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -2954,7 +3490,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA MEXICO - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -2966,7 +3502,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Eventos / Food Truck",
     "address": "SPOLETO FOOD TRUCK TERESOPOLIS - Teresópolis/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -2978,7 +3514,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD SAO GONCALO - São Gonçalo/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -2990,7 +3526,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO PLAZA SHOPPING NITEROI - Niterói/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -3002,7 +3538,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA LEBLON - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -3014,7 +3550,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA PETROPOLIS - Petrópolis/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -3026,7 +3562,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO POSTO MARICA - Maricá/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -3038,7 +3574,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SAO GONCALO SHOPPING - São Gonçalo/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -3050,7 +3586,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BAY MARKET - Niterói/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -3062,7 +3598,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING LEBLON - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -3074,7 +3610,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVA AMERICA - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -3086,7 +3622,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVA AMERICA II MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -3098,7 +3634,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PÁTIO ALCÂNTARA - São Gonçalo/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -3110,7 +3646,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIO SUL - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -3122,7 +3658,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO FRIBURGO SHOPPING - Nova Friburgo/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -3134,7 +3670,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO NORTE SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -3146,7 +3682,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO TERESOPOLIS SHOPPING - Teresópolis/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -3158,7 +3694,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD CAMPOS - Campos dos Goytacazes/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -3170,7 +3706,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA MACAE CAVALEIROS - Macaé/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -3182,7 +3718,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARK LAGOS - Cabo Frio / Arraial/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -3194,7 +3730,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PLAZA MACAE - Macaé/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -3206,7 +3742,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIO DAS OSTRAS - Rio das Ostras/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -3218,7 +3754,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO PENINSULA MALL - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -3230,7 +3766,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BOSSA NOVA MALL - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -3242,7 +3778,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO BOTAFOGO PRAIA SHOPPING - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -3254,7 +3790,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO RUA COPACABANA II - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -3266,7 +3802,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO COMPACTO ITAIPU MULTICENTER - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-11",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -3278,7 +3814,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Rua",
     "address": "SPOLETO BOTAFOGO RUA MM - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -3290,7 +3826,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DO MEIER - Rio de Janeiro/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -3302,7 +3838,7 @@ export const INITIAL_STORES = [
     "state": "RJ",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO ARRAIAL DO CABO PICCOLO - Cabo Frio / Arraial/RJ",
-    "consultantId": "cons-1",
+    "consultantId": "cons-11",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -3314,7 +3850,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO INDEPENDENCIA SHOPPING - Juiz de Fora/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-11",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -3326,7 +3862,7 @@ export const INITIAL_STORES = [
     "state": "AM",
     "locationType": "Shopping",
     "address": "SPOLETO AMAZONAS SHOPPING - Manaus/AM",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -3338,7 +3874,7 @@ export const INITIAL_STORES = [
     "state": "RR",
     "locationType": "Rua",
     "address": "SPOLETO BOA VISTA RUA - Boa Vista/RR",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -3350,7 +3886,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD SHOPPING BELEM - Belém/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -3362,7 +3898,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Shopping",
     "address": "SPOLETO CASTANHEIRAS SHOPPING - Belém/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -3374,7 +3910,7 @@ export const INITIAL_STORES = [
     "state": "AP",
     "locationType": "Shopping",
     "address": "SPOLETO MACAPA SHOPPING - Macapá/AP",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -3386,7 +3922,7 @@ export const INITIAL_STORES = [
     "state": "AM",
     "locationType": "Shopping",
     "address": "SPOLETO PARK SUMAUMA - Manaus/AM",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -3398,7 +3934,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE SHOPPING BELEM - Belém/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -3410,7 +3946,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Rua",
     "address": "SPOLETO RUA NAZARE MM - Belém/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -3422,7 +3958,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GRAO PARA - Belém/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -3434,7 +3970,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PATIO BELEM - Belém/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -3446,7 +3982,7 @@ export const INITIAL_STORES = [
     "state": "AM",
     "locationType": "Shopping",
     "address": "SPOLETO MANAUARA SHOPPING - Manaus/AM",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -3458,7 +3994,7 @@ export const INITIAL_STORES = [
     "state": "AM",
     "locationType": "Shopping",
     "address": "SPOLETO PONTA NEGRA - Manaus/AM",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -3470,7 +4006,7 @@ export const INITIAL_STORES = [
     "state": "PA",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ANANINDEUA - Ananindeua/PA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -3482,7 +4018,7 @@ export const INITIAL_STORES = [
     "state": "MA",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DA ILHA - São Luís/MA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -3494,7 +4030,7 @@ export const INITIAL_STORES = [
     "state": "MA",
     "locationType": "Shopping",
     "address": "SPOLETO SÃO LUIS SHOPPING - São Luís/MA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -3506,7 +4042,7 @@ export const INITIAL_STORES = [
     "state": "AM",
     "locationType": "Shopping",
     "address": "SPOLETO VIA NORTE - Manaus/AM",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -3518,7 +4054,7 @@ export const INITIAL_STORES = [
     "state": "AM",
     "locationType": "Shopping",
     "address": "SPOLETO MANAUS PLAZA - Manaus/AM",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -3530,7 +4066,7 @@ export const INITIAL_STORES = [
     "state": "PI",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIO POTY - Teresina/PI",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -3542,7 +4078,7 @@ export const INITIAL_STORES = [
     "state": "PI",
     "locationType": "Shopping",
     "address": "SPOLETO TERESINA SHOPPING - Teresina/PI",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -3554,7 +4090,7 @@ export const INITIAL_STORES = [
     "state": "RO",
     "locationType": "Shopping",
     "address": "SPOLETO PORTO VELHO SHOPPING - Porto Velho/RO",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -3566,7 +4102,7 @@ export const INITIAL_STORES = [
     "state": "RO",
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO PORTO VELHO DK - Porto Velho/RO",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -3578,7 +4114,7 @@ export const INITIAL_STORES = [
     "state": "RO",
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO DK PORTO VELHO - Porto Velho/RO",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -3590,7 +4126,7 @@ export const INITIAL_STORES = [
     "state": "MA",
     "locationType": "Shopping",
     "address": "SPOLETO PATIO NORTE SHOPPING - São Luís/MA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-12",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -3602,7 +4138,7 @@ export const INITIAL_STORES = [
     "state": "AC",
     "locationType": "Shopping",
     "address": "SPOLETO RIO BRANCO - Rio Branco/AC",
-    "consultantId": "cons-1",
+    "consultantId": "cons-15",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -3614,7 +4150,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO JABAQUARA PICCOLO MM - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -3626,7 +4162,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO GOLDEN SQUARE SHOPPING - São Bernardo do Campo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -3638,7 +4174,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO ATRIUM SHOPPING SANTO ANDRE - Santo André/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -3650,7 +4186,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ABC - Santo André/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -3662,7 +4198,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO GUARUJÁ - Guarujá/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -3674,7 +4210,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SAO BERNARDO PLAZA SHOPPING - São Bernardo do Campo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -3686,7 +4222,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO BRISAMAR SHOPPING - São Vicente / Praia Grande/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -3698,7 +4234,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO CENTRAL PLAZA SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -3710,7 +4246,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Outlet",
     "address": "SPOLETO OUTLET PREMIUM GRANDE SP - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -3722,7 +4258,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO MAUA PLAZA SHOPPING - Mauá/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -3734,7 +4270,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PATTEO URUPEMA - Mogi das Cruzes/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -3746,7 +4282,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO LITORAL PLAZA SHOPPING - São Vicente / Praia Grande/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -3758,7 +4294,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO POSTO ARCO IRIS - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -3770,7 +4306,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METRO ITAQUERA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -3782,7 +4318,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PRAIAMAR SHOPPING - Santos/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -3794,7 +4330,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SANTANA PARQUE SHOPPING MM - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -3806,7 +4342,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Rua",
     "address": "SPOLETO SANTOS RUA - Santos/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -3818,7 +4354,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ANALIA FRANCO - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -3830,7 +4366,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ARICANDUVA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -3842,7 +4378,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BURITI GUARA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -3854,7 +4390,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CENTER NORTE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -3866,7 +4402,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING LED BARRA FUNDA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -3878,7 +4414,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METROPOLE - São Bernardo do Campo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -3890,7 +4426,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO MOOCA PLAZA SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -3902,7 +4438,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARQUE BALNEARIO - Santos/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -3914,7 +4450,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PATIO PINDA - Pindamonhangaba/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -3926,7 +4462,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ALEGRIA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -3938,7 +4474,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO HIPER ANDORINHA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -3950,7 +4486,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO CARREFOUR ARICANDUVA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-13",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -3962,7 +4498,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO FRANCA - Franca/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -3974,7 +4510,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO IGUATEMI RIBEIRAO PRETO - Ribeirão Preto/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -3986,7 +4522,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO MOGI SHOPPING - Mogi das Cruzes/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -3998,7 +4534,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO NOVO SHOPPING - Ribeirão Preto/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -4010,7 +4546,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO OPEN SQUARE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -4022,7 +4558,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO OSASCO PLAZA SHOPPING - Osasco/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -4034,7 +4570,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO CONTINENTAL SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -4046,7 +4582,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO PENHA SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -4058,7 +4594,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO RIBEIRAO SHOPPING - Ribeirão Preto/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -4070,7 +4606,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SERRAMAR PARQUE SHOPPING - Caraguatatuba/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -4082,7 +4618,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BUTANTA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -4094,7 +4630,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DeD - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -4106,7 +4642,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IBIRAPUERA - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -4118,7 +4654,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI RIO PRETO - São José do Rio Preto/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -4130,7 +4666,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING INTERLAGOS MM - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -4142,7 +4678,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PLAZA SUL - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -4154,7 +4690,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PRACA DA MOCA - Diadema/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -4166,7 +4702,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING SANTA URSULA - Ribeirão Preto/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -4178,7 +4714,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING SUZANO - Suzano/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -4190,7 +4726,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING UNIAO OSASCO - Osasco/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -4202,7 +4738,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SUPER SHOPPING OSASCO - Osasco/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -4214,7 +4750,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING TABOAO - Taboão da Serra/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -4226,7 +4762,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING TAMBORE - Barueri/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -4238,7 +4774,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO UBATUBA MALL - Ubatuba/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -4250,7 +4786,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PRAÇA NOVA ARAÇATUBA - Araçatuba/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -4262,7 +4798,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO CENTRAL PARK MM - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -4274,7 +4810,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO RAPOSO SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -4286,7 +4822,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO OESTE PLAZA ANDRADINA - Andradina/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -4298,7 +4834,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO LARGO 13 - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-14",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -4310,7 +4846,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO ALAMEDA SHOPPING - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -4322,7 +4858,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Rua",
     "address": "SPOLETO BARREIRAS RUA - Barreiras/BA",
-    "consultantId": "cons-1",
+    "consultantId": "cons-15",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -4334,7 +4870,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO ARAGUAIA SHOPPING - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -4346,7 +4882,7 @@ export const INITIAL_STORES = [
     "state": "MT",
     "locationType": "Shopping",
     "address": "SPOLETO PANTANAL SHOPPING MT - Cuiabá/MT",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -4358,7 +4894,7 @@ export const INITIAL_STORES = [
     "state": "MT",
     "locationType": "Shopping",
     "address": "SPOLETO ESTACAO CUIABA - Cuiabá/MT",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -4370,7 +4906,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO APARECIDA SHOPPING - Aparecida de Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -4382,7 +4918,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CERRADO - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -4394,7 +4930,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO GILBERTO SALOMAO - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -4406,7 +4942,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PIER 21 - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -4418,7 +4954,7 @@ export const INITIAL_STORES = [
     "state": "MT",
     "locationType": "Aeroporto",
     "address": "SPOLETO AEROPORTO CUIABA - Cuiabá/MT",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -4430,7 +4966,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Rua",
     "address": "SPOLETO RUA SUDOESTE MM - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -4442,7 +4978,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO SAMAMBAIA MM - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -4454,7 +4990,7 @@ export const INITIAL_STORES = [
     "state": "AC",
     "locationType": "Shopping",
     "address": "SPOLETO VIA VERDE SHOPPING - Rio Branco/AC",
-    "consultantId": "cons-1",
+    "consultantId": "cons-15",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -4466,7 +5002,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO COMPACTO POSTO 314 NORTE - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -4478,7 +5014,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO ÁGUAS CLARAS SHOPPING - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-15",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -4490,7 +5026,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO ORION - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -4502,7 +5038,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO CNB SHOPPING - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -4514,7 +5050,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO GOIANIA SHOPPING - Goiânia/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -4526,7 +5062,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO GUARÁ MM - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -4538,7 +5074,7 @@ export const INITIAL_STORES = [
     "state": "GO",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING SUL - Valparaíso de Goiás/GO",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -4550,7 +5086,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO DARK KITCHEN ALTANA MM - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-15",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -4562,7 +5098,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO QUE GAMA MM - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -4574,7 +5110,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOULEVARD BRASILIA - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -4586,7 +5122,7 @@ export const INITIAL_STORES = [
     "state": "DF",
     "locationType": "Shopping",
     "address": "SPOLETO JARDIM BOTANICO DF - Brasília/DF",
-    "consultantId": "cons-5",
+    "consultantId": "cons-15",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -4598,7 +5134,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING JARDIM NORTE - Juiz de Fora/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-11",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -4610,7 +5146,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO ARAXÁ - Araxá/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -4622,7 +5158,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO BH SHOPPING - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -4634,7 +5170,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOULEVARD BH - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -4646,7 +5182,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO CENTRO BH - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -4658,7 +5194,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DIAMOND MALL - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -4670,7 +5206,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO GUTIERREZ MM  --> PRADO - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -4682,7 +5218,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO GV SHOPPING - Governador Valadares/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -4694,7 +5230,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO ITAU POWER SHOPPING - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -4706,7 +5242,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO METROPOLITAN SHOPPING BETIM - Betim/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -4718,7 +5254,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO MINAS SHOPPING - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -4730,7 +5266,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO PATIO DIVINOPOLIS - Divinópolis/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -4742,7 +5278,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO RODOVIARIA BH - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -4754,7 +5290,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Rua",
     "address": "SPOLETO RUA SAVASSI MM - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -4766,7 +5302,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING SETE LAGOAS - Sete Lagoas/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.2,
     "status": "Ativa"
   },
@@ -4778,7 +5314,7 @@ export const INITIAL_STORES = [
     "state": "SP",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CIDADE - São Paulo/SP",
-    "consultantId": "cons-2",
+    "consultantId": "cons-16",
     "ratingScore": 9.3,
     "status": "Ativa"
   },
@@ -4790,7 +5326,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CONTAGEM - Contagem/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.4,
     "status": "Ativa"
   },
@@ -4802,7 +5338,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING DEL REY - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -4814,7 +5350,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ESTACAO BH - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.6,
     "status": "Ativa"
   },
@@ -4826,7 +5362,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IPATINGA - Ipatinga/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.7,
     "status": "Ativa"
   },
@@ -4838,7 +5374,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MONTES CLAROS - Montes Claros/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.8,
     "status": "Ativa"
   },
@@ -4850,7 +5386,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VIA CAFÉ GARDEM - Varginha/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.9,
     "status": "Ativa"
   },
@@ -4862,7 +5398,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO VIA SHOPPING BARREIRO - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.4,
     "status": "Ativa"
   },
@@ -4874,7 +5410,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO BETIM MM - Betim/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -4886,7 +5422,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO PATIO SAVASSI - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -4898,7 +5434,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Outlet",
     "address": "SPOLETO OUTLET SÓ MARCAS MM - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.7,
     "status": "Ativa"
   },
@@ -4910,7 +5446,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PATIO MATOSINHO PICCOLO - São João del-Rei/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.8,
     "status": "Ativa"
   },
@@ -4922,7 +5458,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Aeroporto",
     "address": "SPOLETO AEROPORTO CONFINS - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 8.9,
     "status": "Ativa"
   },
@@ -4934,7 +5470,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD COLINA - Belo Horizonte/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9,
     "status": "Ativa"
   },
@@ -4946,7 +5482,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO LAGOA SANTA - Lagoa Santa/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.1,
     "status": "Ativa"
   },
@@ -4958,7 +5494,7 @@ export const INITIAL_STORES = [
     "state": "MG",
     "locationType": "Shopping",
     "address": "SPOLETO LAVRAS - Lavras/MG",
-    "consultantId": "cons-3",
+    "consultantId": "cons-16",
     "ratingScore": 9.2,
     "status": "Ativa"
   }
@@ -6149,182 +6685,182 @@ export const INITIAL_CATEGORIES = [
 
 export const INITIAL_VISITS = [
   {
-    id: 'vis-101',
-    storeId: 'store-1', // Shopping Leblon
-    consultantId: 'cons-1', // Carlos Silveira
-    date: '2026-08-15',
-    time: '14:30',
-    visitType: 'Auditoria de Rotina',
-    generalScore: 8.8,
-    status: 'Finalizada',
-    generalNotes: 'Loja operando em bom ritmo de almoço. Apresentou gargalo pontual no balcão e tempo de espera no iFood.',
-    diagnostics: [
+    "id": "vis-101",
+    "storeId": "store-1",
+    "consultantId": "cons-1",
+    "date": "2026-08-15",
+    "time": "14:30",
+    "visitType": "Auditoria de Rotina",
+    "generalScore": 8.8,
+    "status": "Finalizada",
+    "generalNotes": "Loja operando em bom ritmo de almoço. Apresentou gargalo pontual no balcão e tempo de espera no iFood.",
+    "diagnostics": [
       {
-        id: 'diag-1',
-        categoryId: 'cat-balcao',
-        subproblemId: 'sub-balcao-1',
-        severity: 'Alta',
-        notes: 'Apenas 1 atendente no balcão entre 12h30 e 13h15 gerando fila de 14 clientes.',
-        actionPlan: {
-          action: 'Remanejar funcionário do pré-preparo para apoio de pista às 12h00 em dias de semana.',
-          responsible: 'Marcelo Guimarães (Franqueado) / Gerente Ana',
-          deadline: '2026-08-25',
-          status: 'Em Andamento'
+        "id": "diag-1",
+        "categoryId": "cat-balcao",
+        "subproblemId": "sub-balcao-1",
+        "severity": "Alta",
+        "notes": "Apenas 1 atendente no balcão entre 12h30 e 13h15 gerando fila de 14 clientes.",
+        "actionPlan": {
+          "action": "Remanejar funcionário do pré-preparo para apoio de pista às 12h00 em dias de semana.",
+          "responsible": "Marcelo Guimarães (Franqueado) / Gerente Ana",
+          "deadline": "2026-08-25",
+          "status": "Em Andamento"
         }
       },
       {
-        id: 'diag-2',
-        categoryId: 'cat-ifood',
-        subproblemId: 'sub-ifood-1',
-        severity: 'Crítica',
-        notes: 'Tempo médio de despacho no iFood atingiu 22 minutos nos pedidos das 13h.',
-        actionPlan: {
-          action: 'Instalar frigideira auxiliar para pedidos exclusivos de delivery.',
-          responsible: 'Líder de Cozinha Roberto',
-          deadline: '2026-08-22',
-          status: 'Concluído'
+        "id": "diag-2",
+        "categoryId": "cat-ifood",
+        "subproblemId": "sub-ifood-1",
+        "severity": "Crítica",
+        "notes": "Tempo médio de despacho no iFood atingiu 22 minutos nos pedidos das 13h.",
+        "actionPlan": {
+          "action": "Instalar frigideira auxiliar para pedidos exclusivos de delivery.",
+          "responsible": "Líder de Cozinha Roberto",
+          "deadline": "2026-08-22",
+          "status": "Concluído"
         }
       }
     ]
   },
   {
-    id: 'vis-102',
-    storeId: 'store-5', // Shopping Morumbi
-    consultantId: 'cons-2', // Mariana Albuquerque
-    date: '2026-08-18',
-    time: '19:45',
-    visitType: 'Auditoria Crítica',
-    generalScore: 7.2,
-    status: 'Finalizada',
-    generalNotes: 'Problemas recorrentes no delivery iFood e controle de validade dos ingredientes.',
-    diagnostics: [
+    "id": "vis-102",
+    "storeId": "store-5",
+    "consultantId": "cons-1",
+    "date": "2026-08-18",
+    "time": "19:45",
+    "visitType": "Auditoria Crítica",
+    "generalScore": 7.2,
+    "status": "Finalizada",
+    "generalNotes": "Problemas recorrentes no delivery iFood e controle de validade dos ingredientes.",
+    "diagnostics": [
       {
-        id: 'diag-3',
-        categoryId: 'cat-ifood',
-        subproblemId: 'sub-ifood-1',
-        severity: 'Crítica',
-        notes: 'Motoboys esperando em média 18 minutos. Vários cancelamentos no app.',
-        actionPlan: {
-          action: 'Reorganizar o fluxo de montagem do delivery com bancada dedicada.',
-          responsible: 'Camila Siqueira (Franqueada)',
-          deadline: '2026-08-28',
-          status: 'Em Andamento'
+        "id": "diag-3",
+        "categoryId": "cat-ifood",
+        "subproblemId": "sub-ifood-1",
+        "severity": "Crítica",
+        "notes": "Motoboys esperando em média 18 minutos. Vários cancelamentos no app.",
+        "actionPlan": {
+          "action": "Reorganizar o fluxo de montagem do delivery com bancada dedicada.",
+          "responsible": "Camila Siqueira (Franqueada)",
+          "deadline": "2026-08-28",
+          "status": "Em Andamento"
         }
       },
       {
-        id: 'diag-4',
-        categoryId: 'cat-ifood',
-        subproblemId: 'sub-ifood-4',
-        severity: 'Alta',
-        notes: 'Falta de molho pesto e sobremesas em 3 pedidos seguidos.',
-        actionPlan: {
-          action: 'Criar checklist físico com carimbo de conferência em todas as sacolas.',
-          responsible: 'Expedidor Marcos',
-          deadline: '2026-08-24',
-          status: 'Concluído'
+        "id": "diag-4",
+        "categoryId": "cat-ifood",
+        "subproblemId": "sub-ifood-4",
+        "severity": "Alta",
+        "notes": "Falta de molho pesto e sobremesas em 3 pedidos seguidos.",
+        "actionPlan": {
+          "action": "Criar checklist físico com carimbo de conferência em todas as sacolas.",
+          "responsible": "Expedidor Marcos",
+          "deadline": "2026-08-24",
+          "status": "Concluído"
         }
       },
       {
-        id: 'diag-5',
-        categoryId: 'cat-higiene',
-        subproblemId: 'sub-higiene-3',
-        severity: 'Crítica',
-        notes: 'Duas cubas de bacon e frango desfiado sem etiqueta de validade horária.',
-        actionPlan: {
-          action: 'Aplicar treinamento imediato de PVPS e descartar lote sem identificação.',
-          responsible: 'Gerente Carlos Eduardo',
-          deadline: '2026-08-19',
-          status: 'Concluído'
+        "id": "diag-5",
+        "categoryId": "cat-higiene",
+        "subproblemId": "sub-higiene-3",
+        "severity": "Crítica",
+        "notes": "Duas cubas de bacon e frango desfiado sem etiqueta de validade horária.",
+        "actionPlan": {
+          "action": "Aplicar treinamento imediato de PVPS e descartar lote sem identificação.",
+          "responsible": "Gerente Carlos Eduardo",
+          "deadline": "2026-08-19",
+          "status": "Concluído"
         }
       }
     ]
   },
   {
-    id: 'vis-103',
-    storeId: 'store-2', // BarraShopping
-    consultantId: 'cons-1', // Carlos Silveira
-    date: '2026-08-20',
-    time: '11:30',
-    visitType: 'Auditoria de Rotina',
-    generalScore: 9.2,
-    status: 'Finalizada',
-    generalNotes: 'Excelente padrão visual e de higienização. Pequeno ajuste no ponto da massa.',
-    diagnostics: [
+    "id": "vis-103",
+    "storeId": "store-2",
+    "consultantId": "cons-1",
+    "date": "2026-08-20",
+    "time": "11:30",
+    "visitType": "Auditoria de Rotina",
+    "generalScore": 9.2,
+    "status": "Finalizada",
+    "generalNotes": "Excelente padrão visual e de higienização. Pequeno ajuste no ponto da massa.",
+    "diagnostics": [
       {
-        id: 'diag-6',
-        categoryId: 'cat-cozinha',
-        subproblemId: 'sub-cozinha-1',
-        severity: 'Média',
-        notes: 'Penne estava sendo cozido 45 segundos acima do tempo da ficha técnica.',
-        actionPlan: {
-          action: 'Recalibrar o timer digital do cozinhador de massas para 6 minutos exatos.',
-          responsible: 'Cozinheiro Chefe Wagner',
-          deadline: '2026-08-22',
-          status: 'Concluído'
+        "id": "diag-6",
+        "categoryId": "cat-cozinha",
+        "subproblemId": "sub-cozinha-1",
+        "severity": "Média",
+        "notes": "Penne estava sendo cozido 45 segundos acima do tempo da ficha técnica.",
+        "actionPlan": {
+          "action": "Recalibrar o timer digital do cozinhador de massas para 6 minutos exatos.",
+          "responsible": "Cozinheiro Chefe Wagner",
+          "deadline": "2026-08-22",
+          "status": "Concluído"
         }
       }
     ]
   },
   {
-    id: 'vis-104',
-    storeId: 'store-8', // BH Shopping
-    consultantId: 'cons-3', // Rodrigo Mendes
-    date: '2026-08-22',
-    time: '15:00',
-    visitType: 'Auditoria de Rotina',
-    generalScore: 9.5,
-    status: 'Finalizada',
-    generalNotes: 'Loja modelo em Minas Gerais. Equipe afinada e metas de CMV batidas.',
-    diagnostics: []
+    "id": "vis-104",
+    "storeId": "store-8",
+    "consultantId": "cons-1",
+    "date": "2026-08-22",
+    "time": "15:00",
+    "visitType": "Auditoria de Rotina",
+    "generalScore": 9.5,
+    "status": "Finalizada",
+    "generalNotes": "Loja modelo em Minas Gerais. Equipe afinada e metas de CMV batidas.",
+    "diagnostics": []
   },
   {
-    id: 'vis-105',
-    storeId: 'store-6', // Shopping Eldorado
-    consultantId: 'cons-2', // Mariana Albuquerque
-    date: '2026-08-24',
-    time: '13:15',
-    visitType: 'Auditoria de Rotina',
-    generalScore: 8.5,
-    status: 'Finalizada',
-    generalNotes: 'Operação fluindo bem, porém iFood sofreu com tempo de despacho no pico.',
-    diagnostics: [
+    "id": "vis-105",
+    "storeId": "store-6",
+    "consultantId": "cons-1",
+    "date": "2026-08-24",
+    "time": "13:15",
+    "visitType": "Auditoria de Rotina",
+    "generalScore": 8.5,
+    "status": "Finalizada",
+    "generalNotes": "Operação fluindo bem, porém iFood sofreu com tempo de despacho no pico.",
+    "diagnostics": [
       {
-        id: 'diag-7',
-        categoryId: 'cat-ifood',
-        subproblemId: 'sub-ifood-1',
-        severity: 'Alta',
-        notes: 'Tempo de despacho atingiu 16 minutos devido ao acúmulo de pedidos de balcão.',
-        actionPlan: {
-          action: 'Ativar modo de pré-cozimento escalonado para pedidos agendados do delivery.',
-          responsible: 'Bruno Henrique Lima (Franqueado)',
-          deadline: '2026-09-02',
-          status: 'Pendente'
+        "id": "diag-7",
+        "categoryId": "cat-ifood",
+        "subproblemId": "sub-ifood-1",
+        "severity": "Alta",
+        "notes": "Tempo de despacho atingiu 16 minutos devido ao acúmulo de pedidos de balcão.",
+        "actionPlan": {
+          "action": "Ativar modo de pré-cozimento escalonado para pedidos agendados do delivery.",
+          "responsible": "Bruno Henrique Lima (Franqueado)",
+          "deadline": "2026-09-02",
+          "status": "Pendente"
         }
       }
     ]
   },
   {
-    id: 'vis-106',
-    storeId: 'store-3', // Botafogo Praia Shopping
-    consultantId: 'cons-1', // Carlos Silveira
-    date: '2026-08-26',
-    time: '18:30',
-    visitType: 'Auditoria de Acompanhamento',
-    generalScore: 8.1,
-    status: 'Finalizada',
-    generalNotes: 'Acompanhamento do plano de ação anterior. Balcão melhorou, cooktop em manutenção.',
-    diagnostics: [
+    "id": "vis-106",
+    "storeId": "store-3",
+    "consultantId": "cons-1",
+    "date": "2026-08-26",
+    "time": "18:30",
+    "visitType": "Auditoria de Acompanhamento",
+    "generalScore": 8.1,
+    "status": "Finalizada",
+    "generalNotes": "Acompanhamento do plano de ação anterior. Balcão melhorou, cooktop em manutenção.",
+    "diagnostics": [
       {
-        id: 'diag-8',
-        categoryId: 'cat-equipamentos',
-        subproblemId: 'sub-equip-1',
-        severity: 'Alta',
-        notes: 'Cooktop de indução da boca 2 apresentando código de erro E-04.',
-        actionPlan: {
-          action: 'Solicitar visita técnica de urgência da assistência autorizada.',
-          responsible: 'André Vasconcelos (Franqueado)',
-          deadline: '2026-08-30',
-          status: 'Em Andamento'
+        "id": "diag-8",
+        "categoryId": "cat-equipamentos",
+        "subproblemId": "sub-equip-1",
+        "severity": "Alta",
+        "notes": "Cooktop de indução da boca 2 apresentando código de erro E-04.",
+        "actionPlan": {
+          "action": "Solicitar visita técnica de urgência da assistência autorizada.",
+          "responsible": "André Vasconcelos (Franqueado)",
+          "deadline": "2026-08-30",
+          "status": "Em Andamento"
         }
       }
     ]

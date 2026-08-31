@@ -7,9 +7,30 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function seed() {
-  console.log('Iniciando carga de dados no Supabase...');
+  console.log('Iniciando atualização e carga de dados no Supabase...');
 
-  // 1. Stores (409 Lojas)
+  // 1. Limpar consultores antigos para remover dados de teste
+  console.log('Limpando tabela de consultores antigos...');
+  const { error: delConsErr } = await supabase.from('consultants').delete().neq('id', 'dummy_never_match');
+  if (delConsErr) {
+    console.log('Aviso ao limpar consultores:', delConsErr.message);
+  }
+
+  // 2. Consultants (16 Consultores Oficiais)
+  console.log(`Inserindo ${INITIAL_CONSULTANTS.length} consultores oficiais...`);
+  const consultantRows = INITIAL_CONSULTANTS.map(c => ({
+    id: c.id,
+    name: c.name,
+    region: c.region,
+    phone: c.phone || '',
+    email: c.email || '',
+    assigned_stores: c.assignedStores || []
+  }));
+  const { error: consErr } = await supabase.from('consultants').upsert(consultantRows);
+  if (consErr) console.error('Erro consultores:', consErr.message);
+  else console.log(`${INITIAL_CONSULTANTS.length} Consultores inseridos com sucesso!`);
+
+  // 3. Stores (409 Lojas)
   console.log(`Inserindo ${INITIAL_STORES.length} lojas...`);
   const storeRows = INITIAL_STORES.map(s => ({
     id: s.id,
@@ -29,21 +50,7 @@ async function seed() {
   }
   console.log('409 Lojas inseridas com sucesso!');
 
-  // 2. Consultants
-  console.log(`Inserindo ${INITIAL_CONSULTANTS.length} consultores...`);
-  const consultantRows = INITIAL_CONSULTANTS.map(c => ({
-    id: c.id,
-    name: c.name,
-    region: c.region,
-    phone: c.phone || '',
-    email: c.email || '',
-    assigned_stores: c.assignedStores || []
-  }));
-  const { error: consErr } = await supabase.from('consultants').upsert(consultantRows);
-  if (consErr) console.error('Erro consultores:', consErr.message);
-  else console.log('Consultores inseridos com sucesso!');
-
-  // 3. Categories (20 Temas Oficiais)
+  // 4. Categories (20 Temas Oficiais)
   console.log(`Inserindo ${INITIAL_CATEGORIES.length} categorias...`);
   const catRows = INITIAL_CATEGORIES.map(cat => ({
     id: cat.id,
@@ -57,7 +64,7 @@ async function seed() {
   if (catErr) console.error('Erro categorias:', catErr.message);
   else console.log('20 Temas principais e 100 subproblemas inseridos com sucesso!');
 
-  // 4. Visits
+  // 5. Visits
   console.log(`Inserindo ${INITIAL_VISITS.length} visitas...`);
   const visitRows = INITIAL_VISITS.map(v => ({
     id: v.id,
@@ -73,7 +80,7 @@ async function seed() {
   if (visitErr) console.error('Erro visitas:', visitErr.message);
   else console.log('Visitas inseridas com sucesso!');
 
-  console.log('BANCO SUPABASE 100% CARREGADO E ATIVO!');
+  console.log('BANCO SUPABASE 100% CARREGADO E SINCRONIZADO!');
 }
 
 seed();

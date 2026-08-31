@@ -18,14 +18,20 @@ export function AppProvider({ children }) {
     const saved = localStorage.getItem('trigo_stores');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed.length >= 400) return parsed;
+      // Migrate to new official stores if old mock assignments were present
+      if (parsed.length >= 400 && parsed.some(s => s.consultantId === 'cons-1' && s.name.includes('MAG SHOPPING'))) return parsed;
     }
     return INITIAL_STORES;
   });
 
   const [consultants, setConsultants] = useState(() => {
     const saved = localStorage.getItem('trigo_consultants');
-    return saved ? JSON.parse(saved) : INITIAL_CONSULTANTS;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Migrate if old 5 mock consultants
+      if (parsed.length >= 16) return parsed;
+    }
+    return INITIAL_CONSULTANTS;
   });
 
   const [categories, setCategories] = useState(() => {
@@ -52,34 +58,48 @@ export function AppProvider({ children }) {
       if (!isSupabaseConfigured || !supabase) return;
       setIsCloudSyncing(true);
       try {
-        // Fetch Stores
-        const { data: cloudStores } = await supabase.from('stores').select('*');
-        if (cloudStores && cloudStores.length > 0) {
-          const mappedStores = cloudStores.map(s => ({
-            id: s.id,
-            code: s.code,
-            name: s.name,
-            state: s.state,
-            city: s.city,
-            locationType: s.location_type || s.locationType,
-            phone: s.phone,
-            email: s.email
-          }));
-          setStores(mappedStores);
-        }
-
         // Fetch Consultants
         const { data: cloudConsultants } = await supabase.from('consultants').select('*');
+        let mappedConsultants = null;
         if (cloudConsultants && cloudConsultants.length > 0) {
-          const mappedConsultants = cloudConsultants.map(c => ({
+          mappedConsultants = cloudConsultants.map(c => ({
             id: c.id,
             name: c.name,
             region: c.region,
             phone: c.phone,
             email: c.email,
-            assignedStores: c.assigned_stores || c.assignedStores || []
+            assignedStores: c.assigned_stores || c.assignedStores || [],
+            storesCount: (c.assigned_stores || c.assignedStores || []).length,
+            active: true
           }));
           setConsultants(mappedConsultants);
+        }
+
+        // Fetch Stores
+        const { data: cloudStores } = await supabase.from('stores').select('*');
+        if (cloudStores && cloudStores.length > 0) {
+          const mappedStores = cloudStores.map(s => {
+            let matchedConsId = null;
+            if (mappedConsultants) {
+              const cons = mappedConsultants.find(c => c.assignedStores && c.assignedStores.includes(s.id));
+              if (cons) matchedConsId = cons.id;
+            }
+            return {
+              id: s.id,
+              code: s.code,
+              name: s.name,
+              state: s.state,
+              city: s.city,
+              locationType: s.location_type || s.locationType || 'Shopping',
+              address: `${s.name} - ${s.city}/${s.state}`,
+              phone: s.phone || '',
+              email: s.email || '',
+              consultantId: matchedConsId || s.consultantId || null,
+              ratingScore: s.ratingScore || 8.5,
+              status: s.status || 'Ativa'
+            };
+          });
+          setStores(mappedStores);
         }
 
         // Fetch Categories
@@ -207,17 +227,109 @@ export function AppProvider({ children }) {
     showToast('Status do Plano de Ação atualizado para: ' + newStatus);
   };
 
-  // Assign Stores to Consultant
+  // Add Consultant
+  const addConsultant = async (consultantData) => {
+    const newConsultant = {
+      id: 'cons-' + Date.now(),
+      name: consultantData.name.toUpperCase().trim(),
+      email: consultantData.email.trim(),
+      phone: consultantData.phone || '',
+      region: consultantData.region || 'Brasil',
+      active: true,
+      assignedStores: [],
+      storesCount: 0
+    };
+
+    setConsultants(prev => [newConsultant, ...prev]);
+    showToast('Consultor cadastrado com sucesso!');
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('consultants').insert([{
+          id: newConsultant.id,
+          name: newConsultant.name,
+          region: newConsultant.region,
+          phone: newConsultant.phone,
+          email: newConsultant.email,
+          assigned_stores: []
+        }]);
+      } catch (e) {
+        console.error('Supabase consultant insert error:', e);
+      }
+    }
+
+    return newConsultant;
+  };
+
+  // Add Store
+  const addStore = async (storeData) => {
+    const newStore = {
+      id: 'store-' + Date.now(),
+      code: storeData.code.toUpperCase().trim(),
+      name: storeData.name.toUpperCase().trim(),
+      city: storeData.city || '',
+      state: storeData.state || 'RJ',
+      locationType: storeData.locationType || 'Shopping',
+      address: storeData.address || `${storeData.name} - ${storeData.city}/${storeData.state}`,
+      consultantId: storeData.consultantId || null,
+      ratingScore: 8.5,
+      status: 'Ativa'
+    };
+
+    setStores(prev => [newStore, ...prev]);
+    if (newStore.consultantId) {
+      setConsultants(prev => prev.map(c => {
+        if (c.id === newStore.consultantId) {
+          const updated = [...(c.assignedStores || []), newStore.id];
+          return { ...c, assignedStores: updated, storesCount: updated.length };
+        }
+        return c;
+      }));
+    }
+    showToast('Nova loja cadastrada com sucesso!');
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('stores').insert([{
+          id: newStore.id,
+          code: newStore.code,
+          name: newStore.name,
+          state: newStore.state,
+          city: newStore.city,
+          location_type: newStore.locationType
+        }]);
+      } catch (e) {
+        console.error('Supabase store insert error:', e);
+      }
+    }
+
+    return newStore;
+  };
+
+  // Assign Stores to Consultant (2-way reactive sync)
   const assignStoresToConsultant = async (consultantId, storeIds) => {
     setConsultants(prev => {
       return prev.map(c => {
         if (c.id === consultantId) {
-          return { ...c, assignedStores: storeIds };
+          return { ...c, assignedStores: storeIds, storesCount: storeIds.length };
         }
+        const filtered = (c.assignedStores || []).filter(id => !storeIds.includes(id));
         return {
           ...c,
-          assignedStores: c.assignedStores.filter(id => !storeIds.includes(id))
+          assignedStores: filtered,
+          storesCount: filtered.length
         };
+      });
+    });
+
+    setStores(prev => {
+      return prev.map(store => {
+        if (storeIds.includes(store.id)) {
+          return { ...store, consultantId };
+        } else if (store.consultantId === consultantId) {
+          return { ...store, consultantId: null };
+        }
+        return store;
       });
     });
 
@@ -420,6 +532,8 @@ export function AppProvider({ children }) {
       addVisit,
       updateActionPlanStatus,
       assignStoresToConsultant,
+      addConsultant,
+      addStore,
       addCategory,
       updateCategory,
       deleteCategory,
