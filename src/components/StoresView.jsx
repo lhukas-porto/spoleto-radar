@@ -31,10 +31,11 @@ export default function StoresView() {
   });
 
   const filteredStores = stores.filter(store => {
-    const matchesSearch = store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          store.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          store.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          store.franchisee.toLowerCase().includes(searchTerm.toLowerCase());
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = (store.name || '').toLowerCase().includes(term) ||
+                          (store.city || '').toLowerCase().includes(term) ||
+                          (store.code || '').toLowerCase().includes(term) ||
+                          (store.franchisee || '').toLowerCase().includes(term);
     const matchesState = stateFilter === 'Todos' || store.state === stateFilter;
     return matchesSearch && matchesState;
   });
@@ -150,7 +151,7 @@ export default function StoresView() {
 
                 <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.82rem' }}>
                   <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Franqueado(a):</span> <strong>{store.franchisee}</strong>
+                    <span style={{ color: 'var(--text-muted)' }}>Franqueado(a):</span> <strong>{store.franchisee || 'Franquia Oficial Spoleto'}</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>Consultor(a):</span> <strong>{consultant?.name || 'Não atribuído'}</strong>
