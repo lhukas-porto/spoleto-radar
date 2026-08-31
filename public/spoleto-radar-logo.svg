@@ -3,11 +3,10 @@
   <text x="0" y="35" fill="#2E1C13" font-family="'Montserrat', sans-serif" font-weight="800" font-size="36" letter-spacing="7">SPOLET</text>
 
   <!-- O icônico "O" do Spoleto com Gema Dourada e Haste -->
-  <g transform="translate(230, 22)">
-    <circle cx="0" cy="0" r="14" fill="#F5A623" />
-    <circle cx="0" cy="0" r="16.5" stroke="#2E1C13" stroke-width="4.5" fill="none" />
-    <rect x="15" y="-2.5" width="16" height="5" rx="1.5" fill="#2E1C13" />
-    <circle cx="0" cy="0" r="2.5" fill="#FFFFFF" opacity="0.6" />
+  <g transform="translate(225, 23)">
+    <circle cx="0" cy="0" r="14.5" fill="#FAB819" />
+    <circle cx="0" cy="0" r="14.5" stroke="#2E1C13" stroke-width="5.5" fill="none" />
+    <rect x="0" y="-2.75" width="24" height="5.5" rx="1" fill="#2E1C13" />
   </g>
 
   <!-- Badge RADAR -->

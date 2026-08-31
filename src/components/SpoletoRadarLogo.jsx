@@ -44,19 +44,16 @@ export default function SpoletoRadarLogo({
           SPOLET
         </text>
 
-        {/* Ícone Especial "O" do Spoleto (Prato / Frigideira com Gema Dourada + Cabo Horizontal) */}
-        <g transform="translate(230, 22)">
-          {/* Círculo Interno - Gema Amarela Dourada */}
-          <circle cx="0" cy="0" r="14" fill={yolkColor} />
+        {/* Ícone Especial "O" do Spoleto (Círculo com Gema Dourada e Haste Horizontal) */}
+        <g transform="translate(225, 23)">
+          {/* Gema Amarela Dourada */}
+          <circle cx="0" cy="0" r="14.5" fill="#FAB819" />
 
-          {/* Anel Externo Preto/Branco */}
-          <circle cx="0" cy="0" r="16.5" stroke={handleColor} strokeWidth="4.5" fill="none" />
+          {/* Anel Circular Grosso */}
+          <circle cx="0" cy="0" r="14.5" stroke={handleColor} strokeWidth="5.5" fill="none" />
 
-          {/* Haste / Cabo Horizontal Direito (Marca Registrada Spoleto) */}
-          <rect x="15" y="-2.5" width="16" height="5" rx="1.5" fill={handleColor} />
-
-          {/* Ponto Central de Radar / Gema */}
-          <circle cx="0" cy="0" r="2.5" fill="#FFFFFF" opacity="0.6" />
+          {/* Haste Horizontal Preta/Branca que sai do interior para fora */}
+          <rect x="0" y="-2.75" width="24" height="5.5" rx="1" fill={handleColor} />
         </g>
 
         {/* Tagline / Badge "RADAR" */}

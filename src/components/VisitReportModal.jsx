@@ -94,7 +94,7 @@ export default function VisitReportModal() {
   const generateWhatsAppMessage = () => {
     const formattedDate = new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR');
 
-    let msg = `🍝 *GRUPO TRIGO | SPOLETO - PLANO DE AÇÃO OFICIAL* 📋\n\n`;
+    let msg = `🎯 *GRUPO TRIGO | SPOLETO - PLANO DE AÇÃO OFICIAL* 📋\n\n`;
     msg += `Olá! O relatório e plano de ação oficial em *PDF* da unidade *${store?.name}* referente à visita de Consultoria de Negócios em *${formattedDate}* foi gerado.\n\n`;
     msg += `📎 *Segue o arquivo PDF anexo para execução e acompanhamento das ações pontuadas.*\n\n`;
     msg += `👨‍💼 *Consultor(a):* ${consultant?.name || 'Consultoria de Negócios'}\n`;
