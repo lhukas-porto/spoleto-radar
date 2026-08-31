@@ -27,7 +27,7 @@ export default function Header() {
             <SpoletoRadarLogo variant="navbar" size="md" />
           </div>
           <div className="brand-subtitle" style={{ fontSize: '0.74rem', opacity: 0.85, paddingLeft: '2px' }}>
-            Grupo Trigo &bull; {stores.length} Lojas Ativas
+            Consultoria de Negócios &bull; {stores.length} Lojas Ativas
           </div>
         </div>
 

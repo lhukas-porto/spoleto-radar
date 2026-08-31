@@ -696,7 +696,7 @@ export default function ConsultantsView() {
                     type="email" 
                     value={newCons.email} 
                     onChange={(e) => setNewCons({ ...newCons, email: e.target.value })} 
-                    placeholder="nome@grupotrigo.com.br" 
+                    placeholder="nome@spoleto.com.br" 
                   />
                 </div>
 
@@ -781,7 +781,7 @@ export default function ConsultantsView() {
                     type="email" 
                     value={editForm.email} 
                     onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} 
-                    placeholder="nome@grupotrigo.com.br" 
+                    placeholder="nome@spoleto.com.br" 
                   />
                 </div>
 

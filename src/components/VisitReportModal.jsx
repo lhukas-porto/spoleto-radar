@@ -101,11 +101,11 @@ export default function VisitReportModal() {
   const generateWhatsAppMessage = () => {
     const formattedDate = new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR');
 
-    let msg = `🎯 *GRUPO TRIGO | SPOLETO - PLANO DE AÇÃO OFICIAL* 📋\n\n`;
+    let msg = `🎯 *SPOLETO - PLANO DE AÇÃO OFICIAL* 📋\n\n`;
     msg += `Olá! O relatório e plano de ação oficial em *PDF* da unidade *${store?.name}* referente à visita de Consultoria de Negócios em *${formattedDate}* foi gerado.\n\n`;
     msg += `📎 *Segue o arquivo PDF anexo para execução e acompanhamento das ações pontuadas.*\n\n`;
     msg += `👨‍💼 *Consultor(a):* ${consultant?.name || 'Consultoria de Negócios'}\n`;
-    msg += `_Grupo Trigo • Spoleto_`;
+    msg += `_Spoleto Radar • Consultoria de Negócios_`;
 
     return msg;
   };
@@ -123,7 +123,7 @@ export default function VisitReportModal() {
     body += `Favor dar andamento imediato nas ações corretivas pontuadas com os respectivos responsáveis e prazos.\n\n`;
     body += `Atenciosamente,\n`;
     body += `${consultant?.name || 'Consultor(a) de Negócios'}\n`;
-    body += `Consultoria de Negócios - Grupo Trigo\n`;
+    body += `Consultoria de Negócios Spoleto\n`;
     return body;
   };
 
@@ -375,7 +375,7 @@ export default function VisitReportModal() {
                 PLANO DE AÇÃO OFICIAL
               </h1>
               <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, marginTop: '2px' }}>
-                Consultoria de Negócios &bull; Grupo Trigo
+                Consultoria de Negócios &bull; Spoleto
               </p>
             </div>
           </div>
@@ -598,7 +598,7 @@ export default function VisitReportModal() {
                 <strong style={{ fontSize: '0.82rem', display: 'block' }}>
                   {visit.signatures?.consultantName || consultant?.name || 'Consultor(a) de Negócios'}
                 </strong>
-                <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Consultor(a) de Negócios &bull; Grupo Trigo</span>
+                <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Consultor(a) de Negócios Spoleto</span>
               </div>
 
               {/* Assinatura da Gerência / Franqueado */}

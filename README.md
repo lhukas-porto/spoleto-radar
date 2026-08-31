@@ -1,6 +1,6 @@
-# 🍝 Spoleto Radar | Consultoria de Negócios 360 - Grupo Trigo
+# 🍝 Spoleto Radar | Consultoria de Negócios 360
 
-Plataforma oficial de **Consultoria de Negócios, Auditoria de Qualidade e Gestão de Planos de Ação Operacionais** para a rede de franquias **Spoleto & Grupo Trigo**.
+Plataforma oficial de **Consultoria de Negócios, Auditoria de Qualidade e Gestão de Planos de Ação Operacionais** para a rede de franquias **Spoleto**.
 
 ---
 
@@ -98,5 +98,5 @@ http://localhost:5173/
 
 ---
 
-## 🏛️ Grupo Trigo & Spoleto
+## 🏛️ Rede Spoleto
 *Documentação gerada automaticamente para a plataforma Spoleto Radar.*

@@ -13,7 +13,7 @@ export default function App() {
   const context = useApp();
   
   if (!context) {
-    return <div style={{ padding: '2rem', textAlign: 'center' }}>Carregando Trigo Visita 360...</div>;
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Carregando Spoleto Radar...</div>;
   }
 
   const { activeTab, visits, setSelectedVisitForReport, toastMessage } = context;

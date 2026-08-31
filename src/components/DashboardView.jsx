@@ -75,7 +75,7 @@ export default function DashboardView() {
     <div>
       <div className="section-header">
         <div>
-          <h1 className="section-title">Painel Executivo Spoleto & Grupo Trigo</h1>
+          <h1 className="section-title">Painel Executivo Spoleto</h1>
           <p className="section-subtitle">Acompanhamento consolidado de visitas, conformidade de rede e gargalos operacionais.</p>
         </div>
 

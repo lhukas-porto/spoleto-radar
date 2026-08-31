@@ -1,4 +1,4 @@
-// Dados Oficiais do Ecossistema Spoleto / Grupo Trigo - Spoleto Radar
+// Dados Oficiais do Ecossistema Spoleto / Spoleto - Spoleto Radar
 // Base Oficial Atualizada com os 16 Consultores de Negócios e 409 Restaurantes
 
 export const INITIAL_REGIONS = [
@@ -5560,7 +5560,7 @@ export const INITIAL_CATEGORIES = [
       },
       {
         "id": "sub-fat-4",
-        "title": "Ticket médio da loja abaixo da média regional do Grupo Trigo",
+        "title": "Ticket médio da loja abaixo da média regional da Rede Spoleto",
         "defaultSeverity": "Média",
         "suggestedActions": [
           "Capacitar operadores de caixa e montagem na venda de adicionais (proteína dupla, queijo gratinado, bebidas e sobremesas).",
@@ -5850,7 +5850,7 @@ export const INITIAL_CATEGORIES = [
         "suggestedActions": [
           "Posicionar o Embaixador na fila adiantando a escolha de ingredientes e molhos antes do cliente chegar ao balcão.",
           "Manter a pista de 28 ingredientes 100% abastecida para não interromper a montagem ao vivo.",
-          "Organizar as cubas na ordem exata do fluxo operacional do manual do Grupo Trigo."
+          "Organizar as cubas na ordem exata do fluxo operacional do manual da Rede Spoleto."
         ]
       },
       {
@@ -6036,7 +6036,7 @@ export const INITIAL_CATEGORIES = [
         "defaultSeverity": "Alta",
         "suggestedActions": [
           "Não deixar o estoque de produtos enxuto. Considerar sempre uma reserva de pelo menos 2 dias.",
-          "Antecipar pedidos semanais na distribuidora homologada do Grupo Trigo.",
+          "Antecipar pedidos semanais na distribuidora homologada da Rede Spoleto.",
           "Criar quadro visual no depósito com o estoque mínimo de segurança por tipo de massa e molho."
         ]
       },
@@ -6075,7 +6075,7 @@ export const INITIAL_CATEGORIES = [
         "defaultSeverity": "Alta",
         "suggestedActions": [
           "Ajustar o plano de produção de massas cozidas em lotes menores ao longo do turno.",
-          "Utilizar a planilha de pré-preparo inteligente do Grupo Trigo baseada no histórico de vendas.",
+          "Utilizar a planilha de pré-preparo inteligente da Rede Spoleto baseada no histórico de vendas.",
           "Pesar e registrar diariamente em planilha todo descarte de massa no fechamento."
         ]
       },
@@ -6359,7 +6359,7 @@ export const INITIAL_CATEGORIES = [
         "title": "Materiais de comunicação de PDV desatualizados ou danificados",
         "defaultSeverity": "Alta",
         "suggestedActions": [
-          "Solicitar reposição imediata de testeiras, displays de balcão e totens com o time de Marketing do Grupo Trigo.",
+          "Solicitar reposição imediata de testeiras, displays de balcão e totens com o time de Marketing da Rede Spoleto.",
           "Retirar materiais de campanhas passadas e instalar a campanha vigente da rede.",
           "Limpar e higienizar todos os acrílicos de cardápio e testeiras de pista."
         ]
@@ -6379,7 +6379,7 @@ export const INITIAL_CATEGORIES = [
         "title": "Falta de participação em campanhas promocionais oficiais da rede",
         "defaultSeverity": "Alta",
         "suggestedActions": [
-          "Aderir a 100% das campanhas nacionais de marketing promovidas pelo Grupo Trigo.",
+          "Aderir a 100% das campanhas nacionais de marketing promovidas pela Rede Spoleto.",
           "Garantir estoque de brindes e produtos promocionais homologados antes do início da campanha.",
           "Treinar toda a equipe de atendimento sobre a mecânica da promoção em vigor."
         ]
@@ -6439,7 +6439,7 @@ export const INITIAL_CATEGORIES = [
         "defaultSeverity": "Média",
         "suggestedActions": [
           "Definir responsável diário (Gerente) para tratar e reverter clientes insatisfeitos no Google.",
-          "Adotar o manual oficial de respostas padrão do Grupo Trigo para feedbacks negativos.",
+          "Adotar o manual oficial de respostas padrão da Rede Spoleto para feedbacks negativos.",
           "Entrar em contato direto com clientes que avaliaram com 1 ou 2 estrelas para entender o ocorrido."
         ]
       },
@@ -6509,7 +6509,7 @@ export const INITIAL_CATEGORIES = [
         "suggestedActions": [
           "Cobrar conclusão imediata dos módulos avançados de CMV e Gestão de Pessoas pela gerência.",
           "Alinhar cronograma semanal de estudos do gerente com o Franqueado da unidade.",
-          "Aplicar plano de ação prático baseado nos estudos dos módulos de liderança do Grupo Trigo."
+          "Aplicar plano de ação prático baseado nos estudos dos módulos de liderança da Rede Spoleto."
         ]
       },
       {
@@ -6538,7 +6538,7 @@ export const INITIAL_CATEGORIES = [
         "suggestedActions": [
           "Reparar todos os pontos de infraestrutura pontuados no Q.A em até 30 dias conforme combinado.",
           "Solicitar cotação com prestadores de serviço e aprovar cronograma com a gerência.",
-          "Acessar o checklist no TrigON e anexar as fotos de evidência após a conclusão dos reparos."
+          "Acessar o checklist no Checklist Oficial e anexar as fotos de evidência após a conclusão dos reparos."
         ]
       },
       {
@@ -6567,7 +6567,7 @@ export const INITIAL_CATEGORIES = [
         "defaultSeverity": "Média",
         "suggestedActions": [
           "Retocar pintura com as cores oficiais da marca Spoleto (Marrom e Ouro) no pós-fechamento.",
-          "Solicitar reposição de adesivos e testeiras oficiais junto ao time de Marketing do Grupo Trigo.",
+          "Solicitar reposição de adesivos e testeiras oficiais junto ao time de Marketing da Rede Spoleto.",
           "Limpar e higienizar painéis luminosos da fachada da loja."
         ]
       },
@@ -6605,7 +6605,7 @@ export const INITIAL_CATEGORIES = [
         "title": "Cooktop / Coccionador de indução com potência fraca ou desligando",
         "defaultSeverity": "Alta",
         "suggestedActions": [
-          "Acionar assistência técnica homologada do Grupo Trigo para troca de placas e bobinas de indução.",
+          "Acionar assistência técnica homologada da Rede Spoleto para troca de placas e bobinas de indução.",
           "Limpar os coolers e entradas de ar inferiores do cooktop para evitar superaquecimento.",
           "Utilizar somente panelas e frigideiras de indução com fundo triplo em perfeito estado."
         ]
@@ -6635,7 +6635,7 @@ export const INITIAL_CATEGORIES = [
         "title": "Sistema PDV travando ou impressora de cupom sem comunicação",
         "defaultSeverity": "Alta",
         "suggestedActions": [
-          "Reiniciar terminal PDV e testar cabo de rede com o suporte de TI do Grupo Trigo.",
+          "Reiniciar terminal PDV e testar cabo de rede com o suporte de TI da Rede Spoleto.",
           "Manter bobinas térmicas reservas ao lado de cada caixa e impressora de comanda.",
           "Configurar contingência em 4G caso haja instabilidade no link de internet do shopping."
         ]
@@ -6647,14 +6647,14 @@ export const INITIAL_CATEGORIES = [
     "name": "Q.A (AUDITORIA DE QUALIDADE)",
     "icon": "ShieldCheck",
     "color": "#0284C7",
-    "description": "Conformidade com o checklist oficial TrigON, boas práticas sanitárias, PVPS e laudos técnicos",
+    "description": "Conformidade com o checklist oficial Checklist Oficial, boas práticas sanitárias, PVPS e laudos técnicos",
     "subproblems": [
       {
         "id": "sub-qa-1",
         "title": "Itens de não-conformidade pontuados no checklist Q.A pendentes de correção",
         "defaultSeverity": "Crítica",
         "suggestedActions": [
-          "Solucionar os itens pontuados no check-list, acessar o TrigON e anexar as evidências corrigidas.",
+          "Solucionar os itens pontuados no check-list, acessar o Checklist Oficial e anexar as evidências corrigidas.",
           "Montar plano de ação emergencial com a gerência para regularizar os apontamentos em até 7 dias.",
           "Realizar auto-auditoria preventiva semanal utilizando o mesmo checklist do consultor de negócios."
         ]

@@ -844,7 +844,7 @@ export default function NewVisitForm() {
                           <option value="EMBAIXADOR">EMBAIXADOR</option>
                           <option value="GERENTE">GERENTE</option>
                           <option value="CONSULTOR">CONSULTOR</option>
-                          <option value="ÁREAS INTERNAS DO TRIGO">ÁREAS INTERNAS DO TRIGO</option>
+                          <option value="ÁREAS INTERNAS DA FRANQUEADORA">ÁREAS INTERNAS DA FRANQUEADORA</option>
                         </select>
                       </div>
 
@@ -948,8 +948,8 @@ export default function NewVisitForm() {
                   value={consultantSignature}
                   onChange={setConsultantSignature}
                   title="Assinatura do Consultor(a)"
-                  subtitle="Rubrica do consultor técnico Grupo Trigo"
-                  signerRole="Consultor(a) de Negócios • Grupo Trigo"
+                  subtitle="Rubrica do consultor de negócios Spoleto"
+                  signerRole="Consultor(a) de Negócios Spoleto"
                   height={150}
                 />
               </div>

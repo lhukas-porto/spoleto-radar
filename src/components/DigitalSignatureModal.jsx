@@ -138,11 +138,11 @@ export default function DigitalSignatureModal({
               value={consultantSig}
               onChange={setConsultantSig}
               title="Assinatura do(a) Consultor(a) de Negócios"
-              subtitle="Rubrica oficial do consultor técnico do Grupo Trigo"
+              subtitle="Rubrica oficial do consultor de negócios Spoleto"
               signerName={consultantName}
               onSignerNameChange={setConsultantName}
               signerNameLabel="Nome do(a) Consultor(a)"
-              signerRole="Consultor(a) de Negócios • Grupo Trigo"
+              signerRole="Consultor(a) de Negócios Spoleto"
               height={170}
             />
           </div>
