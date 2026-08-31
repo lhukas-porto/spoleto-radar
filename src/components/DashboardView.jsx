@@ -140,7 +140,7 @@ export default function DashboardView() {
               <div>
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <PieIcon size={20} color="var(--primary-brown)" />
-                  Itens de Oportunidade (Gráfico Pizza)
+                  Itens de Oportunidade
                 </h3>
                 <p className="section-subtitle">
                   Distribuição percentual dos temas mais apontados nos Planos de Ação.
@@ -154,7 +154,7 @@ export default function DashboardView() {
 
             {categoryBottlenecks.length === 0 ? (
               <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                Nenhum gargalo registrado ainda. Realize novas visitas para visualizar a distribuição.
+                Nenhum item de oportunidade registrado ainda. Realize novas visitas para visualizar a distribuição.
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem', margin: '1rem 0' }}>
