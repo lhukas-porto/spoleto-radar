@@ -319,9 +319,7 @@ export default function TaxonomyView() {
                     style={{ fontSize: '0.82rem', padding: '0.5rem 0.9rem' }}
                     onClick={() => {
                       setSubTitle('');
-                      setSubAction1('');
-                      setSubAction2('');
-                      setSubAction3('');
+                      setSubActions(['', '', '']);
                       setIsNewSubModalOpen(true);
                     }}
                   >
@@ -348,16 +346,14 @@ export default function TaxonomyView() {
                     Tópico "{selectedCategory.name}" criado!
                   </h3>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: '440px', margin: '0 auto 1.5rem' }}>
-                    Agora adicione os subtópicos com seus respectivos 3 planos de ação oficiais para completar a matriz.
+                    Agora adicione os subtópicos com seus respectivos planos de ação oficiais para completar a matriz.
                   </p>
                   <button 
                     type="button" 
                     className="btn-primary"
                     onClick={() => {
                       setSubTitle('');
-                      setSubAction1('');
-                      setSubAction2('');
-                      setSubAction3('');
+                      setSubActions(['', '', '']);
                       setIsNewSubModalOpen(true);
                     }}
                     style={{ padding: '0.65rem 1.4rem', fontSize: '0.92rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', margin: '0 auto' }}
