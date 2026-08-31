@@ -202,16 +202,22 @@ export default function ConsultantsView() {
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Mail size={14} color="var(--text-muted)" />
-                    {consultant.email}
+                {(consultant.email || consultant.phone) ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                    {consultant.email && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Mail size={14} color="var(--text-muted)" />
+                        {consultant.email}
+                      </div>
+                    )}
+                    {consultant.phone && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Phone size={14} color="var(--text-muted)" />
+                        {consultant.phone}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Phone size={14} color="var(--text-muted)" />
-                    {consultant.phone}
-                  </div>
-                </div>
+                ) : null}
 
                 {/* Box de Lojas Vinculadas */}
                 <div style={{ background: 'var(--bg-warm)', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>

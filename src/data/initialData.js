@@ -5,8 +5,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-1",
     "name": "ALEX DE BRISTO",
-    "email": "alex.bristo@grupotrigo.com.br",
-    "phone": "(21) 92597-8951",
+    "email": "",
+    "phone": "",
     "region": "Nordeste (PB, PE, AL, BA, RN)",
     "active": true,
     "assignedStores": [
@@ -38,8 +38,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-2",
     "name": "ALEXANDRE DE PAULA",
-    "email": "alexandre.paula@grupotrigo.com.br",
-    "phone": "(11) 97152-3009",
+    "email": "",
+    "phone": "",
     "region": "SP Interior & Sul de Minas",
     "active": true,
     "assignedStores": [
@@ -78,8 +78,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-3",
     "name": "CHRISTIANE RAMOS PEREIRA DE SOUZA",
-    "email": "christiane.souza@grupotrigo.com.br",
-    "phone": "(11) 95127-4894",
+    "email": "",
+    "phone": "",
     "region": "SP Capital, Campinas & Região",
     "active": true,
     "assignedStores": [
@@ -118,8 +118,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-4",
     "name": "CINTHIA MILLIOLE",
-    "email": "cinthia.milliole@grupotrigo.com.br",
-    "phone": "(21) 99241-1229",
+    "email": "",
+    "phone": "",
     "region": "RJ Capital & Sul Fluminense",
     "active": true,
     "assignedStores": [
@@ -160,8 +160,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-5",
     "name": "EDUARDO SPISLA",
-    "email": "eduardo.spisla@grupotrigo.com.br",
-    "phone": "(41) 98445-7687",
+    "email": "",
+    "phone": "",
     "region": "Região Sul (PR, SC, RS)",
     "active": true,
     "assignedStores": [
@@ -199,8 +199,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-6",
     "name": "FABIO FAUSTINO DO CARMO",
-    "email": "fabio.carmo@grupotrigo.com.br",
-    "phone": "(19) 97565-2853",
+    "email": "",
+    "phone": "",
     "region": "SP Capital, Campinas & Interior",
     "active": true,
     "assignedStores": [
@@ -222,8 +222,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-7",
     "name": "FABRÍCIO GUEDES",
-    "email": "fabricio.guedes@grupotrigo.com.br",
-    "phone": "(61) 93439-4389",
+    "email": "",
+    "phone": "",
     "region": "Centro-Oeste (DF, GO, MT, MS, TO)",
     "active": true,
     "assignedStores": [
@@ -257,8 +257,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-8",
     "name": "ISRAEL LOMARDES ROCHA DA SILVA",
-    "email": "israel.silva@grupotrigo.com.br",
-    "phone": "(21) 94144-9504",
+    "email": "",
+    "phone": "",
     "region": "RJ Capital & Espírito Santo",
     "active": true,
     "assignedStores": [
@@ -299,8 +299,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-9",
     "name": "KATARINY GOULART",
-    "email": "katariny.goulart@grupotrigo.com.br",
-    "phone": "(71) 97648-3284",
+    "email": "",
+    "phone": "",
     "region": "Nordeste (CE, BA)",
     "active": true,
     "assignedStores": [
@@ -328,8 +328,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-10",
     "name": "MARCELO CORA SILVA DIAS",
-    "email": "marcelo.dias@grupotrigo.com.br",
-    "phone": "(11) 98086-1170",
+    "email": "",
+    "phone": "",
     "region": "SP Capital, Campinas & Piracicaba",
     "active": true,
     "assignedStores": [
@@ -352,8 +352,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-11",
     "name": "MAYARA MOREIRA DAMASCO",
-    "email": "mayara.damasco@grupotrigo.com.br",
-    "phone": "(21) 91738-9688",
+    "email": "",
+    "phone": "",
     "region": "RJ Capital, Serrana, Lagos & Norte",
     "active": true,
     "assignedStores": [
@@ -396,8 +396,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-12",
     "name": "PABLO HENRIQUE FERREIRA SIMPLICIO",
-    "email": "pablo.simplicio@grupotrigo.com.br",
-    "phone": "(91) 94223-1172",
+    "email": "",
+    "phone": "",
     "region": "Norte & Nordeste (AM, PA, AP, RR, RO, MA, PI)",
     "active": true,
     "assignedStores": [
@@ -429,8 +429,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-13",
     "name": "PERCY PINHEIRO",
-    "email": "percy.pinheiro@grupotrigo.com.br",
-    "phone": "(11) 96379-7405",
+    "email": "",
+    "phone": "",
     "region": "SP Capital, ABC, Litoral & Vale",
     "active": true,
     "assignedStores": [
@@ -469,8 +469,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-14",
     "name": "RENE SANTOS DO VALE",
-    "email": "rene.vale@grupotrigo.com.br",
-    "phone": "(16) 95939-7282",
+    "email": "",
+    "phone": "",
     "region": "SP Capital, Osasco, Alto Tietê & Interior",
     "active": true,
     "assignedStores": [
@@ -509,8 +509,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-15",
     "name": "ROSA ALICE GUEDES DE SOUZA",
-    "email": "rosa.souza@grupotrigo.com.br",
-    "phone": "(61) 93326-9547",
+    "email": "",
+    "phone": "",
     "region": "DF, GO, MT, AC & BA",
     "active": true,
     "assignedStores": [
@@ -545,8 +545,8 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-16",
     "name": "TEREZA CRISTINA",
-    "email": "tereza.cristina@grupotrigo.com.br",
-    "phone": "(31) 94245-5007",
+    "email": "",
+    "phone": "",
     "region": "Minas Gerais (BH & Interior)",
     "active": true,
     "assignedStores": [

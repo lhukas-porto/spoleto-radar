@@ -465,8 +465,8 @@ const consultants = consultantDefinitions.map((c, index) => {
   return {
     id,
     name: c.name,
-    email: formatEmail(c.name),
-    phone: formatPhone(index),
+    email: '',
+    phone: '',
     region: c.region,
     active: true,
     assignedStores: []
