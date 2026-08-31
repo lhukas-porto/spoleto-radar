@@ -8,6 +8,7 @@ import StoresView from './components/StoresView';
 import ConsultantsView from './components/ConsultantsView';
 import TaxonomyView from './components/TaxonomyView';
 import VisitReportModal from './components/VisitReportModal';
+import Footer from './components/Footer';
 
 export default function App() {
   const context = useApp();
@@ -57,6 +58,8 @@ export default function App() {
         {activeTab === 'consultants' && <ConsultantsView />}
         {activeTab === 'taxonomy' && <TaxonomyView />}
       </main>
+      
+      <Footer />
 
       {/* Global Visit Report & Action Plan Modal */}
       <VisitReportModal />
