@@ -44,32 +44,33 @@ export default function Footer() {
           style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '0.65rem',
+            gap: '0.85rem',
             background: 'var(--bg-warm, #FAF8F5)',
-            padding: '0.45rem 0.95rem',
-            borderRadius: 'var(--radius-md, 8px)',
-            border: '1px solid #E8DFD8',
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md, 10px)',
+            border: '1px solid #E2D9D2',
             textDecoration: 'none',
-            transition: 'all 0.2s ease',
+            transition: 'all 0.25s ease',
             cursor: 'pointer'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = 'var(--accent-gold-dark, #8C6239)';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(93, 56, 38, 0.1)';
-            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(93, 56, 38, 0.12)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = '#E8DFD8';
+            e.currentTarget.style.borderColor = '#E2D9D2';
             e.currentTarget.style.boxShadow = 'none';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
           title="Falar com a LFcoding no WhatsApp (61 99627-2630)"
         >
           <span style={{ 
-            fontSize: '0.75rem', 
+            fontSize: '0.8rem', 
             color: 'var(--text-secondary, #475569)', 
-            fontWeight: 600,
-            letterSpacing: '0.2px'
+            fontWeight: 700,
+            letterSpacing: '0.3px',
+            textTransform: 'uppercase'
           }}>
             Desenvolvido por
           </span>
@@ -77,10 +78,11 @@ export default function Footer() {
             src={lfLogo} 
             alt="LFcoding" 
             style={{ 
-              height: '28px', 
+              height: '50px', 
               width: 'auto', 
               objectFit: 'contain',
-              display: 'block'
+              display: 'block',
+              borderRadius: '4px'
             }} 
           />
         </a>
