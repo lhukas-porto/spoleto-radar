@@ -7,13 +7,11 @@ import {
   FileText, 
   Store, 
   Users, 
-  Settings2,
-  RefreshCw,
-  Radio
+  Settings2
 } from 'lucide-react';
 
 export default function Header() {
-  const { activeTab, setActiveTab, resetToDemoData, stores, visits } = useApp();
+  const { activeTab, setActiveTab, stores, visits } = useApp();
 
   return (
     <header className="navbar">
@@ -80,24 +78,6 @@ export default function Header() {
             <Settings2 size={16} /> Matriz de Temas
           </button>
         </nav>
-
-        {/* Quick Reset Button */}
-        <div>
-          <button 
-            className="btn-secondary" 
-            onClick={resetToDemoData}
-            style={{ 
-              fontSize: '0.75rem', 
-              padding: '0.4rem 0.65rem',
-              background: 'rgba(255, 255, 255, 0.12)',
-              borderColor: 'rgba(255, 255, 255, 0.25)',
-              color: '#FFFFFF'
-            }}
-            title="Restaurar dados padrão de demonstração"
-          >
-            <RefreshCw size={13} /> Resetar Demonstração
-          </button>
-        </div>
       </div>
     </header>
   );
