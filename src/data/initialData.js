@@ -1,6 +1,30 @@
 // Dados Oficiais do Ecossistema Spoleto / Grupo Trigo - Spoleto Radar
 // Base Oficial Atualizada com os 16 Consultores de Negócios e 409 Restaurantes
 
+export const INITIAL_REGIONS = [
+  "SP Capital, Campinas & Região",
+  "SP Capital, ABC, Litoral & Vale",
+  "SP Capital, Osasco, Alto Tietê & Interior",
+  "SP Capital, Campinas & Piracicaba",
+  "SP Capital, Campinas & Interior",
+  "SP Interior & Sul de Minas",
+  "RJ Capital & Sul Fluminense",
+  "RJ Capital, Serrana, Lagos & Norte",
+  "RJ Capital & Espírito Santo",
+  "Minas Gerais (BH & Interior)",
+  "Região Sul (PR, SC, RS)",
+  "Nordeste (PB, PE, AL, BA, RN)",
+  "Nordeste (CE, BA)",
+  "Norte & Nordeste (AM, PA, AP, RR, RO, MA, PI)",
+  "Centro-Oeste (DF, GO, MT, MS, TO)",
+  "DF, GO, MT, AC & BA",
+  "SP - Capital",
+  "SP - Interior",
+  "RJ - Capital",
+  "Sul - Geral",
+  "Nacional / Brasil"
+];
+
 export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-1",

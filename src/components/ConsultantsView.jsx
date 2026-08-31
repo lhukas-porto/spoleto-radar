@@ -55,12 +55,16 @@ export default function ConsultantsView() {
     updateConsultant, 
     deleteConsultant, 
     assignStoresToConsultant, 
+    regions,
+    addRegion,
+    updateRegion,
+    deleteRegion,
     setActiveTab 
   } = useApp();
 
-  // Get all unique regions combining official list with any active consultants' regions
+  // Combine regions from context with any active consultants' custom regions
   const availableRegions = Array.from(new Set([
-    ...OFFICIAL_REGIONS,
+    ...(regions || []),
     ...consultants.map(c => c.region).filter(Boolean)
   ]));
   
@@ -68,11 +72,18 @@ export default function ConsultantsView() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [managingConsultant, setManagingConsultant] = useState(null);
   const [editingConsultant, setEditingConsultant] = useState(null);
+  const [isRegionsModalOpen, setIsRegionsModalOpen] = useState(false);
+
+  // Region Management state
+  const [newRegionInput, setNewRegionInput] = useState('');
+  const [editingRegionOldName, setEditingRegionOldName] = useState(null);
+  const [editingRegionNewName, setEditingRegionNewName] = useState('');
+  const [regionSearchTerm, setRegionSearchTerm] = useState('');
 
   // Edit Consultant Form State
   const [editForm, setEditForm] = useState({
     name: '',
-    region: OFFICIAL_REGIONS[0],
+    region: availableRegions[0] || 'SP - Capital',
     email: '',
     phone: ''
   });
@@ -88,14 +99,46 @@ export default function ConsultantsView() {
     name: '',
     email: '',
     phone: '',
-    region: OFFICIAL_REGIONS[0]
+    region: availableRegions[0] || 'SP - Capital'
   });
+
+  // Region Management Handlers
+  const handleAddNewRegion = (e) => {
+    e.preventDefault();
+    if (!newRegionInput.trim()) return;
+    const ok = addRegion(newRegionInput.trim());
+    if (ok) setNewRegionInput('');
+  };
+
+  const handleStartEditRegion = (regionName) => {
+    setEditingRegionOldName(regionName);
+    setEditingRegionNewName(regionName);
+  };
+
+  const handleSaveEditRegion = (e) => {
+    e.preventDefault();
+    if (!editingRegionNewName.trim()) return;
+    updateRegion(editingRegionOldName, editingRegionNewName.trim());
+    setEditingRegionOldName(null);
+    setEditingRegionNewName('');
+  };
+
+  const handleDeleteRegion = (regionName) => {
+    const consultantsUsing = consultants.filter(c => c.region === regionName);
+    const msg = consultantsUsing.length > 0
+      ? `Atenção: existem ${consultantsUsing.length} consultor(es) vinculados a esta região (${consultantsUsing.map(c => c.name).join(', ')}). Deseja realmente excluir a região "${regionName}"?`
+      : `Tem certeza que deseja excluir a região "${regionName}"?`;
+
+    if (confirm(msg)) {
+      deleteRegion(regionName);
+    }
+  };
 
   const handleOpenEditModal = (consultant) => {
     setEditingConsultant(consultant);
     setEditForm({
       name: consultant.name || '',
-      region: consultant.region || '',
+      region: consultant.region || availableRegions[0] || '',
       email: consultant.email || '',
       phone: consultant.phone || ''
     });
@@ -183,9 +226,14 @@ export default function ConsultantsView() {
       name: '',
       email: '',
       phone: '',
-      region: 'SP - Capital'
+      region: availableRegions[0] || 'SP - Capital'
     });
   };
+
+  // Filtered regions for management modal
+  const filteredRegionsList = availableRegions.filter(reg => 
+    reg.toLowerCase().includes(regionSearchTerm.toLowerCase())
+  );
 
   // Filtered stores for the checklist modal
   const modalFilteredStores = stores.filter(store => {
@@ -215,12 +263,17 @@ export default function ConsultantsView() {
       <div className="section-header">
         <div>
           <h1 className="section-title">Equipe de Consultores de Negócios</h1>
-          <p className="section-subtitle">Gerencie os consultores e defina a carteira exclusiva de lojas Spoleto para cada um.</p>
+          <p className="section-subtitle">Gerencie os consultores, regiões de atendimento e defina a carteira exclusiva de lojas Spoleto.</p>
         </div>
 
-        <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
-          <Plus size={18} /> Cadastrar Consultor
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button className="btn-secondary" onClick={() => setIsRegionsModalOpen(true)}>
+            <MapPin size={18} /> Gerenciar Regiões ({availableRegions.length})
+          </button>
+          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
+            <Plus size={18} /> Cadastrar Consultor
+          </button>
+        </div>
       </div>
 
       {/* Grid de Consultores */}
@@ -613,7 +666,16 @@ export default function ConsultantsView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Região / Praça de Atuação *</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <label className="form-label" style={{ marginBottom: 0 }}>Região / Praça de Atuação *</label>
+                    <button 
+                      type="button" 
+                      onClick={() => setIsRegionsModalOpen(true)}
+                      style={{ fontSize: '0.75rem', color: 'var(--primary-brown)', background: 'transparent', border: 'none', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+                    >
+                      <Plus size={12} /> Gerenciar / Criar Praças
+                    </button>
+                  </div>
                   <select 
                     value={newCons.region} 
                     onChange={(e) => setNewCons({ ...newCons, region: e.target.value })} 
@@ -689,7 +751,16 @@ export default function ConsultantsView() {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Região / Praça de Atuação *</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <label className="form-label" style={{ marginBottom: 0 }}>Região / Praça de Atuação *</label>
+                    <button 
+                      type="button" 
+                      onClick={() => setIsRegionsModalOpen(true)}
+                      style={{ fontSize: '0.75rem', color: 'var(--primary-brown)', background: 'transparent', border: 'none', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+                    >
+                      <Plus size={12} /> Gerenciar / Criar Praças
+                    </button>
+                  </div>
                   <select 
                     value={editForm.region} 
                     onChange={(e) => setEditForm({ ...editForm, region: e.target.value })} 
@@ -744,6 +815,139 @@ export default function ConsultantsView() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Gerenciador de Regiões / Praças */}
+      {isRegionsModalOpen && (
+        <div className="modal-overlay" onClick={() => { setIsRegionsModalOpen(false); setEditingRegionOldName(null); }}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '680px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.85rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.25rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <MapPin size={22} /> Gerenciar Regiões e Praças de Atuação
+                </h2>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, marginTop: '0.2rem' }}>
+                  Adicione novas praças, renomeie ou exclua regiões do catálogo oficial.
+                </p>
+              </div>
+              <button onClick={() => { setIsRegionsModalOpen(false); setEditingRegionOldName(null); }} style={{ color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Form de Adicionar Nova Região */}
+            <form onSubmit={handleAddNewRegion} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', background: 'var(--bg-warm)', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+              <input 
+                type="text" 
+                value={newRegionInput} 
+                onChange={(e) => setNewRegionInput(e.target.value)} 
+                placeholder="Nome da nova região / praça (ex: SP - Vale do Paraíba & Litoral)"
+                style={{ flex: 1, padding: '0.55rem 0.85rem', fontSize: '0.85rem' }}
+              />
+              <button type="submit" className="btn-primary" style={{ padding: '0.55rem 1rem', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                <Plus size={16} /> Adicionar
+              </button>
+            </form>
+
+            {/* Busca de Regiões */}
+            <div style={{ position: 'relative', marginBottom: '0.85rem' }}>
+              <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                type="text"
+                placeholder="Filtrar regiões na lista..."
+                value={regionSearchTerm}
+                onChange={(e) => setRegionSearchTerm(e.target.value)}
+                style={{ width: '100%', paddingLeft: '2.3rem', fontSize: '0.82rem', paddingBlock: '0.45rem' }}
+              />
+            </div>
+
+            {/* Lista de Regiões */}
+            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', maxHeight: '380px' }}>
+              {filteredRegionsList.map((regionName, idx) => {
+                const count = consultants.filter(c => c.region === regionName).length;
+                const isEditing = editingRegionOldName === regionName;
+
+                return (
+                  <div 
+                    key={regionName + idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.65rem 0.85rem',
+                      borderBottom: '1px solid var(--border-subtle)',
+                      background: isEditing ? 'var(--primary-brown-light)' : '#FFFFFF',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    {isEditing ? (
+                      <form onSubmit={handleSaveEditRegion} style={{ display: 'flex', gap: '0.5rem', flex: 1, alignItems: 'center' }}>
+                        <input 
+                          type="text" 
+                          value={editingRegionNewName} 
+                          onChange={(e) => setEditingRegionNewName(e.target.value)} 
+                          autoFocus
+                          style={{ flex: 1, padding: '0.4rem 0.6rem', fontSize: '0.85rem', fontWeight: 600 }}
+                        />
+                        <button type="submit" className="btn-primary" style={{ padding: '0.4rem 0.7rem', fontSize: '0.8rem' }} title="Salvar alteração">
+                          <Check size={14} /> Salvar
+                        </button>
+                        <button type="button" className="btn-secondary" style={{ padding: '0.4rem 0.7rem', fontSize: '0.8rem' }} onClick={() => setEditingRegionOldName(null)} title="Cancelar">
+                          <X size={14} />
+                        </button>
+                      </form>
+                    ) : (
+                      <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1 }}>
+                          <MapPin size={14} color="var(--primary-brown)" />
+                          <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                            {regionName}
+                          </span>
+                          <span style={{ fontSize: '0.72rem', background: '#F3F4F6', color: '#4B5563', padding: '0.15rem 0.45rem', borderRadius: 'var(--radius-full)', fontWeight: 600 }}>
+                            {count} consultor{count !== 1 ? 'es' : ''}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.35rem' }}>
+                          <button 
+                            type="button" 
+                            className="btn-secondary" 
+                            style={{ padding: '0.35rem 0.55rem', fontSize: '0.75rem' }}
+                            onClick={() => handleStartEditRegion(regionName)}
+                            title="Renomear região"
+                          >
+                            <Edit3 size={13} />
+                          </button>
+                          <button 
+                            type="button" 
+                            style={{ background: '#FEE2E2', color: '#B91C1C', border: '1px solid #FCA5A5', padding: '0.35rem 0.55rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            onClick={() => handleDeleteRegion(regionName)}
+                            title="Excluir região"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+
+              {filteredRegionsList.length === 0 && (
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  Nenhuma região encontrada com esse termo de busca.
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)' }}>
+              <button type="button" className="btn-primary" onClick={() => { setIsRegionsModalOpen(false); setEditingRegionOldName(null); }}>
+                Concluir
+              </button>
+            </div>
           </div>
         </div>
       )}

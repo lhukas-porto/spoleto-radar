@@ -3,7 +3,8 @@ import {
   INITIAL_STORES, 
   INITIAL_CONSULTANTS, 
   INITIAL_CATEGORIES, 
-  INITIAL_VISITS 
+  INITIAL_VISITS,
+  INITIAL_REGIONS
 } from '../data/initialData';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 
@@ -59,6 +60,17 @@ export function AppProvider({ children }) {
       } catch (e) {}
     }
     return INITIAL_VISITS;
+  });
+
+  const [regions, setRegions] = useState(() => {
+    const saved = localStorage.getItem('trigo_regions_v2');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return INITIAL_REGIONS;
   });
 
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
@@ -162,6 +174,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('trigo_visits_v2', JSON.stringify(visits));
   }, [visits]);
+
+  useEffect(() => {
+    localStorage.setItem('trigo_regions_v2', JSON.stringify(regions));
+  }, [regions]);
 
   // Toast Helper
   const showToast = (message) => {
@@ -328,6 +344,54 @@ export function AppProvider({ children }) {
     }
 
     showToast('Consultor removido com sucesso.');
+  };
+
+  // Add Region
+  const addRegion = (newRegionName) => {
+    const trimmed = newRegionName.trim();
+    if (!trimmed) return false;
+    if (regions.some(r => r.toLowerCase() === trimmed.toLowerCase())) {
+      showToast('Esta região já está cadastrada.');
+      return false;
+    }
+    setRegions(prev => [...prev, trimmed]);
+    showToast(`Região "${trimmed}" adicionada com sucesso!`);
+    return true;
+  };
+
+  // Update Region
+  const updateRegion = (oldName, newName) => {
+    const trimmedOld = oldName.trim();
+    const trimmedNew = newName.trim();
+    if (!trimmedNew || trimmedOld === trimmedNew) return false;
+    
+    // Update in regions list
+    setRegions(prev => prev.map(r => r === trimmedOld ? trimmedNew : r));
+    
+    // Also update all consultants who had this region
+    setConsultants(prev => prev.map(c => {
+      if (c.region === trimmedOld) {
+        return { ...c, region: trimmedNew };
+      }
+      return c;
+    }));
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('consultants').update({ region: trimmedNew }).eq('region', trimmedOld)
+        .then(() => {})
+        .catch(e => console.error('Error updating region in Supabase:', e));
+    }
+
+    showToast(`Região atualizada para "${trimmedNew}"!`);
+    return true;
+  };
+
+  // Delete Region
+  const deleteRegion = (regionName) => {
+    const trimmed = regionName.trim();
+    setRegions(prev => prev.filter(r => r !== trimmed));
+    showToast(`Região "${trimmed}" removida.`);
+    return true;
   };
 
   // Add Store
@@ -604,6 +668,10 @@ export function AppProvider({ children }) {
       addConsultant,
       updateConsultant,
       deleteConsultant,
+      regions,
+      addRegion,
+      updateRegion,
+      deleteRegion,
       addStore,
       addCategory,
       updateCategory,
