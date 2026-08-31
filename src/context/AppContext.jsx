@@ -130,9 +130,7 @@ export function AppProvider({ children }) {
         // Fetch Categories
         const { data: cloudCategories } = await supabase.from('categories').select('*');
         if (cloudCategories && cloudCategories.length > 0) {
-          const cloudIds = new Set(cloudCategories.map(c => c.id));
-          const missingDefaults = INITIAL_CATEGORIES.filter(c => !cloudIds.has(c.id));
-          setCategories([...cloudCategories, ...missingDefaults]);
+          setCategories(cloudCategories);
         }
 
         // Fetch Visits

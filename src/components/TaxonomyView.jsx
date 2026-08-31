@@ -33,8 +33,10 @@ export default function TaxonomyView() {
   // Modals state
   const [isNewCatModalOpen, setIsNewCatModalOpen] = useState(false);
   const [isEditCatModalOpen, setIsEditCatModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null); // { id, name, description }
+  
   const [isNewSubModalOpen, setIsNewSubModalOpen] = useState(false);
-  const [editingSubproblem, setEditingSubproblem] = useState(null);
+  const [editingSubproblemData, setEditingSubproblemData] = useState(null); // { catId, sub }
 
   // New Category Form State
   const [catName, setCatName] = useState('');
@@ -48,6 +50,15 @@ export default function TaxonomyView() {
   const [subTitle, setSubTitle] = useState('');
   const [subSeverity, setSubSeverity] = useState('Alta');
   const [subActions, setSubActions] = useState(['', '', '']);
+
+  // Garante que o tópico selecionado sempre exista
+  React.useEffect(() => {
+    if (categories.length > 0) {
+      if (!selectedCatId || !categories.some(c => c.id === selectedCatId)) {
+        setSelectedCatId(categories[0].id);
+      }
+    }
+  }, [categories, selectedCatId]);
 
   const handleAddActionField = () => {
     setSubActions(prev => [...prev, '']);
@@ -63,29 +74,32 @@ export default function TaxonomyView() {
 
   const selectedCategory = categories.find(c => c.id === selectedCatId) || categories[0];
 
-  // Open Edit Category Modal
+  // Open Edit Category Modal (Passa o objeto exato)
   const handleOpenEditCategory = (cat) => {
+    setEditingCategory(cat);
     setEditCatName(cat.name);
     setEditCatDesc(cat.description || '');
     setIsEditCatModalOpen(true);
   };
 
-  const handleSaveEditCategory = (e) => {
+  const handleSaveEditCategory = async (e) => {
     e.preventDefault();
+    if (!editingCategory) return;
     if (!editCatName.trim()) {
       alert('Informe o nome do tema.');
       return;
     }
-    updateCategory(selectedCategory.id, {
+    await updateCategory(editingCategory.id, {
       name: editCatName,
       description: editCatDesc
     });
     setIsEditCatModalOpen(false);
+    setEditingCategory(null);
   };
 
-  const handleDeleteCategory = (catId, catName) => {
+  const handleDeleteCategory = async (catId, catName) => {
     if (confirm(`Tem certeza que deseja excluir o Tópico Principal "${catName}" e todos os seus subtópicos?`)) {
-      deleteCategory(catId);
+      await deleteCategory(catId);
       const remaining = categories.filter(c => c.id !== catId);
       if (remaining.length > 0) {
         setSelectedCatId(remaining[0].id);
@@ -93,9 +107,9 @@ export default function TaxonomyView() {
     }
   };
 
-  // Open Edit Subproblem Modal
-  const handleOpenEditSubproblem = (sub) => {
-    setEditingSubproblem(sub);
+  // Open Edit Subproblem Modal (Passa o tópico e o subtópico exatos)
+  const handleOpenEditSubproblem = (catId, sub) => {
+    setEditingSubproblemData({ catId, sub });
     setSubTitle(sub.title);
     setSubSeverity(sub.defaultSeverity || 'Alta');
     const actions = sub.suggestedActions?.length > 0 
@@ -104,8 +118,9 @@ export default function TaxonomyView() {
     setSubActions(actions.length > 0 ? actions : ['', '', '']);
   };
 
-  const handleSaveEditSubproblem = (e) => {
+  const handleSaveEditSubproblem = async (e) => {
     e.preventDefault();
+    if (!editingSubproblemData) return;
     if (!subTitle.trim()) {
       alert('Informe o título do subtópico.');
       return;
@@ -113,18 +128,18 @@ export default function TaxonomyView() {
 
     const validActions = subActions.map(a => a.trim()).filter(a => a.length > 0);
 
-    updateSubproblem(selectedCategory.id, editingSubproblem.id, {
+    await updateSubproblem(editingSubproblemData.catId, editingSubproblemData.sub.id, {
       title: subTitle.trim(),
       defaultSeverity: subSeverity,
       suggestedActions: validActions.length > 0 ? validActions : ['Definir ação corretiva na visita.']
     });
 
-    setEditingSubproblem(null);
+    setEditingSubproblemData(null);
   };
 
-  const handleDeleteSubproblem = (subId, title) => {
+  const handleDeleteSubproblem = async (catId, subId, title) => {
     if (confirm(`Deseja remover o subtópico "${title}"?`)) {
-      deleteSubproblem(selectedCategory.id, subId);
+      await deleteSubproblem(catId, subId);
     }
   };
 
@@ -175,7 +190,7 @@ export default function TaxonomyView() {
       <div className="section-header">
         <div>
           <h1 className="section-title">Matriz de Tópicos & Planos de Ação Oficiais</h1>
-          <p className="section-subtitle">Gerencie e edite os Tópicos Principais e Subtópicos com seus 3 Planos de Ação oficiais.</p>
+          <p className="section-subtitle">Gerencie e edite os Tópicos Principais e Subtópicos com seus Planos de Ação oficiais.</p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -184,9 +199,7 @@ export default function TaxonomyView() {
           </button>
           <button className="btn-secondary" onClick={() => {
             setSubTitle('');
-            setSubAction1('');
-            setSubAction2('');
-            setSubAction3('');
+            setSubActions(['', '', '']);
             setIsNewSubModalOpen(true);
           }}>
             <Plus size={18} /> Novo Subtópico
@@ -383,10 +396,10 @@ export default function TaxonomyView() {
                           {/* Botão Editar Subtópico */}
                           <button
                             type="button"
-                            onClick={() => handleOpenEditSubproblem(sub)}
+                            onClick={() => handleOpenEditSubproblem(selectedCategory.id, sub)}
                             className="btn-secondary"
                             style={{ fontSize: '0.76rem', padding: '0.3rem 0.6rem', color: 'var(--primary-brown)' }}
-                            title="Editar este subtópico e os 3 planos de ação"
+                            title="Editar este subtópico e os planos de ação"
                           >
                             <Edit2 size={13} /> Editar
                           </button>
@@ -394,7 +407,7 @@ export default function TaxonomyView() {
                           {/* Botão Excluir Subtópico */}
                           <button
                             type="button"
-                            onClick={() => handleDeleteSubproblem(sub.id, sub.title)}
+                            onClick={() => handleDeleteSubproblem(selectedCategory.id, sub.id, sub.title)}
                             style={{ color: '#EF4444', padding: '0.3rem', borderRadius: '4px' }}
                             title="Excluir este subtópico"
                           >
@@ -428,12 +441,12 @@ export default function TaxonomyView() {
       {/* =========================================================================
           MODAL: EDITAR TÓPICO PRINCIPAL
           ========================================================================= */}
-      {isEditCatModalOpen && (
+      {isEditCatModalOpen && editingCategory && (
         <div className="modal-overlay" onClick={() => setIsEditCatModalOpen(false)}>
           <div className="modal-card" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Edit2 size={20} /> Editar Tópico Principal
+                <Edit2 size={20} /> Editar Tópico Principal: {editingCategory.name}
               </h2>
               <button onClick={() => setIsEditCatModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -478,16 +491,16 @@ export default function TaxonomyView() {
       )}
 
       {/* =========================================================================
-          MODAL: EDITAR SUBTÓPICO (TÍTULO, SEVERIDADE E 3 AÇÕES)
+          MODAL: EDITAR SUBTÓPICO (TÍTULO, SEVERIDADE E PLANOS DE AÇÃO)
           ========================================================================= */}
-      {editingSubproblem && (
-        <div className="modal-overlay" onClick={() => setEditingSubproblem(null)}>
+      {editingSubproblemData && (
+        <div className="modal-overlay" onClick={() => setEditingSubproblemData(null)}>
           <div className="modal-card" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Edit2 size={20} /> Editar Subtópico & Planos de Ação
               </h2>
-              <button onClick={() => setEditingSubproblem(null)} style={{ color: 'var(--text-muted)' }}>
+              <button onClick={() => setEditingSubproblemData(null)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
               </button>
             </div>
@@ -496,7 +509,12 @@ export default function TaxonomyView() {
               <div className="form-grid">
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label">Tópico Principal Vinculado</label>
-                  <input type="text" value={selectedCategory.name} disabled style={{ background: '#F5EFE6', fontWeight: 700 }} />
+                  <input 
+                    type="text" 
+                    value={categories.find(c => c.id === editingSubproblemData.catId)?.name || selectedCategory.name} 
+                    disabled 
+                    style={{ background: '#F5EFE6', fontWeight: 700 }} 
+                  />
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
@@ -568,7 +586,7 @@ export default function TaxonomyView() {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                <button type="button" className="btn-secondary" onClick={() => setEditingSubproblem(null)}>
+                <button type="button" className="btn-secondary" onClick={() => setEditingSubproblemData(null)}>
                   Cancelar
                 </button>
                 <button type="submit" className="btn-primary">
