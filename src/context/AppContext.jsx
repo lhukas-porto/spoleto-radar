@@ -693,13 +693,22 @@ export function AppProvider({ children }) {
     }
   };
 
+  // Ordenação Alfabética Automática A-Z
+  const sortedCategories = [...categories].sort((a, b) => 
+    (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' })
+  );
+
+  const sortedConsultants = [...consultants].sort((a, b) => 
+    (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' })
+  );
+
   return (
     <AppContext.Provider value={{
       activeTab,
       setActiveTab,
       stores,
-      consultants,
-      categories,
+      consultants: sortedConsultants,
+      categories: sortedCategories,
       visits,
       selectedVisitForReport,
       setSelectedVisitForReport,
