@@ -27,7 +27,9 @@ import {
   Paperclip,
   Info,
   PenTool,
-  ShieldCheck
+  ShieldCheck,
+  Camera,
+  ZoomIn
 } from 'lucide-react';
 
 export default function VisitReportModal() {
@@ -35,6 +37,7 @@ export default function VisitReportModal() {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [zoomedPhoto, setZoomedPhoto] = useState(null);
   const [shareChannel, setShareChannel] = useState('whatsapp'); // 'whatsapp' | 'email' | 'both'
   const [recipientPhone, setRecipientPhone] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
@@ -463,7 +466,21 @@ export default function VisitReportModal() {
                           </td>
 
                           <td style={{ padding: '0.65rem 0.75rem', fontSize: '0.78rem', color: '#475569', fontStyle: 'italic', lineHeight: '1.3' }}>
-                            {diag.notes || sub?.title || 'Conforme combinamos em visita técnica.'}
+                            <div>{diag.notes || sub?.title || 'Conforme combinamos em visita técnica.'}</div>
+                            {diag.photoUrl && (
+                              <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <img 
+                                  src={diag.photoUrl} 
+                                  alt="Evidência" 
+                                  onClick={() => setZoomedPhoto(diag.photoUrl)}
+                                  style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #94A3B8', cursor: 'pointer' }}
+                                  title="Clique para ampliar a foto"
+                                />
+                                <span style={{ fontSize: '0.7rem', color: '#5D3826', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                                  <Camera size={11} color="var(--accent-gold-dark)" /> Foto Anexada
+                                </span>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       );
@@ -473,6 +490,54 @@ export default function VisitReportModal() {
               </div>
             )}
           </div>
+
+          {/* Galeria de Evidências Fotográficas de Não Conformidade */}
+          {visit.diagnostics?.some(d => d.photoUrl) && (
+            <div style={{ marginBottom: '1.5rem', pageBreakInside: 'avoid' }}>
+              <h3 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#5D3826', textTransform: 'uppercase', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem', borderBottom: '1px solid #CBD5E1', paddingBottom: '0.35rem' }}>
+                <Camera size={16} color="var(--accent-gold-dark)" /> Registro Fotográfico de Não Conformidades (Evidências de Campo)
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                {visit.diagnostics.filter(d => d.photoUrl).map((d, pIdx) => {
+                  const cat = categories.find(c => c.id === d.categoryId);
+                  const sub = cat?.subproblems.find(s => s.id === d.subproblemId);
+                  return (
+                    <div 
+                      key={d.id || pIdx} 
+                      style={{
+                        border: '1px solid #CBD5E1',
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                        background: '#FFFFFF',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                      }}
+                    >
+                      <img 
+                        src={d.photoUrl} 
+                        alt={`Evidência ${pIdx + 1}`}
+                        onClick={() => setZoomedPhoto(d.photoUrl)}
+                        style={{ width: '100%', height: '140px', objectFit: 'cover', cursor: 'pointer', borderBottom: '1px solid #CBD5E1' }}
+                        title="Clique para ampliar"
+                      />
+                      <div style={{ padding: '0.5rem' }}>
+                        <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#C8102E', textTransform: 'uppercase' }}>
+                          {cat?.name.split('(')[0].trim() || 'TÓPICO'}
+                        </div>
+                        <div style={{ fontSize: '0.76rem', color: '#1E293B', fontWeight: 600, marginTop: '0.15rem', lineHeight: '1.2' }}>
+                          {sub?.title || d.notes || 'Registro em visita'}
+                        </div>
+                        {d.notes && d.notes !== sub?.title && (
+                          <div style={{ fontSize: '0.7rem', color: '#64748B', fontStyle: 'italic', marginTop: '0.2rem' }}>
+                            "{d.notes}"
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Diagnóstico do Consultor */}
           {visit.generalNotes && (
@@ -724,6 +789,39 @@ export default function VisitReportModal() {
           });
         }}
       />
+
+      {/* Lightbox Modal de Ampliação de Foto */}
+      {zoomedPhoto && (
+        <div 
+          className="modal-overlay no-print" 
+          onClick={() => setZoomedPhoto(null)} 
+          style={{ zIndex: 9999, background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(4px)' }}
+        >
+          <div 
+            className="modal-card" 
+            style={{ maxWidth: '850px', padding: '1rem', background: '#1E293B', border: '1px solid #334155', textAlign: 'center' }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid #334155', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#F8FAFC', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Camera size={16} color="var(--accent-gold)" /> Evidência Fotográfica da Visita
+              </span>
+              <button 
+                type="button" 
+                onClick={() => setZoomedPhoto(null)} 
+                style={{ color: '#94A3B8', background: 'transparent', border: 'none', cursor: 'pointer', padding: '0.2rem' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+            <img 
+              src={zoomedPhoto} 
+              alt="Evidência Ampliada" 
+              style={{ maxWidth: '100%', maxHeight: '72vh', objectFit: 'contain', borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

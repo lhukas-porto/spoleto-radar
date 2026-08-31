@@ -24,11 +24,14 @@ import {
   Lightbulb,
   UserCheck,
   PenTool,
-  ShieldCheck
+  ShieldCheck,
+  Camera,
+  ZoomIn,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export default function NewVisitForm() {
-  const { stores, consultants, categories, addVisit, setActiveTab, setSelectedVisitForReport } = useApp();
+  const { stores, consultants, categories, addVisit, setActiveTab, setSelectedVisitForReport, showToast } = useApp();
 
   // Store Combobox
   const [selectedStoreId, setSelectedStoreId] = useState('');
@@ -49,6 +52,9 @@ export default function NewVisitForm() {
   const [consultantSignature, setConsultantSignature] = useState(null);
   const [showSignatureSection, setShowSignatureSection] = useState(false);
 
+  // Modal para ampliar foto
+  const [zoomedPhoto, setZoomedPhoto] = useState(null);
+
   // Dynamic Diagnostics List Builder
   const [diagnostics, setDiagnostics] = useState([
     {
@@ -57,6 +63,7 @@ export default function NewVisitForm() {
       subproblemId: categories[0]?.subproblems[0]?.id || '',
       severity: categories[0]?.subproblems[0]?.defaultSeverity || 'Alta',
       notes: '',
+      photoUrl: null,
       actionPlan: {
         action: categories[0]?.subproblems[0]?.suggestedActions?.[0] || '',
         responsible: 'GERENTE E EQUIPE',
@@ -120,6 +127,7 @@ export default function NewVisitForm() {
       subproblemId: firstSub?.id || '',
       severity: firstSub?.defaultSeverity || 'Alta',
       notes: '',
+      photoUrl: null,
       actionPlan: {
         action: firstSub?.suggestedActions?.[0] || 'Definir plano de ação corretivo.',
         responsible: 'GERENTE E EQUIPE',
@@ -133,6 +141,53 @@ export default function NewVisitForm() {
 
   const handleRemoveDiagnosticRow = (diagId) => {
     setDiagnostics(prev => prev.filter(d => d.id !== diagId));
+  };
+
+  // Upload e Compressão de Foto da Não Conformidade
+  const handlePhotoUpload = (diagId, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione um arquivo de imagem.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 1000;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.78);
+        updateDiagField(diagId, 'photoUrl', compressedBase64);
+        if (showToast) {
+          showToast('📷 Foto do problema anexada com sucesso!');
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = (diagId) => {
+    updateDiagField(diagId, 'photoUrl', null);
   };
 
   const handleCategoryChange = (diagId, newCatId) => {
@@ -566,13 +621,95 @@ export default function NewVisitForm() {
 
                       {/* Observações de Campo */}
                       <div className="form-group">
-                        <label className="form-label">Observações / Evidências da Visita</label>
+                        <label className="form-label">Observações / Detalhes</label>
                         <input 
                           type="text" 
                           placeholder="Ex: Conforme combinamos em visita; nota atual 3.8; meta acima de 60%..."
                           value={diag.notes}
                           onChange={(e) => updateDiagField(diag.id, 'notes', e.target.value)}
                         />
+                      </div>
+
+                      {/* Campo de Anexo de Foto de Evidência / Não Conformidade */}
+                      <div className="form-group" style={{ gridColumn: '1 / -1', borderTop: '1px dashed #E8DFD8', paddingTop: '0.85rem', marginTop: '0.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+                          <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--primary-brown)', fontWeight: 700, margin: 0 }}>
+                            <Camera size={15} color="var(--accent-gold-dark)" /> Foto do Problema / Não Conformidade (Opcional)
+                          </label>
+                          {diag.photoUrl && (
+                            <span style={{ fontSize: '0.72rem', color: '#166534', background: '#DCFCE7', padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-full)', fontWeight: 700 }}>
+                              Foto Anexada ✅
+                            </span>
+                          )}
+                        </div>
+
+                        {diag.photoUrl ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: '#FAF8F5', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #E8DFD8', flexWrap: 'wrap' }}>
+                            <img 
+                              src={diag.photoUrl} 
+                              alt="Foto da Não Conformidade" 
+                              onClick={() => setZoomedPhoto(diag.photoUrl)}
+                              style={{ width: '68px', height: '68px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', border: '2px solid #5D3826', cursor: 'pointer' }}
+                              title="Clique para ampliar a foto"
+                            />
+                            <div style={{ flex: 1, minWidth: '180px' }}>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <CheckCircle2 size={15} color="#16A34A" /> Evidência fotográfica registrada
+                              </div>
+                              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                                Esta foto será incluída no Laudo Oficial e no PDF emitido.
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                type="button"
+                                onClick={() => setZoomedPhoto(diag.photoUrl)}
+                                className="btn-secondary"
+                                style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                              >
+                                <ZoomIn size={14} /> Ampliar
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemovePhoto(diag.id)}
+                                style={{ color: '#EF4444', background: '#FEE2E2', border: '1px solid #FCA5A5', padding: '0.3rem 0.6rem', borderRadius: 'var(--radius-sm)', fontSize: '0.75rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600 }}
+                              >
+                                <Trash2 size={14} /> Remover
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <label 
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.55rem 1rem',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1.5px dashed #C8102E',
+                                background: '#FFF8F8',
+                                color: '#C8102E',
+                                fontSize: '0.82rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              <Camera size={16} /> 📷 Tirar Foto com a Câmera ou Selecionar Arquivo
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                capture="environment"
+                                style={{ display: 'none' }}
+                                onChange={(e) => handlePhotoUpload(diag.id, e)}
+                              />
+                            </label>
+                            <span className="form-help" style={{ display: 'block', marginTop: '0.35rem' }}>
+                              Ex: Foto do equipamento quebrado, painel de temperos fora do padrão, falta de pagers, etc.
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -838,6 +975,39 @@ export default function NewVisitForm() {
           </div>
         </div>
       </form>
+
+      {/* Modal Lightbox para Ampliar Foto */}
+      {zoomedPhoto && (
+        <div 
+          className="modal-overlay" 
+          onClick={() => setZoomedPhoto(null)} 
+          style={{ zIndex: 9999, background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(4px)' }}
+        >
+          <div 
+            className="modal-card" 
+            style={{ maxWidth: '850px', padding: '1rem', background: '#1E293B', border: '1px solid #334155', textAlign: 'center' }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid #334155', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#F8FAFC', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Camera size={16} color="var(--accent-gold)" /> Evidência Fotográfica da Não Conformidade
+              </span>
+              <button 
+                type="button" 
+                onClick={() => setZoomedPhoto(null)} 
+                style={{ color: '#94A3B8', background: 'transparent', border: 'none', cursor: 'pointer', padding: '0.2rem' }}
+              >
+                <X size={22} />
+              </button>
+            </div>
+            <img 
+              src={zoomedPhoto} 
+              alt="Evidência Ampliada" 
+              style={{ maxWidth: '100%', maxHeight: '72vh', objectFit: 'contain', borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
