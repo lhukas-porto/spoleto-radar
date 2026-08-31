@@ -245,9 +245,9 @@ export function AppProvider({ children }) {
     const newConsultant = {
       id: 'cons-' + Date.now(),
       name: consultantData.name.toUpperCase().trim(),
-      email: consultantData.email.trim(),
-      phone: consultantData.phone || '',
-      region: consultantData.region || 'Brasil',
+      email: (consultantData.email || '').trim(),
+      phone: (consultantData.phone || '').trim(),
+      region: (consultantData.region || 'Brasil').trim(),
       active: true,
       assignedStores: [],
       storesCount: 0
@@ -272,6 +272,62 @@ export function AppProvider({ children }) {
     }
 
     return newConsultant;
+  };
+
+  // Update Consultant
+  const updateConsultant = async (consultantId, updatedData) => {
+    let updatedObj = null;
+    setConsultants(prev => {
+      return prev.map(c => {
+        if (c.id !== consultantId) return c;
+        updatedObj = {
+          ...c,
+          name: updatedData.name ? updatedData.name.toUpperCase().trim() : c.name,
+          region: updatedData.region !== undefined ? updatedData.region.trim() : c.region,
+          email: updatedData.email !== undefined ? updatedData.email.trim() : (c.email || ''),
+          phone: updatedData.phone !== undefined ? updatedData.phone.trim() : (c.phone || ''),
+          active: updatedData.active !== undefined ? updatedData.active : c.active
+        };
+        return updatedObj;
+      });
+    });
+
+    if (isSupabaseConfigured && supabase && updatedObj) {
+      try {
+        await supabase.from('consultants').update({
+          name: updatedObj.name,
+          region: updatedObj.region,
+          email: updatedObj.email,
+          phone: updatedObj.phone
+        }).eq('id', consultantId);
+      } catch (e) {
+        console.error('Supabase consultant update error:', e);
+      }
+    }
+
+    showToast('Dados do consultor atualizados com sucesso!');
+    return updatedObj;
+  };
+
+  // Delete Consultant
+  const deleteConsultant = async (consultantId) => {
+    setConsultants(prev => prev.filter(c => c.id !== consultantId));
+    setStores(prev => prev.map(s => {
+      if (s.consultantId === consultantId) {
+        return { ...s, consultantId: null };
+      }
+      return s;
+    }));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('consultants').delete().eq('id', consultantId);
+      } catch (e) {
+        console.error('Supabase consultant delete error:', e);
+      }
+    }
+
+    showToast('Consultor removido com sucesso.');
   };
 
   // Add Store
@@ -546,6 +602,8 @@ export function AppProvider({ children }) {
       updateActionPlanStatus,
       assignStoresToConsultant,
       addConsultant,
+      updateConsultant,
+      deleteConsultant,
       addStore,
       addCategory,
       updateCategory,

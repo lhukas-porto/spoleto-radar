@@ -17,15 +17,35 @@ import {
   CheckCircle2,
   Lock,
   Unlock,
-  AlertCircle
+  AlertCircle,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 
 export default function ConsultantsView() {
-  const { consultants, stores, visits, addConsultant, assignStoresToConsultant, setActiveTab } = useApp();
+  const { 
+    consultants, 
+    stores, 
+    visits, 
+    addConsultant, 
+    updateConsultant, 
+    deleteConsultant, 
+    assignStoresToConsultant, 
+    setActiveTab 
+  } = useApp();
   
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [managingConsultant, setManagingConsultant] = useState(null);
+  const [editingConsultant, setEditingConsultant] = useState(null);
+
+  // Edit Consultant Form State
+  const [editForm, setEditForm] = useState({
+    name: '',
+    region: '',
+    email: '',
+    phone: ''
+  });
 
   // Store selection state inside assignment modal
   const [assignedStoreIds, setAssignedStoreIds] = useState([]);
@@ -40,6 +60,33 @@ export default function ConsultantsView() {
     phone: '',
     region: 'SP - Capital'
   });
+
+  const handleOpenEditModal = (consultant) => {
+    setEditingConsultant(consultant);
+    setEditForm({
+      name: consultant.name || '',
+      region: consultant.region || '',
+      email: consultant.email || '',
+      phone: consultant.phone || ''
+    });
+  };
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    if (!editForm.name.trim()) {
+      alert('Preencha pelo menos o Nome do consultor.');
+      return;
+    }
+    updateConsultant(editingConsultant.id, editForm);
+    setEditingConsultant(null);
+  };
+
+  const handleDeleteConsultant = (consultant) => {
+    if (confirm(`Tem certeza que deseja excluir o consultor "${consultant.name}"? As lojas vinculadas a ele ficarão com status "Não atribuído".`)) {
+      deleteConsultant(consultant.id);
+      setEditingConsultant(null);
+    }
+  };
 
   const handleOpenManageStores = (consultant) => {
     setManagingConsultant(consultant);
@@ -96,8 +143,8 @@ export default function ConsultantsView() {
 
   const handleSaveConsultant = (e) => {
     e.preventDefault();
-    if (!newCons.name || !newCons.email) {
-      alert('Preencha pelo menos o Nome e E-mail.');
+    if (!newCons.name.trim()) {
+      alert('Preencha pelo menos o Nome do Consultor.');
       return;
     }
     addConsultant(newCons);
@@ -263,15 +310,24 @@ export default function ConsultantsView() {
               <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
                 <button 
                   className="btn-primary"
-                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.9rem', flex: 1, justifyContent: 'center' }}
+                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.8rem', flex: 1, justifyContent: 'center' }}
                   onClick={() => handleOpenManageStores(consultant)}
                 >
-                  <CheckSquare size={15} /> Alterar Lojas ({storeCount})
+                  <CheckSquare size={15} /> Lojas ({storeCount})
                 </button>
 
                 <button 
                   className="btn-secondary"
-                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.8rem' }}
+                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                  onClick={() => handleOpenEditModal(consultant)}
+                  title="Editar dados cadastrais do consultor"
+                >
+                  <Edit3 size={14} /> Editar
+                </button>
+
+                <button 
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '0.45rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
                   onClick={() => setActiveTab('reports')}
                   title="Ver histórico de visitas"
                 >
@@ -503,8 +559,8 @@ export default function ConsultantsView() {
       {/* Modal Cadastro de Consultor */}
       {isAddModalOpen && (
         <div className="modal-overlay" onClick={() => setIsAddModalOpen(false)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '560px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.85rem' }}>
               <h2 style={{ fontSize: '1.25rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Users size={22} /> Cadastrar Consultor de Negócios
               </h2>
@@ -521,24 +577,34 @@ export default function ConsultantsView() {
                     type="text" 
                     value={newCons.name} 
                     onChange={(e) => setNewCons({ ...newCons, name: e.target.value })} 
-                    placeholder="Nome do consultor(a)" 
+                    placeholder="Ex: CARLOS SILVA" 
+                    required 
+                  />
+                </div>
+
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Região de Atuação *</label>
+                  <input 
+                    type="text" 
+                    value={newCons.region} 
+                    onChange={(e) => setNewCons({ ...newCons, region: e.target.value })} 
+                    placeholder="Ex: SP Capital, RJ, Minas Gerais, Sul..." 
                     required 
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">E-mail Corporativo *</label>
+                  <label className="form-label">E-mail (Opcional)</label>
                   <input 
                     type="email" 
                     value={newCons.email} 
                     onChange={(e) => setNewCons({ ...newCons, email: e.target.value })} 
                     placeholder="nome@grupotrigo.com.br" 
-                    required 
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Telefone / WhatsApp</label>
+                  <label className="form-label">Telefone / WhatsApp (Opcional)</label>
                   <input 
                     type="text" 
                     value={newCons.phone} 
@@ -546,25 +612,96 @@ export default function ConsultantsView() {
                     placeholder="(11) 99999-9999" 
                   />
                 </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Região de Atuação</label>
-                  <input 
-                    type="text" 
-                    value={newCons.region} 
-                    onChange={(e) => setNewCons({ ...newCons, region: e.target.value })} 
-                    placeholder="Ex: RJ - Zona Norte & Baixada" 
-                  />
-                </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
                 <button type="button" className="btn-secondary" onClick={() => setIsAddModalOpen(false)}>
                   Cancelar
                 </button>
                 <button type="submit" className="btn-primary">
-                  Salvar Consultor
+                  <CheckCircle2 size={16} /> Salvar Consultor
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edição de Consultor */}
+      {editingConsultant && (
+        <div className="modal-overlay" onClick={() => setEditingConsultant(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '560px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.85rem' }}>
+              <h2 style={{ fontSize: '1.25rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Edit3 size={20} /> Editar Consultor: {editingConsultant.name}
+              </h2>
+              <button onClick={() => setEditingConsultant(null)} style={{ color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit}>
+              <div className="form-grid">
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Nome Completo *</label>
+                  <input 
+                    type="text" 
+                    value={editForm.name} 
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} 
+                    placeholder="Nome do consultor(a)" 
+                    required 
+                  />
+                </div>
+
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Região de Atuação *</label>
+                  <input 
+                    type="text" 
+                    value={editForm.region} 
+                    onChange={(e) => setEditForm({ ...editForm, region: e.target.value })} 
+                    placeholder="Ex: Nordeste (PB, PE, AL, BA, RN)" 
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">E-mail (Opcional)</label>
+                  <input 
+                    type="email" 
+                    value={editForm.email} 
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} 
+                    placeholder="nome@grupotrigo.com.br" 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Telefone / WhatsApp (Opcional)</label>
+                  <input 
+                    type="text" 
+                    value={editForm.phone} 
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} 
+                    placeholder="(DDD) 99999-9999" 
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
+                <button 
+                  type="button" 
+                  style={{ background: '#FEE2E2', color: '#B91C1C', border: '1px solid #FCA5A5', padding: '0.45rem 0.85rem', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                  onClick={() => handleDeleteConsultant(editingConsultant)}
+                >
+                  <Trash2 size={14} /> Excluir Consultor
+                </button>
+
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button type="button" className="btn-secondary" onClick={() => setEditingConsultant(null)}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    <CheckCircle2 size={16} /> Salvar Alterações
+                  </button>
+                </div>
               </div>
             </form>
           </div>
