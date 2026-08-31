@@ -4,7 +4,7 @@ import { RotateCcw, Check, PenTool, Eraser } from 'lucide-react';
 /**
  * SignaturePad Component
  * Canvas de alta precisão para coleta de assinatura manuscrita digital (Touch / Mouse / Caneta Stylus).
- * Suporta telas Retina / HiDPI, toque móvel e exporta PNG transparente.
+ * Suporta telas Retina / HiDPI, toque móvel e exporta PNG transparente sem apagar o traço.
  */
 export default function SignaturePad({
   value = null,
@@ -19,22 +19,29 @@ export default function SignaturePad({
   width = 460
 }) {
   const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [hasDrawn, setHasDrawn] = useState(false);
-  const [currentImage, setCurrentImage] = useState(value);
+  const isDrawingRef = useRef(false);
+  const [hasDrawn, setHasDrawn] = useState(Boolean(value));
+  const internalDataRef = useRef(value);
 
-  // Redimensionamento e escala de DPI
-  const initCanvas = useCallback(() => {
+  // Configura tamanho e escala do canvas
+  const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    
-    // Obter dimensões reais
+
     const rect = canvas.getBoundingClientRect();
     const actualWidth = rect.width || width;
     const actualHeight = rect.height || height;
+
+    // Salvar imagem atual se houver antes de redimensionar
+    let savedData = null;
+    if (canvas.width > 0 && canvas.height > 0) {
+      try {
+        savedData = canvas.toDataURL('image/png');
+      } catch (e) {}
+    }
 
     canvas.width = actualWidth * dpr;
     canvas.height = actualHeight * dpr;
@@ -43,26 +50,56 @@ export default function SignaturePad({
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = '#1E293B'; // Tinta escura elegante
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.8;
 
-    // Se já tiver valor e não desenhou ainda, desenhar imagem existente
-    if (value && !hasDrawn) {
+    // Restaurar imagem
+    const dataToRestore = savedData || internalDataRef.current || value;
+    if (dataToRestore && dataToRestore.startsWith('data:image')) {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
         ctx.clearRect(0, 0, actualWidth, actualHeight);
         ctx.drawImage(img, 0, 0, actualWidth, actualHeight);
       };
-      img.src = value;
+      img.src = dataToRestore;
       setHasDrawn(true);
     }
-  }, [value, width, height, hasDrawn]);
+  }, [width, height, value]);
 
+  // Inicialização única no mount e no resize
   useEffect(() => {
-    initCanvas();
-    window.addEventListener('resize', initCanvas);
-    return () => window.removeEventListener('resize', initCanvas);
-  }, [initCanvas]);
+    setupCanvas();
+    const handleResize = () => setupCanvas();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Se o valor externo mudar externamente (ex: limpeza ou carregamento)
+  useEffect(() => {
+    if (value !== internalDataRef.current) {
+      internalDataRef.current = value;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const actualWidth = canvas.width / dpr;
+      const actualHeight = canvas.height / dpr;
+
+      if (!value) {
+        ctx.clearRect(0, 0, actualWidth, actualHeight);
+        setHasDrawn(false);
+      } else {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          ctx.clearRect(0, 0, actualWidth, actualHeight);
+          ctx.drawImage(img, 0, 0, actualWidth, actualHeight);
+          setHasDrawn(true);
+        };
+        img.src = value;
+      }
+    }
+  }, [value]);
 
   // Helpers de coordenadas
   const getCoordinates = (e) => {
@@ -79,36 +116,46 @@ export default function SignaturePad({
     e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    try {
+      e.target.setPointerCapture(e.pointerId);
+    } catch (err) {}
+
     const ctx = canvas.getContext('2d');
-    
     const { x, y } = getCoordinates(e);
+
     ctx.beginPath();
     ctx.moveTo(x, y);
-    setIsDrawing(true);
+    isDrawingRef.current = true;
     setHasDrawn(true);
   };
 
   const handlePointerMove = (e) => {
-    if (!isDrawing) return;
+    if (!isDrawingRef.current) return;
     e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
-    
     const { x, y } = getCoordinates(e);
+
     ctx.lineTo(x, y);
     ctx.stroke();
   };
 
   const handlePointerUp = (e) => {
-    if (!isDrawing) return;
+    if (!isDrawingRef.current) return;
     e.preventDefault();
-    setIsDrawing(false);
-    
+    isDrawingRef.current = false;
+
+    try {
+      e.target.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+
     const canvas = canvasRef.current;
     if (canvas) {
       const dataUrl = canvas.toDataURL('image/png');
-      setCurrentImage(dataUrl);
+      internalDataRef.current = dataUrl;
       onChange?.(dataUrl);
     }
   };
@@ -119,8 +166,9 @@ export default function SignaturePad({
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    isDrawingRef.current = false;
     setHasDrawn(false);
-    setCurrentImage(null);
+    internalDataRef.current = null;
     onChange?.(null);
   };
 
@@ -190,7 +238,8 @@ export default function SignaturePad({
             width: '100%',
             height: '100%',
             display: 'block',
-            cursor: 'crosshair'
+            cursor: 'crosshair',
+            touchAction: 'none'
           }}
         />
 
