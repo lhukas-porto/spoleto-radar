@@ -491,13 +491,6 @@ const updatedStores = INITIAL_STORES.map(store => {
     }
   }
 
-  // Handle remaining 4 stores if needed
-  if (!matchedConsName) {
-    if (store.state === 'PR') matchedConsName = 'EDUARDO SPISLA';
-    else if (store.state === 'BA') matchedConsName = 'KATARINY GOULART';
-    else if (store.state === 'MA') matchedConsName = 'PABLO HENRIQUE FERREIRA SIMPLICIO';
-  }
-
   const consObj = matchedConsName ? consultantByName.get(matchedConsName) : null;
   const consultantId = consObj ? consObj.id : null;
 

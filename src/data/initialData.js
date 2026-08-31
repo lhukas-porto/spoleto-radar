@@ -6,7 +6,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-1",
     "name": "ALEX DE BRISTO",
     "email": "alex.bristo@grupotrigo.com.br",
-    "phone": "(21) 95400-9044",
+    "phone": "(21) 92597-8951",
     "region": "Nordeste (PB, PE, AL, BA, RN)",
     "active": true,
     "assignedStores": [
@@ -39,7 +39,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-2",
     "name": "ALEXANDRE DE PAULA",
     "email": "alexandre.paula@grupotrigo.com.br",
-    "phone": "(11) 93206-2523",
+    "phone": "(11) 97152-3009",
     "region": "SP Interior & Sul de Minas",
     "active": true,
     "assignedStores": [
@@ -79,7 +79,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-3",
     "name": "CHRISTIANE RAMOS PEREIRA DE SOUZA",
     "email": "christiane.souza@grupotrigo.com.br",
-    "phone": "(11) 96030-3783",
+    "phone": "(11) 95127-4894",
     "region": "SP Capital, Campinas & Região",
     "active": true,
     "assignedStores": [
@@ -119,7 +119,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-4",
     "name": "CINTHIA MILLIOLE",
     "email": "cinthia.milliole@grupotrigo.com.br",
-    "phone": "(21) 96670-5669",
+    "phone": "(21) 99241-1229",
     "region": "RJ Capital & Sul Fluminense",
     "active": true,
     "assignedStores": [
@@ -161,7 +161,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-5",
     "name": "EDUARDO SPISLA",
     "email": "eduardo.spisla@grupotrigo.com.br",
-    "phone": "(41) 91021-2616",
+    "phone": "(41) 98445-7687",
     "region": "Região Sul (PR, SC, RS)",
     "active": true,
     "assignedStores": [
@@ -192,16 +192,15 @@ export const INITIAL_CONSULTANTS = [
       "store-136",
       "store-137",
       "store-138",
-      "store-139",
-      "store-140"
+      "store-139"
     ],
-    "storesCount": 29
+    "storesCount": 28
   },
   {
     "id": "cons-6",
     "name": "FABIO FAUSTINO DO CARMO",
     "email": "fabio.carmo@grupotrigo.com.br",
-    "phone": "(19) 97156-9418",
+    "phone": "(19) 97565-2853",
     "region": "SP Capital, Campinas & Interior",
     "active": true,
     "assignedStores": [
@@ -224,7 +223,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-7",
     "name": "FABRÍCIO GUEDES",
     "email": "fabricio.guedes@grupotrigo.com.br",
-    "phone": "(61) 94194-3876",
+    "phone": "(61) 93439-4389",
     "region": "Centro-Oeste (DF, GO, MT, MS, TO)",
     "active": true,
     "assignedStores": [
@@ -259,7 +258,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-8",
     "name": "ISRAEL LOMARDES ROCHA DA SILVA",
     "email": "israel.silva@grupotrigo.com.br",
-    "phone": "(21) 93422-6070",
+    "phone": "(21) 94144-9504",
     "region": "RJ Capital & Espírito Santo",
     "active": true,
     "assignedStores": [
@@ -301,7 +300,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-9",
     "name": "KATARINY GOULART",
     "email": "katariny.goulart@grupotrigo.com.br",
-    "phone": "(71) 96276-6020",
+    "phone": "(71) 97648-3284",
     "region": "Nordeste (CE, BA)",
     "active": true,
     "assignedStores": [
@@ -322,17 +321,15 @@ export const INITIAL_CONSULTANTS = [
       "store-222",
       "store-223",
       "store-224",
-      "store-225",
-      "store-226",
-      "store-227"
+      "store-225"
     ],
-    "storesCount": 20
+    "storesCount": 18
   },
   {
     "id": "cons-10",
     "name": "MARCELO CORA SILVA DIAS",
     "email": "marcelo.dias@grupotrigo.com.br",
-    "phone": "(11) 94832-1886",
+    "phone": "(11) 98086-1170",
     "region": "SP Capital, Campinas & Piracicaba",
     "active": true,
     "assignedStores": [
@@ -356,7 +353,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-11",
     "name": "MAYARA MOREIRA DAMASCO",
     "email": "mayara.damasco@grupotrigo.com.br",
-    "phone": "(21) 99496-9677",
+    "phone": "(21) 91738-9688",
     "region": "RJ Capital, Serrana, Lagos & Norte",
     "active": true,
     "assignedStores": [
@@ -400,7 +397,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-12",
     "name": "PABLO HENRIQUE FERREIRA SIMPLICIO",
     "email": "pablo.simplicio@grupotrigo.com.br",
-    "phone": "(91) 95798-3831",
+    "phone": "(91) 94223-1172",
     "region": "Norte & Nordeste (AM, PA, AP, RR, RO, MA, PI)",
     "active": true,
     "assignedStores": [
@@ -425,16 +422,15 @@ export const INITIAL_CONSULTANTS = [
       "store-291",
       "store-292",
       "store-293",
-      "store-294",
-      "store-295"
+      "store-294"
     ],
-    "storesCount": 23
+    "storesCount": 22
   },
   {
     "id": "cons-13",
     "name": "PERCY PINHEIRO",
     "email": "percy.pinheiro@grupotrigo.com.br",
-    "phone": "(11) 98267-3531",
+    "phone": "(11) 96379-7405",
     "region": "SP Capital, ABC, Litoral & Vale",
     "active": true,
     "assignedStores": [
@@ -474,7 +470,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-14",
     "name": "RENE SANTOS DO VALE",
     "email": "rene.vale@grupotrigo.com.br",
-    "phone": "(16) 97694-3514",
+    "phone": "(16) 95939-7282",
     "region": "SP Capital, Osasco, Alto Tietê & Interior",
     "active": true,
     "assignedStores": [
@@ -514,7 +510,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-15",
     "name": "ROSA ALICE GUEDES DE SOUZA",
     "email": "rosa.souza@grupotrigo.com.br",
-    "phone": "(61) 97902-1790",
+    "phone": "(61) 93326-9547",
     "region": "DF, GO, MT, AC & BA",
     "active": true,
     "assignedStores": [
@@ -550,7 +546,7 @@ export const INITIAL_CONSULTANTS = [
     "id": "cons-16",
     "name": "TEREZA CRISTINA",
     "email": "tereza.cristina@grupotrigo.com.br",
-    "phone": "(31) 94414-9812",
+    "phone": "(31) 94245-5007",
     "region": "Minas Gerais (BH & Interior)",
     "active": true,
     "assignedStores": [
@@ -2266,7 +2262,7 @@ export const INITIAL_STORES = [
     "state": "PR",
     "locationType": "Rua",
     "address": "SPOLETO RUA MARINGÁ - Maringá/PR",
-    "consultantId": "cons-5",
+    "consultantId": null,
     "ratingScore": 9.5,
     "status": "Ativa"
   },
@@ -3298,7 +3294,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO CAMAÇARI - Camaçari/BA",
-    "consultantId": "cons-9",
+    "consultantId": null,
     "ratingScore": 8.5,
     "status": "Ativa"
   },
@@ -3310,7 +3306,7 @@ export const INITIAL_STORES = [
     "state": "BA",
     "locationType": "Shopping",
     "address": "SPOLETO PRAIA HOTEL ILHEUS - Ilhéus/BA",
-    "consultantId": "cons-9",
+    "consultantId": null,
     "ratingScore": 8.6,
     "status": "Ativa"
   },
@@ -4126,7 +4122,7 @@ export const INITIAL_STORES = [
     "state": "MA",
     "locationType": "Shopping",
     "address": "SPOLETO PATIO NORTE SHOPPING - São Luís/MA",
-    "consultantId": "cons-12",
+    "consultantId": null,
     "ratingScore": 9,
     "status": "Ativa"
   },
