@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { evaluateActionPlanStatus } from '../utils/dateHelpers';
 import { 
   Building2, 
   Users, 
@@ -7,23 +8,39 @@ import {
   AlertTriangle, 
   TrendingUp, 
   ArrowRight,
+  ArrowLeft,
   ShieldAlert,
   Clock,
-  CheckCircle2,
-  FileText,
-  PieChart as PieIcon,
-  Layers
+  CheckCircle2, 
+  FileText, 
+  PieChart as PieIcon, 
+  Layers,
+  BellRing,
+  Flame,
+  Send,
+  ChevronRight
 } from 'lucide-react';
 
 export default function DashboardView() {
-  const { stores, consultants, categories, visits, setActiveTab, setSelectedVisitForReport } = useApp();
+  const { 
+    stores, 
+    consultants, 
+    categories, 
+    visits, 
+    setActiveTab, 
+    setSelectedVisitForReport,
+    setIsOverdueModalOpen,
+    setSelectedStaffForProfile
+  } = useApp();
+
   const [hoveredSlice, setHoveredSlice] = useState(null);
+  const [drilldownCategory, setDrilldownCategory] = useState(null); // null = Main Topics; categoryId = Subtopics
 
   // High level KPIs
   const totalStores = stores.length;
-  const totalConsultants = consultants.length;
+  const totalStaff = consultants.length;
   const totalVisits = visits.length;
-  
+
   // Colors palette for slices
   const chartColors = [
     '#C8102E', // Spoleto Red
@@ -35,8 +52,26 @@ export default function DashboardView() {
     '#0284C7', // Sky Blue
     '#6366F1', // Indigo
     '#14B8A6', // Teal
-    '#D97706'  // Brown-Amber
+    '#D97706', // Brown-Amber
+    '#E11D48', // Rose
+    '#059669'  // Emerald
   ];
+
+  // Calculate Overdue Action Plans metrics
+  let totalOverduePlans = 0;
+  let dueTodayPlans = 0;
+  let dueThisWeekPlans = 0;
+
+  visits.forEach(v => {
+    (v.diagnostics || []).forEach(d => {
+      const deadline = d.actionPlan?.deadline || 'IMEDIATO';
+      const status = d.actionPlan?.status || 'NÃO INICIADO';
+      const metrics = evaluateActionPlanStatus(v.date, deadline, status);
+      if (metrics.isOverdue) totalOverduePlans++;
+      if (metrics.isDueToday) dueTodayPlans++;
+      if (metrics.isDueThisWeek && !metrics.isOverdue) dueThisWeekPlans++;
+    });
+  });
 
   // Calculate bottlenecks by aggregating all diagnostics from all visits
   const categoryCounts = {};
@@ -54,12 +89,40 @@ export default function DashboardView() {
     return {
       id: catId,
       name: displayName,
+      fullName: cat ? cat.name : displayName,
       color: (cat && cat.color && cat.color !== '#5D3826') ? cat.color : chartColors[index % chartColors.length],
       count
     };
   }).sort((a, b) => b.count - a.count);
 
   const totalBottlenecks = categoryBottlenecks.reduce((sum, c) => sum + c.count, 0);
+
+  // Drilldown Subtopics Calculation
+  const activeDrilldownCat = drilldownCategory ? categories.find(c => c.id === drilldownCategory) : null;
+  const subproblemCounts = {};
+
+  if (drilldownCategory) {
+    visits.forEach(v => {
+      (v.diagnostics || []).forEach(d => {
+        if (d.categoryId === drilldownCategory) {
+          const subId = d.subproblemId || 'sub-outro';
+          subproblemCounts[subId] = (subproblemCounts[subId] || 0) + 1;
+        }
+      });
+    });
+  }
+
+  const subproblemBottlenecks = drilldownCategory ? Object.entries(subproblemCounts).map(([subId, count], index) => {
+    const sub = activeDrilldownCat?.subproblems?.find(s => s.id === subId);
+    return {
+      id: subId,
+      name: sub ? sub.title : 'Diagnóstico Geral',
+      color: chartColors[index % chartColors.length],
+      count
+    };
+  }).sort((a, b) => b.count - a.count) : [];
+
+  const totalSubBottlenecks = subproblemBottlenecks.reduce((sum, s) => sum + s.count, 0);
 
   // Delivery specific metric
   const deliveryVisitsWithIssues = visits.filter(v => 
@@ -69,6 +132,9 @@ export default function DashboardView() {
   // Donut SVG Math
   const radius = 65;
   const circumference = 2 * Math.PI * radius; // ~408.4
+
+  const activeChartData = drilldownCategory ? subproblemBottlenecks : categoryBottlenecks;
+  const activeTotalCount = drilldownCategory ? totalSubBottlenecks : totalBottlenecks;
   let accumulatedPercent = 0;
 
   return (
@@ -79,10 +145,83 @@ export default function DashboardView() {
           <p className="section-subtitle">Acompanhamento consolidado de visitas, conformidade de rede e gargalos operacionais.</p>
         </div>
 
-        <button className="btn-primary" onClick={() => setActiveTab('new-visit')}>
-          <ClipboardCheck size={18} /> Iniciar Nova Visita
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button 
+            className="btn-secondary" 
+            style={{ borderColor: totalOverduePlans > 0 ? '#991B1B' : 'var(--border-strong)', color: totalOverduePlans > 0 ? '#991B1B' : 'var(--text-main)', fontWeight: 700 }}
+            onClick={() => setIsOverdueModalOpen(true)}
+          >
+            <BellRing size={16} color={totalOverduePlans > 0 ? '#991B1B' : 'var(--primary-brown)'} /> 
+            Central de Atrasos ({totalOverduePlans})
+          </button>
+
+          <button className="btn-primary" onClick={() => setActiveTab('new-visit')}>
+            <ClipboardCheck size={18} /> Iniciar Nova Visita
+          </button>
+        </div>
       </div>
+
+      {/* =========================================================================
+          BANNER DE ALERTA OPERACIONAL DE PLANOS EM ATRASO
+          ========================================================================= */}
+      {totalOverduePlans > 0 && (
+        <div style={{
+          background: 'linear-gradient(135deg, #FFF5F5 0%, #FEF2F2 100%)',
+          border: '1.5px solid #FCA5A5',
+          borderRadius: 'var(--radius-md)',
+          padding: '1rem 1.35rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          boxShadow: '0 2px 6px rgba(185, 28, 28, 0.08)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              backgroundColor: '#FEE2E2',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#991B1B',
+              flexShrink: 0
+            }}>
+              <Flame size={22} />
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <strong style={{ fontSize: '0.96rem', color: '#991B1B' }}>
+                  Atenção: {totalOverduePlans} Plano(s) de Ação em Atraso na Rede Spoleto
+                </strong>
+                <span className="badge badge-critica" style={{ fontSize: '0.7rem' }}>
+                  {dueTodayPlans > 0 ? `${dueTodayPlans} vencendo hoje` : 'Ação requerida'}
+                </span>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: '#7F1D1D', margin: '0.2rem 0 0' }}>
+                Existem franquias com planos de ação com prazo estourado. Notifique franqueados e gerentes regionais para regularização.
+              </p>
+            </div>
+          </div>
+
+          <button 
+            className="btn-primary"
+            onClick={() => setIsOverdueModalOpen(true)}
+            style={{
+              backgroundColor: '#991B1B',
+              borderColor: '#7F1D1D',
+              fontSize: '0.82rem',
+              padding: '0.45rem 0.95rem'
+            }}
+          >
+            <Send size={14} /> Abrir Central & Disparar Avisos
+          </button>
+        </div>
+      )}
 
       {/* KPI Cards Grid */}
       <div className="kpi-grid">
@@ -93,7 +232,7 @@ export default function DashboardView() {
           <div>
             <div className="kpi-label">Rede de Lojas Spoleto</div>
             <div className="kpi-value">{totalStores}</div>
-            <div className="kpi-subtext">Lojas ativas em todo o Brasil</div>
+            <div className="kpi-subtext">Lojas cadastradas (Código RP)</div>
           </div>
         </div>
 
@@ -102,9 +241,9 @@ export default function DashboardView() {
             <Users size={24} />
           </div>
           <div>
-            <div className="kpi-label">Consultores de Negócios</div>
-            <div className="kpi-value">{totalConsultants}</div>
-            <div className="kpi-subtext">Carteiras exclusivas de campo</div>
+            <div className="kpi-label">Equipe Spoleto</div>
+            <div className="kpi-value">{totalStaff}</div>
+            <div className="kpi-subtext">Diretoria, Regionais & Consultores</div>
           </div>
         </div>
 
@@ -119,45 +258,61 @@ export default function DashboardView() {
           </div>
         </div>
 
-        <div className="kpi-card" onClick={() => setActiveTab('reports')} style={{ cursor: 'pointer' }}>
+        <div className="kpi-card" onClick={() => setIsOverdueModalOpen(true)} style={{ cursor: 'pointer' }}>
           <div className="kpi-icon-wrapper" style={{ background: 'var(--danger-light)', color: 'var(--danger)' }}>
             <ShieldAlert size={24} />
           </div>
           <div>
-            <div className="kpi-label">Gargalos no Delivery</div>
-            <div className="kpi-value">{deliveryVisitsWithIssues}</div>
-            <div className="kpi-subtext">Lojas com cancelamento / atraso</div>
+            <div className="kpi-label">Planos em Atraso</div>
+            <div className="kpi-value" style={{ color: totalOverduePlans > 0 ? '#991B1B' : 'inherit' }}>
+              {totalOverduePlans}
+            </div>
+            <div className="kpi-subtext">Clique para gerenciar régua de aviso</div>
           </div>
         </div>
       </div>
 
-      {/* Main Grid: Gráfico Pizza de Gargalos Operacionais & Últimas Visitas */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(420px, 1.15fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+      {/* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
         
         {/* =========================================================================
-            GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS
+            GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM DRILLDOWN
             ========================================================================= */}
         <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
                 <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <PieIcon size={20} color="var(--primary-brown)" />
-                  Itens de Oportunidade
+                  {drilldownCategory ? 'Detalhamento por Subtópicos' : 'Itens de Oportunidade'}
                 </h3>
                 <p className="section-subtitle">
-                  Distribuição percentual dos temas mais apontados nos Planos de Ação.
+                  {drilldownCategory 
+                    ? `Distribuição dos problemas específicos do tema "${activeDrilldownCat?.name.split('(')[0].trim()}".`
+                    : 'Distribuição percentual dos temas principais apontados. Clique em um tema para abrir seus subtópicos.'}
                 </p>
               </div>
 
-              <span style={{ fontSize: '0.78rem', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
-                Total: {totalBottlenecks} apontamentos
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {drilldownCategory && (
+                  <button 
+                    className="btn-secondary" 
+                    onClick={() => setDrilldownCategory(null)}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', gap: '0.3rem' }}
+                  >
+                    <ArrowLeft size={13} /> Voltar aos Tópicos
+                  </button>
+                )}
+
+                <span style={{ fontSize: '0.78rem', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
+                  Total: {activeTotalCount} apontamentos
+                </span>
+              </div>
             </div>
 
-            {categoryBottlenecks.length === 0 ? (
+            {activeChartData.length === 0 ? (
               <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                Nenhum item de oportunidade registrado ainda. Realize novas visitas para visualizar a distribuição.
+                Nenhum apontamento registrado para este tema. Realize novas visitas para visualizar a distribuição.
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem', margin: '1rem 0' }}>
@@ -175,12 +330,12 @@ export default function DashboardView() {
                     />
 
                     {/* Slices */}
-                    {categoryBottlenecks.map((item, idx) => {
-                      const percent = item.count / totalBottlenecks;
+                    {activeChartData.map((item, idx) => {
+                      const percent = activeTotalCount > 0 ? (item.count / activeTotalCount) : 0;
                       const strokeDasharray = `${percent * circumference} ${circumference}`;
                       const strokeDashoffset = -accumulatedPercent * circumference;
                       accumulatedPercent += percent;
-                      const color = chartColors[idx % chartColors.length];
+                      const color = item.color || chartColors[idx % chartColors.length];
                       const isHovered = hoveredSlice === item.id;
 
                       return (
@@ -201,6 +356,12 @@ export default function DashboardView() {
                           }}
                           onMouseEnter={() => setHoveredSlice(item.id)}
                           onMouseLeave={() => setHoveredSlice(null)}
+                          onClick={() => {
+                            if (!drilldownCategory) {
+                              setDrilldownCategory(item.id);
+                              setHoveredSlice(null);
+                            }
+                          }}
                         />
                       );
                     })}
@@ -210,26 +371,27 @@ export default function DashboardView() {
                   <div style={{
                     position: 'absolute',
                     textAlign: 'center',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    maxWidth: '110px'
                   }}>
-                    <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
+                    <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
                       {hoveredSlice 
-                        ? categoryBottlenecks.find(c => c.id === hoveredSlice)?.count
-                        : totalBottlenecks}
+                        ? activeChartData.find(c => c.id === hoveredSlice)?.count
+                        : activeTotalCount}
                     </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {hoveredSlice 
-                        ? categoryBottlenecks.find(c => c.id === hoveredSlice)?.name.slice(0, 12)
-                        : 'Gargalos'}
+                        ? activeChartData.find(c => c.id === hoveredSlice)?.name
+                        : (drilldownCategory ? 'Subtópicos' : 'Gargalos')}
                     </span>
                   </div>
                 </div>
 
-                {/* Legendas & Percentuais */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', flex: 1, minWidth: '180px' }}>
-                  {categoryBottlenecks.map((item, idx) => {
-                    const percent = Math.round((item.count / totalBottlenecks) * 100);
-                    const color = chartColors[idx % chartColors.length];
+                {/* Legendas & Percentuais Interativas com 1-Clique */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, minWidth: '200px', maxHeight: '240px', overflowY: 'auto' }}>
+                  {activeChartData.map((item, idx) => {
+                    const percent = activeTotalCount > 0 ? Math.round((item.count / activeTotalCount) * 100) : 0;
+                    const color = item.color || chartColors[idx % chartColors.length];
                     const isHovered = hoveredSlice === item.id;
 
                     return (
@@ -237,6 +399,12 @@ export default function DashboardView() {
                         key={item.id}
                         onMouseEnter={() => setHoveredSlice(item.id)}
                         onMouseLeave={() => setHoveredSlice(null)}
+                        onClick={() => {
+                          if (!drilldownCategory) {
+                            setDrilldownCategory(item.id);
+                            setHoveredSlice(null);
+                          }
+                        }}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -247,21 +415,25 @@ export default function DashboardView() {
                           transition: 'background-color 0.15s ease',
                           cursor: 'pointer'
                         }}
+                        title={!drilldownCategory ? 'Clique para abrir o gráfico dos subtópicos' : ''}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                          <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: color, flexShrink: 0 }} />
-                          <span style={{ fontSize: '0.84rem', fontWeight: isHovered ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <span style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: color, flexShrink: 0 }} />
+                          <span style={{ fontSize: '0.82rem', fontWeight: isHovered ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {item.name}
                           </span>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
                           <span style={{ fontSize: '0.82rem', fontWeight: 700, color: color }}>
                             {percent}%
                           </span>
-                          <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                             ({item.count})
                           </span>
+                          {!drilldownCategory && (
+                            <ChevronRight size={13} color="var(--text-muted)" />
+                          )}
                         </div>
                       </div>
                     );
@@ -271,13 +443,16 @@ export default function DashboardView() {
             )}
           </div>
 
-          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              {drilldownCategory ? 'Exibindo detalhamento específico.' : 'Dica: clique em qualquer tema para ver subtópicos.'}
+            </span>
             <button 
               className="btn-secondary" 
               style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
               onClick={() => setActiveTab('taxonomy')}
             >
-              Ver Matriz Completa de Temas <ArrowRight size={14} />
+              Ver Matriz de Tópicos <ArrowRight size={14} />
             </button>
           </div>
         </div>
@@ -291,7 +466,7 @@ export default function DashboardView() {
               </h3>
               <button 
                 onClick={() => setActiveTab('reports')}
-                style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
               >
                 Ver todas <ArrowRight size={14} />
               </button>
@@ -301,7 +476,7 @@ export default function DashboardView() {
               {visits.slice(0, 4).map(visit => {
                 const store = stores.find(s => s.id === visit.storeId);
                 const consultant = consultants.find(c => c.id === visit.consultantId);
-                const hasIssues = visit.diagnostics.length > 0;
+                const hasIssues = visit.diagnostics?.length > 0;
 
                 return (
                   <div 
@@ -326,7 +501,17 @@ export default function DashboardView() {
                         {store?.name}
                       </strong>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                        {consultant?.name} &bull; {new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')} &bull; {visit.visitType || 'Visita agendada'}
+                        <span 
+                          onClick={(e) => {
+                            if (consultant) {
+                              e.stopPropagation();
+                              setSelectedStaffForProfile(consultant);
+                            }
+                          }}
+                          style={{ textDecoration: consultant ? 'underline' : 'none', cursor: consultant ? 'pointer' : 'default', fontWeight: 600 }}
+                        >
+                          {consultant?.name}
+                        </span> &bull; {new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')} &bull; Código RP: {store?.code}
                       </div>
                     </div>
 

@@ -15,12 +15,22 @@ import {
   Clock, 
   AlertCircle,
   Eye,
-  BarChart3,
-  CalendarRange
+  CalendarRange,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 
 export default function ReportsView() {
-  const { visits, stores, consultants, categories, setSelectedVisitForReport } = useApp();
+  const { 
+    visits, 
+    stores, 
+    consultants, 
+    categories, 
+    setSelectedVisitForReport,
+    startEditVisit,
+    deleteVisit,
+    setSelectedStaffForProfile 
+  } = useApp();
 
   const [activeSubTab, setActiveSubTab] = useState('visits'); // 'visits' | 'themes' | 'consultants' | 'action-plans'
   const [searchTerm, setSearchTerm] = useState('');
@@ -188,7 +198,7 @@ export default function ReportsView() {
             </label>
             <select value={selectedConsultant} onChange={(e) => setSelectedConsultant(e.target.value)}>
               <option value="all">Todos os Consultores</option>
-              {consultants.map(c => (
+              {consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR').map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
@@ -301,7 +311,7 @@ export default function ReportsView() {
                             {store?.name}
                           </div>
                           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            Código: <strong>{store?.code}</strong> &bull; {store?.city}/{store?.state}
+                            Código RP: <strong>{store?.code}</strong> &bull; {store?.city}/{store?.state}
                           </div>
                         </td>
 
@@ -320,7 +330,17 @@ export default function ReportsView() {
                         </td>
 
                         <td style={{ textAlign: 'center', fontWeight: 600 }}>
-                          {consultant?.name || 'Não atribuído'}
+                          {consultant ? (
+                            <span 
+                              onClick={() => setSelectedStaffForProfile(consultant)}
+                              style={{ color: 'var(--primary-brown)', textDecoration: 'underline', cursor: 'pointer' }}
+                              title="Ver Ficha do Colaborador"
+                            >
+                              {consultant.name}
+                            </span>
+                          ) : (
+                            'Não atribuído'
+                          )}
                         </td>
 
                         <td style={{ textAlign: 'center', width: '130px' }}>
@@ -329,15 +349,42 @@ export default function ReportsView() {
                           </span>
                         </td>
 
-                        <td style={{ textAlign: 'center', width: '140px' }}>
-                          <button
-                            type="button"
-                            className="btn-primary"
-                            onClick={() => setSelectedVisitForReport(visit)}
-                            style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
-                          >
-                            <Eye size={13} /> Ver Laudo
-                          </button>
+                        <td style={{ textAlign: 'center', width: '220px' }}>
+                          <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              onClick={() => setSelectedVisitForReport(visit)}
+                              style={{ fontSize: '0.74rem', padding: '0.3rem 0.6rem' }}
+                              title="Visualizar laudo oficial e PDF"
+                            >
+                              <Eye size={12} /> Ver
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              onClick={() => startEditVisit(visit)}
+                              style={{ fontSize: '0.74rem', padding: '0.3rem 0.6rem' }}
+                              title="Editar este relatório"
+                            >
+                              <Edit3 size={12} /> Editar
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              onClick={() => {
+                                if (confirm(`Tem certeza que deseja excluir permanentemente o relatório da unidade "${store?.name}" realizado em ${new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}?`)) {
+                                  deleteVisit(visit.id);
+                                }
+                              }}
+                              style={{ fontSize: '0.74rem', padding: '0.3rem 0.5rem', color: '#991B1B', borderColor: '#FECACA' }}
+                              title="Excluir relatório"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

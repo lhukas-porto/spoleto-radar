@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 export default function Header() {
-  const { activeTab, setActiveTab, stores, visits } = useApp();
+  const { activeTab, setActiveTab, stores, visits, consultants, categories } = useApp();
 
   return (
     <header className="navbar">
@@ -65,7 +65,7 @@ export default function Header() {
             className={`nav-tab ${activeTab === 'consultants' ? 'active' : ''}`}
             onClick={() => setActiveTab('consultants')}
           >
-            <Users size={16} /> Consultores
+            <Users size={16} /> Equipe Spoleto ({consultants.length})
           </button>
 
           <button 

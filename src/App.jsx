@@ -8,6 +8,9 @@ import StoresView from './components/StoresView';
 import ConsultantsView from './components/ConsultantsView';
 import TaxonomyView from './components/TaxonomyView';
 import VisitReportModal from './components/VisitReportModal';
+import StaffProfileModal from './components/StaffProfileModal';
+import OverdueActionsModal from './components/OverdueActionsModal';
+import SubordinatesModal from './components/SubordinatesModal';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -61,8 +64,11 @@ export default function App() {
       
       <Footer />
 
-      {/* Global Visit Report & Action Plan Modal */}
+      {/* Global Modals */}
       <VisitReportModal />
+      <StaffProfileModal />
+      <OverdueActionsModal />
+      <SubordinatesModal />
 
       {/* Global Toast Alert */}
       {toastMessage && (

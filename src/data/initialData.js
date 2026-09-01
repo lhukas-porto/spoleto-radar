@@ -29,9 +29,12 @@ export const INITIAL_CONSULTANTS = [
   {
     "id": "cons-1",
     "name": "ALEX DE BRISTO",
-    "email": "",
-    "phone": "",
+    "email": "alex.bristo@spoleto.com.br",
+    "phone": "(81) 98765-4321",
     "region": "Nordeste (PB, PE, AL, BA, RN)",
+    "role": "CONSULTOR",
+    "reportsTo": "staff-gr-3",
+    "photoUrl": null,
     "active": true,
     "assignedStores": [
       "store-1",

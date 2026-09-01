@@ -29,11 +29,24 @@ import {
   PenTool,
   ShieldCheck,
   Camera,
-  ZoomIn
+  ZoomIn,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 
 export default function VisitReportModal() {
-  const { selectedVisitForReport, setSelectedVisitForReport, stores, consultants, categories, showToast, updateVisit } = useApp();
+  const { 
+    selectedVisitForReport, 
+    setSelectedVisitForReport, 
+    stores, 
+    consultants, 
+    categories, 
+    showToast, 
+    updateVisit,
+    startEditVisit,
+    deleteVisit,
+    setSelectedStaffForProfile
+  } = useApp();
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
@@ -339,6 +352,30 @@ export default function VisitReportModal() {
             <button 
               type="button"
               className="btn-secondary" 
+              onClick={() => startEditVisit(visit)}
+              style={{ fontSize: '0.82rem', padding: '0.45rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              title="Editar este relatório e planos de ação"
+            >
+              <Edit3 size={15} color="var(--primary-brown)" /> Editar Laudo
+            </button>
+
+            <button 
+              type="button"
+              className="btn-secondary" 
+              onClick={() => {
+                if (confirm(`Tem certeza que deseja excluir permanentemente este relatório da unidade "${store?.name}" realizado em ${new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}? Esta ação não pode ser desfeita.`)) {
+                  deleteVisit(visit.id);
+                }
+              }}
+              style={{ fontSize: '0.82rem', padding: '0.45rem 0.65rem', color: '#991B1B', borderColor: '#FECACA' }}
+              title="Excluir este relatório"
+            >
+              <Trash2 size={15} />
+            </button>
+
+            <button 
+              type="button"
+              className="btn-secondary" 
               onClick={() => setSelectedVisitForReport(null)}
               style={{ padding: '0.45rem 0.6rem' }}
             >
@@ -364,19 +401,23 @@ export default function VisitReportModal() {
         )}
 
         {/* =========================================================================
-            PRINTABLE & EXPORTABLE PDF CONTAINER
+            RELATÓRIO / PLANO DE AÇÃO OFICIAL SPOLETO (ÁREA DE IMPRESSÃO & PDF)
             ========================================================================= */}
-        <div ref={reportRef} style={{ background: '#FFFFFF', padding: '1rem' }}>
-          {/* Printable Report Header com Logo Oficial */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '2px solid #5D3826', paddingBottom: '0.85rem' }}>
-            <SpoletoRadarLogo variant="light" size="md" />
+        <div ref={reportRef} style={{ background: '#FFFFFF', padding: '1rem', color: '#0F172A' }}>
+          
+          {/* Header Corporativo Oficial Spoleto */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '3px solid #5D3826', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <SpoletoRadarLogo variant="report" size="lg" />
+            </div>
+
             <div style={{ textAlign: 'right' }}>
-              <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#5D3826', letterSpacing: '0.5px', textTransform: 'uppercase', margin: 0 }}>
+              <h1 className="report-title" style={{ fontSize: '1.35rem', margin: 0, color: '#5D3826' }}>
                 PLANO DE AÇÃO OFICIAL
               </h1>
-              <p style={{ fontSize: '0.78rem', color: '#64748B', margin: 0, marginTop: '2px' }}>
-                Consultoria de Negócios &bull; Spoleto
-              </p>
+              <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600, marginTop: '0.15rem' }}>
+                CONSULTORIA DE NEGÓCIOS 360 &bull; REDE SPOLETO
+              </div>
             </div>
           </div>
 
@@ -386,13 +427,27 @@ export default function VisitReportModal() {
               <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Unidade Spoleto Auditada</div>
               <strong style={{ fontSize: '1.05rem', color: '#0F172A' }}>{store?.name}</strong>
               <div style={{ color: '#475569', fontSize: '0.8rem', marginTop: '0.15rem' }}>
-                Código: <strong>{store?.code}</strong> &bull; {store?.city}/{store?.state} &bull; {store?.locationType}
+                Código RP: <strong>{store?.code}</strong> &bull; {store?.city}/{store?.state} &bull; {store?.locationType}
               </div>
             </div>
 
             <div>
               <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Dados da Consultoria</div>
-              <div>Consultor(a): <strong>{consultant?.name}</strong> ({consultant?.region})</div>
+              <div>
+                Consultor(a):{' '}
+                {consultant ? (
+                  <strong 
+                    onClick={() => setSelectedStaffForProfile(consultant)}
+                    style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--primary-brown)' }}
+                    title="Ver Ficha do Colaborador"
+                  >
+                    {consultant.name}
+                  </strong>
+                ) : (
+                  <strong>Não atribuído</strong>
+                )}{' '}
+                ({consultant?.region || 'Nacional'})
+              </div>
               <div>
                 Data da Visita: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong> &bull; Horário: <strong>{visit.time ? (visit.endTime ? `${visit.time} às ${visit.endTime}` : `${visit.time}`) : '14:00'}</strong>
               </div>

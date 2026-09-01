@@ -7,8 +7,22 @@ import {
   INITIAL_REGIONS
 } from '../data/initialData';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
+import { formatPhoneNumber } from '../utils/dateHelpers';
 
 const AppContext = createContext();
+
+const isLegacyMockStaff = (c) => {
+  if (!c) return false;
+  const legacyIds = ['staff-dir-1', 'staff-gn-1', 'staff-gr-1', 'staff-gr-2', 'staff-gr-3'];
+  if (legacyIds.includes(c.id)) return true;
+  const upper = (c.name || '').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (upper.includes('GERENCIA REGIONAL SAO PAULO') || upper.includes('GERENCIA REGIONAL SP')) return true;
+  if (upper.includes('GERENCIA NACIONAL DE CONSULTORIA') || upper.includes('GERENCIA NACIONAL')) return true;
+  if (upper.includes('DIRETORIA DE OPERACOES') || upper.includes('DIRETORIA DE OPERAÇOES') || upper.includes('DIRETORIA DE OPERACOES & FRANQUIAS')) return true;
+  if (upper.includes('GERENCIA REGIONAL RIO DE JANEIRO')) return true;
+  if (upper.includes('GERENCIA REGIONAL NORTE')) return true;
+  return false;
+};
 
 export function AppProvider({ children }) {
   // Navigation State
@@ -24,7 +38,7 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.length >= 400 && parsed.some(s => s.consultantId === 'cons-1')) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {}
     }
     return INITIAL_STORES;
@@ -35,11 +49,36 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.length >= 16 && parsed.some(c => c.assignedStores && c.assignedStores.length > 0)) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const cleaned = parsed
+            .filter(c => !isLegacyMockStaff(c))
+            .map(c => ({
+              ...c,
+              name: (c.name || '').toUpperCase().trim(),
+              email: (c.email || '').toLowerCase().trim(),
+              phone: formatPhoneNumber(c.phone),
+              role: c.role || 'CONSULTOR',
+              reportsTo: c.reportsTo !== undefined ? c.reportsTo : null,
+              photoUrl: c.photoUrl || null
+            }));
+          if (cleaned.length > 0) return cleaned;
+        }
       } catch (e) {}
     }
-    return INITIAL_CONSULTANTS;
+    return INITIAL_CONSULTANTS.filter(c => !isLegacyMockStaff(c)).map(c => ({
+      ...c,
+      name: (c.name || '').toUpperCase().trim(),
+      email: (c.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(c.phone),
+      role: c.role || 'CONSULTOR',
+      reportsTo: null
+    }));
   });
+
+  const [editingVisit, setEditingVisit] = useState(null);
+  const [selectedStaffForProfile, setSelectedStaffForProfile] = useState(null);
+  const [isOverdueModalOpen, setIsOverdueModalOpen] = useState(false);
+  const [managingSubordinatesLeader, setManagingSubordinatesLeader] = useState(null);
 
   const [categories, setCategories] = useState(() => {
     const saved = localStorage.getItem('trigo_categories_v2');
@@ -83,48 +122,91 @@ export function AppProvider({ children }) {
       if (!isSupabaseConfigured || !supabase) return;
       setIsCloudSyncing(true);
       try {
-        // Fetch Consultants
+        // Fetch Consultants (Merge without stripping roles or losing local staff)
         const { data: cloudConsultants } = await supabase.from('consultants').select('*');
-        let mappedConsultants = null;
         if (cloudConsultants && cloudConsultants.length > 0) {
-          mappedConsultants = cloudConsultants.map(c => ({
-            id: c.id,
-            name: c.name,
-            region: c.region,
-            phone: c.phone,
-            email: c.email,
-            assignedStores: c.assigned_stores || c.assignedStores || [],
-            storesCount: (c.assigned_stores || c.assignedStores || []).length,
-            active: true
-          }));
-          setConsultants(mappedConsultants);
+          const validCloud = cloudConsultants.filter(c => !isLegacyMockStaff(c));
+          setConsultants(prev => {
+            const cloudMap = new Map(validCloud.map(c => [c.id, c]));
+            const merged = prev
+              .filter(local => !isLegacyMockStaff(local))
+              .map(local => {
+                const cloud = cloudMap.get(local.id);
+                if (!cloud) return local;
+                return {
+                  ...local,
+                  name: cloud.name ? cloud.name.toUpperCase().trim() : local.name,
+                  region: cloud.region || local.region,
+                  phone: formatPhoneNumber(cloud.phone || local.phone),
+                  email: (cloud.email || local.email || '').toLowerCase().trim(),
+                  role: cloud.role || local.role || 'CONSULTOR',
+                  reportsTo: cloud.reports_to || cloud.reportsTo || local.reportsTo || null,
+                  photoUrl: cloud.photo_url || cloud.photoUrl || local.photoUrl || null
+                };
+              });
+            // Add cloud members not yet in local state
+            validCloud.forEach(c => {
+              if (!merged.some(m => m.id === c.id)) {
+                merged.push({
+                  id: c.id,
+                  name: c.name.toUpperCase().trim(),
+                  region: c.region,
+                  phone: formatPhoneNumber(c.phone),
+                  email: (c.email || '').toLowerCase().trim(),
+                  role: c.role || 'CONSULTOR',
+                  reportsTo: c.reports_to || c.reportsTo || null,
+                  photoUrl: c.photo_url || c.photoUrl || null,
+                  assignedStores: c.assigned_stores || c.assignedStores || [],
+                  storesCount: (c.assigned_stores || c.assignedStores || []).length,
+                  active: true
+                });
+              }
+            });
+            return merged.filter(c => !isLegacyMockStaff(c));
+          });
         }
 
-        // Fetch Stores
+        // Fetch Stores (Merge preserving franchisee and details)
         const { data: cloudStores } = await supabase.from('stores').select('*');
         if (cloudStores && cloudStores.length > 0) {
-          const mappedStores = cloudStores.map(s => {
-            let matchedConsId = null;
-            if (mappedConsultants) {
-              const cons = mappedConsultants.find(c => c.assignedStores && c.assignedStores.includes(s.id));
-              if (cons) matchedConsId = cons.id;
-            }
-            return {
-              id: s.id,
-              code: s.code,
-              name: s.name,
-              state: s.state,
-              city: s.city,
-              locationType: s.location_type || s.locationType || 'Shopping',
-              address: `${s.name} - ${s.city}/${s.state}`,
-              phone: s.phone || '',
-              email: s.email || '',
-              consultantId: matchedConsId || s.consultantId || null,
-              ratingScore: s.ratingScore || 8.5,
-              status: s.status || 'Ativa'
-            };
+          setStores(prev => {
+            const cloudMap = new Map(cloudStores.map(s => [s.id, s]));
+            const merged = prev.map(local => {
+              const cloud = cloudMap.get(local.id);
+              if (!cloud) return local;
+              return {
+                ...local,
+                code: cloud.code ? cloud.code.toUpperCase().trim() : local.code,
+                name: cloud.name ? cloud.name.toUpperCase().trim() : local.name,
+                state: cloud.state || local.state,
+                city: cloud.city || local.city,
+                franchisee: cloud.franchisee ? cloud.franchisee.toUpperCase().trim() : local.franchisee,
+                locationType: cloud.location_type || cloud.locationType || local.locationType || 'Shopping',
+                phone: cloud.phone ? formatPhoneNumber(cloud.phone) : local.phone,
+                email: (cloud.email || local.email || '').toLowerCase().trim()
+              };
+            });
+            cloudStores.forEach(s => {
+              if (!merged.some(m => m.id === s.id)) {
+                merged.push({
+                  id: s.id,
+                  code: (s.code || '').toUpperCase().trim(),
+                  name: (s.name || '').toUpperCase().trim(),
+                  state: s.state || 'SP',
+                  city: s.city || '',
+                  franchisee: (s.franchisee || '').toUpperCase().trim(),
+                  locationType: s.location_type || s.locationType || 'Shopping',
+                  address: `${s.name} - ${s.city}/${s.state}`,
+                  phone: formatPhoneNumber(s.phone),
+                  email: (s.email || '').toLowerCase().trim(),
+                  consultantId: s.consultantId || null,
+                  ratingScore: s.ratingScore || 8.5,
+                  status: s.status || 'Ativa'
+                });
+              }
+            });
+            return merged;
           });
-          setStores(mappedStores);
         }
 
         // Fetch Categories
@@ -223,7 +305,46 @@ export function AppProvider({ children }) {
     return newVisit;
   };
 
-  // Update Visit (para Assinaturas Digitais e Edições)
+  // Start editing a visit
+  const startEditVisit = (visit) => {
+    setEditingVisit(visit);
+    setSelectedVisitForReport(null);
+    setActiveTab('new-visit');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Cancel editing a visit
+  const cancelEditVisit = () => {
+    const prevVisit = editingVisit;
+    setEditingVisit(null);
+    if (prevVisit) {
+      setSelectedVisitForReport(prevVisit);
+    }
+  };
+
+  // Delete Visit
+  const deleteVisit = async (visitId) => {
+    setVisits(prev => prev.filter(v => v.id !== visitId));
+    
+    if (selectedVisitForReport && selectedVisitForReport.id === visitId) {
+      setSelectedVisitForReport(null);
+    }
+    if (editingVisit && editingVisit.id === visitId) {
+      setEditingVisit(null);
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('visits').delete().eq('id', visitId);
+      } catch (e) {
+        console.error('Supabase visit delete error:', e);
+      }
+    }
+
+    showToast('Relatório de visita excluído com sucesso.');
+  };
+
+  // Update Visit (para Edições Completas e Assinaturas Digitais)
   const updateVisit = async (visitId, updatedData) => {
     let updatedObj = null;
     setVisits(prev => {
@@ -244,9 +365,20 @@ export function AppProvider({ children }) {
       }));
     }
 
+    if (editingVisit && editingVisit.id === visitId) {
+      setEditingVisit(null);
+      setSelectedVisitForReport(updatedObj);
+    }
+
     if (isSupabaseConfigured && supabase && updatedObj) {
       try {
         await supabase.from('visits').update({
+          store_id: updatedObj.storeId,
+          consultant_id: updatedObj.consultantId,
+          date: updatedObj.date,
+          time: updatedObj.time,
+          end_time: updatedObj.endTime || null,
+          visit_type: updatedObj.visitType,
           signatures: updatedObj.signatures || null,
           general_notes: updatedObj.generalNotes,
           diagnostics: updatedObj.diagnostics
@@ -256,7 +388,7 @@ export function AppProvider({ children }) {
       }
     }
 
-    showToast('Assinaturas salvas no laudo com sucesso!');
+    showToast('Relatório de visita atualizado com sucesso!');
     return updatedObj;
   };
 
@@ -297,21 +429,26 @@ export function AppProvider({ children }) {
     showToast('Status do Plano de Ação atualizado para: ' + newStatus);
   };
 
-  // Add Consultant
+  // Add Staff / Consultant (Equipe Spoleto)
   const addConsultant = async (consultantData) => {
+    const isLeadership = consultantData.role && consultantData.role !== 'CONSULTOR';
+    const prefix = isLeadership ? 'staff-' : 'cons-';
     const newConsultant = {
-      id: 'cons-' + Date.now(),
+      id: prefix + Date.now(),
       name: consultantData.name.toUpperCase().trim(),
-      email: (consultantData.email || '').trim(),
-      phone: (consultantData.phone || '').trim(),
+      email: (consultantData.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(consultantData.phone),
       region: (consultantData.region || 'Brasil').trim(),
+      role: consultantData.role || 'CONSULTOR',
+      reportsTo: consultantData.reportsTo || null,
+      photoUrl: consultantData.photoUrl || null,
       active: true,
-      assignedStores: [],
-      storesCount: 0
+      assignedStores: consultantData.assignedStores || [],
+      storesCount: (consultantData.assignedStores || []).length
     };
 
     setConsultants(prev => [newConsultant, ...prev]);
-    showToast('Consultor cadastrado com sucesso!');
+    showToast(`Membro "${newConsultant.name}" cadastrado com sucesso!`);
 
     if (isSupabaseConfigured && supabase) {
       try {
@@ -321,7 +458,7 @@ export function AppProvider({ children }) {
           region: newConsultant.region,
           phone: newConsultant.phone,
           email: newConsultant.email,
-          assigned_stores: []
+          assigned_stores: newConsultant.assignedStores
         }]);
       } catch (e) {
         console.error('Supabase consultant insert error:', e);
@@ -331,7 +468,7 @@ export function AppProvider({ children }) {
     return newConsultant;
   };
 
-  // Update Consultant
+  // Update Staff / Consultant
   const updateConsultant = async (consultantId, updatedData) => {
     let updatedObj = null;
     setConsultants(prev => {
@@ -341,13 +478,20 @@ export function AppProvider({ children }) {
           ...c,
           name: updatedData.name ? updatedData.name.toUpperCase().trim() : c.name,
           region: updatedData.region !== undefined ? updatedData.region.trim() : c.region,
-          email: updatedData.email !== undefined ? updatedData.email.trim() : (c.email || ''),
-          phone: updatedData.phone !== undefined ? updatedData.phone.trim() : (c.phone || ''),
+          email: updatedData.email !== undefined ? updatedData.email.toLowerCase().trim() : (c.email || '').toLowerCase().trim(),
+          phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : formatPhoneNumber(c.phone || ''),
+          role: updatedData.role !== undefined ? updatedData.role : (c.role || 'CONSULTOR'),
+          reportsTo: updatedData.reportsTo !== undefined ? updatedData.reportsTo : c.reportsTo,
+          photoUrl: updatedData.photoUrl !== undefined ? updatedData.photoUrl : c.photoUrl,
           active: updatedData.active !== undefined ? updatedData.active : c.active
         };
         return updatedObj;
       });
     });
+
+    if (selectedStaffForProfile && selectedStaffForProfile.id === consultantId) {
+      setSelectedStaffForProfile(updatedObj);
+    }
 
     if (isSupabaseConfigured && supabase && updatedObj) {
       try {
@@ -362,11 +506,11 @@ export function AppProvider({ children }) {
       }
     }
 
-    showToast('Dados do consultor atualizados com sucesso!');
+    showToast(`Dados de "${updatedObj?.name || 'colaborador'}" atualizados com sucesso!`);
     return updatedObj;
   };
 
-  // Delete Consultant
+  // Delete Consultant / Staff
   const deleteConsultant = async (consultantId) => {
     setConsultants(prev => prev.filter(c => c.id !== consultantId));
     setStores(prev => prev.map(s => {
@@ -376,6 +520,10 @@ export function AppProvider({ children }) {
       return s;
     }));
 
+    if (selectedStaffForProfile && selectedStaffForProfile.id === consultantId) {
+      setSelectedStaffForProfile(null);
+    }
+
     if (isSupabaseConfigured && supabase) {
       try {
         await supabase.from('consultants').delete().eq('id', consultantId);
@@ -384,7 +532,27 @@ export function AppProvider({ children }) {
       }
     }
 
-    showToast('Consultor removido com sucesso.');
+    showToast('Membro removido da equipe com sucesso.');
+  };
+
+  // Assign Subordinates to a Leader
+  const assignSubordinates = async (leaderId, subordinateIds) => {
+    setConsultants(prev => {
+      return prev.map(c => {
+        if (subordinateIds.includes(c.id)) {
+          return { ...c, reportsTo: leaderId };
+        } else if (c.reportsTo === leaderId) {
+          return { ...c, reportsTo: null };
+        }
+        return c;
+      });
+    });
+
+    if (selectedStaffForProfile && selectedStaffForProfile.id === leaderId) {
+      setSelectedStaffForProfile(prev => ({ ...prev }));
+    }
+
+    showToast('Liderados atualizados com sucesso na hierarquia!');
   };
 
   // Add Region
@@ -478,6 +646,88 @@ export function AppProvider({ children }) {
     }
 
     return newStore;
+  };
+
+  // Update Store
+  const updateStore = async (storeId, updatedData) => {
+    let updatedObj = null;
+    const oldStore = stores.find(s => s.id === storeId);
+    const oldConsultantId = oldStore?.consultantId;
+    const newConsultantId = updatedData.consultantId || null;
+
+    setStores(prev => {
+      return prev.map(s => {
+        if (s.id !== storeId) return s;
+        updatedObj = {
+          ...s,
+          code: updatedData.code ? updatedData.code.toUpperCase().trim() : s.code,
+          name: updatedData.name ? updatedData.name.toUpperCase().trim() : s.name,
+          city: updatedData.city !== undefined ? updatedData.city.trim() : s.city,
+          state: updatedData.state || s.state,
+          locationType: updatedData.locationType || s.locationType,
+          franchisee: updatedData.franchisee !== undefined ? updatedData.franchisee.toUpperCase().trim() : s.franchisee,
+          phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : s.phone,
+          email: updatedData.email !== undefined ? updatedData.email.trim() : s.email,
+          address: updatedData.address !== undefined ? updatedData.address.trim() : s.address,
+          consultantId: newConsultantId
+        };
+        return updatedObj;
+      });
+    });
+
+    // Sync consultant assignment if changed
+    if (oldConsultantId !== newConsultantId) {
+      setConsultants(prev => prev.map(c => {
+        if (c.id === oldConsultantId) {
+          const filtered = (c.assignedStores || []).filter(id => id !== storeId);
+          return { ...c, assignedStores: filtered, storesCount: filtered.length };
+        }
+        if (c.id === newConsultantId) {
+          const added = Array.from(new Set([...(c.assignedStores || []), storeId]));
+          return { ...c, assignedStores: added, storesCount: added.length };
+        }
+        return c;
+      }));
+    }
+
+    if (isSupabaseConfigured && supabase && updatedObj) {
+      try {
+        await supabase.from('stores').update({
+          code: updatedObj.code,
+          name: updatedObj.name,
+          state: updatedObj.state,
+          city: updatedObj.city,
+          location_type: updatedObj.locationType
+        }).eq('id', storeId);
+      } catch (e) {
+        console.error('Supabase store update error:', e);
+      }
+    }
+
+    showToast('Dados da unidade atualizados com sucesso!');
+    return updatedObj;
+  };
+
+  // Delete Store
+  const deleteStore = async (storeId) => {
+    setStores(prev => prev.filter(s => s.id !== storeId));
+    setConsultants(prev => prev.map(c => {
+      if (c.assignedStores && c.assignedStores.includes(storeId)) {
+        const filtered = c.assignedStores.filter(id => id !== storeId);
+        return { ...c, assignedStores: filtered, storesCount: filtered.length };
+      }
+      return c;
+    }));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('stores').delete().eq('id', storeId);
+      } catch (e) {
+        console.error('Supabase store delete error:', e);
+      }
+    }
+
+    showToast('Unidade removida com sucesso.');
   };
 
   // Assign Stores to Consultant (2-way reactive sync)
@@ -715,6 +965,17 @@ export function AppProvider({ children }) {
       visits,
       selectedVisitForReport,
       setSelectedVisitForReport,
+      editingVisit,
+      setEditingVisit,
+      startEditVisit,
+      cancelEditVisit,
+      deleteVisit,
+      selectedStaffForProfile,
+      setSelectedStaffForProfile,
+      isOverdueModalOpen,
+      setIsOverdueModalOpen,
+      managingSubordinatesLeader,
+      setManagingSubordinatesLeader,
       toastMessage,
       showToast,
       addVisit,
@@ -724,11 +985,14 @@ export function AppProvider({ children }) {
       addConsultant,
       updateConsultant,
       deleteConsultant,
+      assignSubordinates,
       regions,
       addRegion,
       updateRegion,
       deleteRegion,
       addStore,
+      updateStore,
+      deleteStore,
       addCategory,
       updateCategory,
       deleteCategory,

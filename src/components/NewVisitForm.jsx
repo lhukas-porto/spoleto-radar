@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import DateInput from './DateInput';
 import SignaturePad from './SignaturePad';
@@ -31,7 +31,18 @@ import {
 } from 'lucide-react';
 
 export default function NewVisitForm() {
-  const { stores, consultants, categories, addVisit, setActiveTab, setSelectedVisitForReport, showToast } = useApp();
+  const { 
+    stores, 
+    consultants, 
+    categories, 
+    addVisit, 
+    updateVisit,
+    editingVisit,
+    cancelEditVisit,
+    setActiveTab, 
+    setSelectedVisitForReport, 
+    showToast 
+  } = useApp();
 
   // Store Combobox
   const [selectedStoreId, setSelectedStoreId] = useState('');
@@ -39,7 +50,13 @@ export default function NewVisitForm() {
   const [isStoreDropdownOpen, setIsStoreDropdownOpen] = useState(false);
   const storeDropdownRef = useRef(null);
 
-  const [selectedConsultantId, setSelectedConsultantId] = useState(consultants[0]?.id || '');
+  const businessConsultants = useMemo(() => {
+    return consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR');
+  }, [consultants]);
+
+  const [selectedConsultantId, setSelectedConsultantId] = useState(() => {
+    return consultants.find(c => (c.role || 'CONSULTOR') === 'CONSULTOR')?.id || '';
+  });
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState(new Date().toTimeString().slice(0, 5));
   const [endTime, setEndTime] = useState('');
@@ -72,6 +89,32 @@ export default function NewVisitForm() {
       }
     }
   ]);
+
+  // Load existing visit data if editing
+  useEffect(() => {
+    if (editingVisit) {
+      setSelectedStoreId(editingVisit.storeId || '');
+      const st = stores.find(s => s.id === editingVisit.storeId);
+      if (st) {
+        setStoreSearchQuery(st.name + ' (' + st.city + '/' + st.state + ')');
+      }
+      setSelectedConsultantId(editingVisit.consultantId || consultants[0]?.id || '');
+      setDate(editingVisit.date || new Date().toISOString().split('T')[0]);
+      setTime(editingVisit.time || new Date().toTimeString().slice(0, 5));
+      setEndTime(editingVisit.endTime || '');
+      setVisitType(editingVisit.visitType || 'Visita agendada');
+      setGeneralNotes(editingVisit.generalNotes || '');
+      if (editingVisit.diagnostics && editingVisit.diagnostics.length > 0) {
+        setDiagnostics(editingVisit.diagnostics);
+      }
+      if (editingVisit.signatures) {
+        setStoreSignature(editingVisit.signatures.storeImg || null);
+        setStoreSignerName(editingVisit.signatures.storeSignerName || '');
+        setConsultantSignature(editingVisit.signatures.consultantImg || null);
+        setShowSignatureSection(true);
+      }
+    }
+  }, [editingVisit, stores, consultants]);
 
   // Filter stores
   const filteredStores = stores.filter(st => {
@@ -269,7 +312,7 @@ export default function NewVisitForm() {
     const hasSignatures = storeSignature || consultantSignature;
     const currentConsultant = consultants.find(c => c.id === selectedConsultantId);
 
-    const newVisit = {
+    const visitPayload = {
       storeId: selectedStoreId,
       consultantId: selectedConsultantId,
       date,
@@ -287,19 +330,75 @@ export default function NewVisitForm() {
       } : null
     };
 
-    const savedVisit = addVisit(newVisit);
-    setSelectedVisitForReport(savedVisit);
-    setActiveTab('reports');
+    if (editingVisit) {
+      updateVisit(editingVisit.id, visitPayload);
+      setActiveTab('reports');
+    } else {
+      const savedVisit = addVisit(visitPayload);
+      setSelectedVisitForReport(savedVisit);
+      setActiveTab('reports');
+    }
   };
 
   return (
     <div>
       <div className="section-header">
         <div>
-          <h1 className="section-title">Visita de Consultoria</h1>
-          <p className="section-subtitle">Realize o diagnóstico operacional Spoleto e gere o Plano de Ação oficial da rede.</p>
+          <h1 className="section-title">
+            {editingVisit ? 'Editar Relatório de Visita' : 'Visita de Consultoria'}
+          </h1>
+          <p className="section-subtitle">
+            {editingVisit 
+              ? 'Atualize os dados, diagnósticos e planos de ação desta visita operacional.' 
+              : 'Realize o diagnóstico operacional Spoleto e gere o Plano de Ação oficial da rede.'}
+          </p>
         </div>
+
+        {editingVisit && (
+          <button 
+            type="button" 
+            className="btn-secondary" 
+            onClick={cancelEditVisit}
+            style={{ fontSize: '0.82rem' }}
+          >
+            <X size={15} /> Cancelar Edição
+          </button>
+        )}
       </div>
+
+      {editingVisit && (
+        <div style={{
+          background: 'linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%)',
+          border: '1.5px solid #FACC15',
+          borderRadius: 'var(--radius-md)',
+          padding: '0.85rem 1.25rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          boxShadow: '0 2px 5px rgba(133, 77, 14, 0.08)'
+        }}>
+          <div>
+            <strong style={{ color: '#854D0E', fontSize: '0.92rem' }}>
+              ✏️ Modo de Edição Ativo
+            </strong>
+            <div style={{ fontSize: '0.78rem', color: '#713F12', marginTop: '0.15rem' }}>
+              Editando visita da unidade <strong>{selectedStore?.name || 'Spoleto'}</strong> realizada em {editingVisit.date}.
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            className="btn-secondary"
+            onClick={cancelEditVisit}
+            style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', backgroundColor: '#FFFFFF' }}
+          >
+            Voltar sem Salvar
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         {/* Bloco 1: Identificação */}
@@ -425,7 +524,7 @@ export default function NewVisitForm() {
             <div className="form-group">
               <label className="form-label">Consultor(a) Responsável *</label>
               <select value={selectedConsultantId} onChange={(e) => setSelectedConsultantId(e.target.value)} required>
-                {consultants.map(cons => (
+                {businessConsultants.map(cons => (
                   <option key={cons.id} value={cons.id}>
                     {cons.name} ({cons.region})
                   </option>
@@ -960,7 +1059,7 @@ export default function NewVisitForm() {
             <button 
               type="button" 
               className="btn-secondary"
-              onClick={() => setActiveTab('dashboard')}
+              onClick={editingVisit ? cancelEditVisit : () => setActiveTab('dashboard')}
             >
               Cancelar
             </button>
@@ -970,7 +1069,7 @@ export default function NewVisitForm() {
               style={{ padding: '0.8rem 2rem', fontSize: '1rem' }}
             >
               <ClipboardCheck size={18} />
-              Finalizar Visita & Gerar Laudo
+              {editingVisit ? 'Salvar Alterações da Visita' : 'Finalizar Visita & Gerar Laudo'}
             </button>
           </div>
         </div>
