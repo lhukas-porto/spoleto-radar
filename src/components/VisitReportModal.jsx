@@ -246,11 +246,46 @@ export default function VisitReportModal() {
     <div className="modal-overlay" onClick={() => setSelectedVisitForReport(null)}>
       <div 
         className="modal-card" 
-        style={{ maxWidth: '980px', padding: '2.25rem', width: '95%' }} 
+        style={{ maxWidth: '980px', padding: '2.25rem', width: '95%', position: 'relative' }} 
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Botão Fechar Padrão Windows no Canto Superior Direito */}
+        <button 
+          type="button"
+          onClick={() => setSelectedVisitForReport(null)}
+          className="no-print"
+          style={{
+            position: 'absolute',
+            top: '1.1rem',
+            right: '1.1rem',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'transparent',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            zIndex: 20
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#EF4444';
+            e.currentTarget.style.color = '#FFFFFF';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
+          title="Fechar (Esc)"
+        >
+          <X size={20} />
+        </button>
+
         {/* Modal Controls Bar (No Print) */}
-        <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem', paddingRight: '2.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               Laudo & Plano de Ação Oficial Spoleto
@@ -371,15 +406,6 @@ export default function VisitReportModal() {
               title="Excluir este relatório"
             >
               <Trash2 size={15} />
-            </button>
-
-            <button 
-              type="button"
-              className="btn-secondary" 
-              onClick={() => setSelectedVisitForReport(null)}
-              style={{ padding: '0.45rem 0.6rem' }}
-            >
-              <X size={18} />
             </button>
           </div>
         </div>
