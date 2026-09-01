@@ -25,7 +25,9 @@ import {
   Award,
   Layers,
   Building2,
-  User
+  User,
+  Sliders,
+  CheckSquare
 } from 'lucide-react';
 import AvatarCropModal from './AvatarCropModal';
 

@@ -29,7 +29,10 @@ import {
   Camera, 
   ZoomIn, 
   Edit3, 
-  Trash2
+  Trash2,
+  ChevronDown,
+  MoreVertical,
+  Info
 } from 'lucide-react';
 
 function getVisitTimeFormatted(startTime, endTime) {

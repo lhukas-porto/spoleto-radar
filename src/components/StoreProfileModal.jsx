@@ -20,7 +20,8 @@ import {
   RotateCcw,
   ShieldCheck,
   Building2,
-  ExternalLink
+  ExternalLink,
+  Star
 } from 'lucide-react';
 
 export default function StoreProfileModal({ store, onClose }) {
