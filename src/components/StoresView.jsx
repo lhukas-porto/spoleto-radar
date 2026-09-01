@@ -5,7 +5,6 @@ import {
   BRAZILIAN_STATES, 
   getCitiesForState, 
   fetchAddressByCEP, 
-  searchCepByText,
   formatCEP 
 } from '../utils/brazilianLocations';
 import { 
@@ -16,21 +15,19 @@ import {
   Search, 
   Filter, 
   Star, 
-  Calendar, 
-  X, 
-  FileText, 
-  Phone, 
-  Mail, 
-  Edit3, 
-  Trash2, 
-  Loader2, 
-  CheckCircle2, 
-  Users, 
-  Building2, 
-  Handshake, 
-  RotateCcw,
-  Sparkles,
-  Zap
+  Calendar,
+  X,
+  FileText,
+  Phone,
+  Mail,
+  Edit3,
+  Trash2,
+  Loader2,
+  CheckCircle2,
+  Users,
+  Building2,
+  Handshake,
+  RotateCcw
 } from 'lucide-react';
 import FranchiseesView from './FranchiseesView';
 
@@ -45,9 +42,8 @@ export default function StoresView() {
     updateStore, 
     deleteStore, 
     setSelectedStaffForProfile, 
-    setSelectedVisitForReport, 
-    setSelectedStoreForProfile,
-    showToast
+    setSelectedVisitForReport,
+    setSelectedStoreForProfile 
   } = useApp();
   const [activeStoreTab, setActiveStoreTab] = useState('stores'); // 'stores' | 'franchisees'
   const [searchTerm, setSearchTerm] = useState('');
@@ -178,168 +174,6 @@ export default function StoresView() {
       }
     } else {
       setCepSuccessEdit(false);
-    }
-  };
-
-  const [nameLookupLoadingNew, setNameLookupLoadingNew] = useState(false);
-  const [nameLookupLoadingEdit, setNameLookupLoadingEdit] = useState(false);
-
-  // Auto-fill address by Store Name for New Store
-  const handleLookupByStoreNameNew = async (inputName) => {
-    const targetName = (inputName || newStore.name || '').trim();
-    if (!targetName) {
-      alert('Digite o nome da loja ou shopping para buscar o CEP.');
-      return;
-    }
-
-    setNameLookupLoadingNew(true);
-    // 1. Procurar nas lojas cadastradas por nome similar que tenha CEP
-    const matchedStore = stores.find(s => 
-      s.cep && (
-        s.name.toUpperCase().includes(targetName.toUpperCase()) || 
-        targetName.toUpperCase().includes(s.name.toUpperCase()) ||
-        (s.code && s.code.toUpperCase() === targetName.toUpperCase())
-      )
-    );
-
-    let targetCep = matchedStore?.cep || '';
-
-    // 2. Se não encontrou CEP na base interna, faz busca reversa na ViaCEP
-    if (!targetCep) {
-      const results = await searchCepByText(newStore.state || 'SP', newStore.city || 'São Paulo', targetName);
-      if (results && results.length > 0) {
-        targetCep = results[0].cep;
-      }
-    }
-
-    if (targetCep) {
-      const cleanDigits = targetCep.replace(/\D/g, '');
-      const maskedCep = formatCEP(cleanDigits);
-      setCepLoadingNew(true);
-      const addrData = await fetchAddressByCEP(cleanDigits);
-      setCepLoadingNew(false);
-
-      if (addrData) {
-        setCepSuccessNew(true);
-        setNewStore(prev => ({
-          ...prev,
-          cep: maskedCep,
-          state: addrData.state || prev.state,
-          city: addrData.city || prev.city,
-          address: addrData.fullAddress ? `${addrData.fullAddress}, ` : prev.address
-        }));
-        showToast?.(`✅ CEP ${maskedCep} e endereço (cidade, UF e rua) preenchidos automaticamente!`);
-      } else {
-        setNewStore(prev => ({ ...prev, cep: maskedCep }));
-        showToast?.(`✅ CEP ${maskedCep} preenchido!`);
-      }
-    } else {
-      showToast?.('⚠️ Nenhum CEP encontrado pelo nome. Digite o CEP manualmente.');
-    }
-    setNameLookupLoadingNew(false);
-  };
-
-  // Auto-fill address by Store Name for Edit Store
-  const handleLookupByStoreNameEdit = async (inputName) => {
-    const targetName = (inputName || editStoreForm.name || '').trim();
-    if (!targetName) {
-      alert('Digite o nome da loja ou shopping para buscar o CEP.');
-      return;
-    }
-
-    setNameLookupLoadingEdit(true);
-    const matchedStore = stores.find(s => 
-      s.cep && (
-        s.name.toUpperCase().includes(targetName.toUpperCase()) || 
-        targetName.toUpperCase().includes(s.name.toUpperCase()) ||
-        (s.code && s.code.toUpperCase() === targetName.toUpperCase())
-      )
-    );
-
-    let targetCep = matchedStore?.cep || '';
-
-    if (!targetCep) {
-      const results = await searchCepByText(editStoreForm.state || 'SP', editStoreForm.city || 'São Paulo', targetName);
-      if (results && results.length > 0) {
-        targetCep = results[0].cep;
-      }
-    }
-
-    if (targetCep) {
-      const cleanDigits = targetCep.replace(/\D/g, '');
-      const maskedCep = formatCEP(cleanDigits);
-      setCepLoadingEdit(true);
-      const addrData = await fetchAddressByCEP(cleanDigits);
-      setCepLoadingEdit(false);
-
-      if (addrData) {
-        setCepSuccessEdit(true);
-        setEditStoreForm(prev => ({
-          ...prev,
-          cep: maskedCep,
-          state: addrData.state || prev.state,
-          city: addrData.city || prev.city,
-          address: addrData.fullAddress ? `${addrData.fullAddress}, ` : prev.address
-        }));
-        showToast?.(`✅ CEP ${maskedCep} e endereço (cidade, UF e rua) preenchidos automaticamente!`);
-      } else {
-        setEditStoreForm(prev => ({ ...prev, cep: maskedCep }));
-        showToast?.(`✅ CEP ${maskedCep} preenchido!`);
-      }
-    } else {
-      showToast?.('⚠️ Nenhum CEP encontrado pelo nome. Digite o CEP manualmente.');
-    }
-    setNameLookupLoadingEdit(false);
-  };
-
-  // Auto-fill when picking from registered stores suggestions in New Modal
-  const handleSelectExistingStoreSuggestionNew = async (matchedStore) => {
-    if (!matchedStore) return;
-    const targetCep = matchedStore.cep || '';
-    
-    setNewStore(prev => ({
-      ...prev,
-      name: matchedStore.name,
-      code: prev.code || matchedStore.code || '',
-      locationType: matchedStore.locationType || prev.locationType,
-      consultantId: matchedStore.consultantId || prev.consultantId,
-      franchisee: matchedStore.franchisee || prev.franchisee,
-      phone: matchedStore.phone || prev.phone,
-      email: matchedStore.email || prev.email,
-      state: matchedStore.state || prev.state,
-      city: matchedStore.city || prev.city,
-      address: matchedStore.address || prev.address
-    }));
-
-    if (targetCep) {
-      handleCepChangeNew(targetCep);
-    } else {
-      handleLookupByStoreNameNew(matchedStore.name);
-    }
-  };
-
-  // Auto-fill when picking from registered stores suggestions in Edit Modal
-  const handleSelectExistingStoreSuggestionEdit = async (matchedStore) => {
-    if (!matchedStore) return;
-    const targetCep = matchedStore.cep || '';
-    
-    setEditStoreForm(prev => ({
-      ...prev,
-      name: matchedStore.name,
-      locationType: matchedStore.locationType || prev.locationType,
-      consultantId: matchedStore.consultantId || prev.consultantId,
-      franchisee: matchedStore.franchisee || prev.franchisee,
-      phone: matchedStore.phone || prev.phone,
-      email: matchedStore.email || prev.email,
-      state: matchedStore.state || prev.state,
-      city: matchedStore.city || prev.city,
-      address: matchedStore.address || prev.address
-    }));
-
-    if (targetCep) {
-      handleCepChangeEdit(targetCep);
-    } else {
-      handleLookupByStoreNameEdit(matchedStore.name);
     }
   };
 
@@ -873,62 +707,16 @@ export default function StoresView() {
                   />
                 </div>
 
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                    <label className="form-label" style={{ margin: 0 }}>Nome da Loja / Unidade *</label>
-                    <button
-                      type="button"
-                      onClick={() => handleLookupByStoreNameNew(newStore.name)}
-                      disabled={nameLookupLoadingNew || !newStore.name}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--primary-brown)',
-                        fontSize: '0.74rem',
-                        fontWeight: 700,
-                        cursor: newStore.name ? 'pointer' : 'default',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        padding: 0,
-                        opacity: newStore.name ? 1 : 0.6
-                      }}
-                      title="Busca o CEP pelo nome da loja ou shopping e preenche o endereço completo via ViaCEP"
-                    >
-                      {nameLookupLoadingNew ? (
-                        <>
-                          <Loader2 size={12} className="spin" /> Buscando CEP...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles size={13} color="#D97706" /> ⚡ Auto-completar CEP & Endereço por este Nome
-                        </>
-                      )}
-                    </button>
-                  </div>
+                <div className="form-group">
+                  <label className="form-label">Nome da Loja / Unidade *</label>
                   <input 
                     type="text" 
-                    list="registered-stores-datalist-new"
                     value={newStore.name} 
-                    onChange={(e) => {
-                      const val = e.target.value.toUpperCase();
-                      setNewStore(prev => ({ ...prev, name: val }));
-                      const match = stores.find(s => s.name.toUpperCase() === val);
-                      if (match) {
-                        handleSelectExistingStoreSuggestionNew(match);
-                      }
-                    }} 
-                    placeholder="Ex: SPOLETO SHOPPING ELDORADO (ou selecione da lista)" 
+                    onChange={(e) => setNewStore({ ...newStore, name: e.target.value.toUpperCase() })} 
+                    placeholder="Ex: SPOLETO SHOPPING D" 
                     style={{ textTransform: 'uppercase' }}
                     required 
                   />
-                  <datalist id="registered-stores-datalist-new">
-                    {stores.map(s => (
-                      <option key={s.id} value={s.name}>
-                        {s.code} • {s.city}/{s.state} {s.cep ? `(CEP: ${s.cep})` : ''}
-                      </option>
-                    ))}
-                  </datalist>
                 </div>
 
                 {/* CEP com Busca Automática de Endereço */}
@@ -1111,62 +899,16 @@ export default function StoresView() {
                   />
                 </div>
 
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                    <label className="form-label" style={{ margin: 0 }}>Nome da Loja / Unidade *</label>
-                    <button
-                      type="button"
-                      onClick={() => handleLookupByStoreNameEdit(editStoreForm.name)}
-                      disabled={nameLookupLoadingEdit || !editStoreForm.name}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--primary-brown)',
-                        fontSize: '0.74rem',
-                        fontWeight: 700,
-                        cursor: editStoreForm.name ? 'pointer' : 'default',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        padding: 0,
-                        opacity: editStoreForm.name ? 1 : 0.6
-                      }}
-                      title="Busca o CEP pelo nome da loja ou shopping e preenche o endereço completo via ViaCEP"
-                    >
-                      {nameLookupLoadingEdit ? (
-                        <>
-                          <Loader2 size={12} className="spin" /> Buscando CEP...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles size={13} color="#D97706" /> ⚡ Auto-completar CEP & Endereço por este Nome
-                        </>
-                      )}
-                    </button>
-                  </div>
+                <div className="form-group">
+                  <label className="form-label">Nome da Loja / Unidade *</label>
                   <input 
                     type="text" 
-                    list="registered-stores-datalist-edit"
                     value={editStoreForm.name} 
-                    onChange={(e) => {
-                      const val = e.target.value.toUpperCase();
-                      setEditStoreForm(prev => ({ ...prev, name: val }));
-                      const match = stores.find(s => s.name.toUpperCase() === val);
-                      if (match) {
-                        handleSelectExistingStoreSuggestionEdit(match);
-                      }
-                    }} 
-                    placeholder="Ex: SPOLETO SHOPPING ELDORADO (ou selecione da lista)" 
+                    onChange={(e) => setEditStoreForm({ ...editStoreForm, name: e.target.value.toUpperCase() })} 
+                    placeholder="Ex: SPOLETO SHOPPING D" 
                     style={{ textTransform: 'uppercase' }}
                     required 
                   />
-                  <datalist id="registered-stores-datalist-edit">
-                    {stores.map(s => (
-                      <option key={s.id} value={s.name}>
-                        {s.code} • {s.city}/{s.state} {s.cep ? `(CEP: ${s.cep})` : ''}
-                      </option>
-                    ))}
-                  </datalist>
                 </div>
 
                 {/* CEP com Busca Automática de Endereço */}
