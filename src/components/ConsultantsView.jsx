@@ -26,8 +26,10 @@ import {
   Award,
   Layers,
   Building2,
-  User
+  User,
+  Sliders
 } from 'lucide-react';
+import AvatarCropModal from './AvatarCropModal';
 
 const OFFICIAL_REGIONS = [
   "SP Capital, Campinas & Região",
@@ -92,6 +94,29 @@ export default function ConsultantsView() {
   const [editingRegionNewName, setEditingRegionNewName] = useState('');
   const [regionSearchTerm, setRegionSearchTerm] = useState('');
   const [zoomedPhoto, setZoomedPhoto] = useState(null);
+  const [imageToCrop, setImageToCrop] = useState(null); // { src: string, target: 'new' | 'edit' }
+
+  // Handlers para o corte e posicionamento circular da foto
+  const handleFileSelect = (file, target) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImageToCrop({
+        src: e.target.result,
+        target
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleConfirmCrop = (croppedUrl) => {
+    if (imageToCrop?.target === 'new') {
+      setNewCons(prev => ({ ...prev, photoUrl: croppedUrl }));
+    } else if (imageToCrop?.target === 'edit') {
+      setEditForm(prev => ({ ...prev, photoUrl: croppedUrl }));
+    }
+    setImageToCrop(null);
+  };
 
   // Edit Consultant Form State
   const [editForm, setEditForm] = useState({
@@ -737,17 +762,30 @@ export default function ConsultantsView() {
                     <input 
                       type="file" 
                       accept="image/*"
-                      onChange={(e) => processImageFile(e.target.files?.[0], (url) => setNewCons({ ...newCons, photoUrl: url }))}
+                      onChange={(e) => {
+                        handleFileSelect(e.target.files?.[0], 'new');
+                        e.target.value = '';
+                      }}
                       style={{ fontSize: '0.8rem' }}
                     />
                     {newCons.photoUrl && (
-                      <button 
-                        type="button" 
-                        onClick={() => setNewCons({ ...newCons, photoUrl: null })}
-                        style={{ fontSize: '0.72rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', marginTop: '0.25rem', padding: 0 }}
-                      >
-                        Remover Foto
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', alignItems: 'center' }}>
+                        <button 
+                          type="button" 
+                          onClick={() => setImageToCrop({ src: newCons.photoUrl, target: 'new' })}
+                          style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: '4px', cursor: 'pointer', padding: '0.2rem 0.55rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 600 }}
+                          title="Reposicionar ou dar zoom na foto"
+                        >
+                          <Sliders size={12} /> Ajustar Posição / Zoom
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setNewCons({ ...newCons, photoUrl: null })}
+                          style={{ fontSize: '0.74rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                          Remover Foto
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -882,17 +920,30 @@ export default function ConsultantsView() {
                     <input 
                       type="file" 
                       accept="image/*"
-                      onChange={(e) => processImageFile(e.target.files?.[0], (url) => setEditForm({ ...editForm, photoUrl: url }))}
+                      onChange={(e) => {
+                        handleFileSelect(e.target.files?.[0], 'edit');
+                        e.target.value = '';
+                      }}
                       style={{ fontSize: '0.8rem' }}
                     />
                     {editForm.photoUrl && (
-                      <button 
-                        type="button" 
-                        onClick={() => setEditForm({ ...editForm, photoUrl: null })}
-                        style={{ fontSize: '0.72rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', marginTop: '0.25rem', padding: 0 }}
-                      >
-                        Remover Foto
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', alignItems: 'center' }}>
+                        <button 
+                          type="button" 
+                          onClick={() => setImageToCrop({ src: editForm.photoUrl, target: 'edit' })}
+                          style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: '4px', cursor: 'pointer', padding: '0.2rem 0.55rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 600 }}
+                          title="Reposicionar ou dar zoom na foto"
+                        >
+                          <Sliders size={12} /> Ajustar Posição / Zoom
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setEditForm({ ...editForm, photoUrl: null })}
+                          style={{ fontSize: '0.74rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                          Remover Foto
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1342,6 +1393,15 @@ export default function ConsultantsView() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal Interativo de Corte e Posicionamento Circular da Foto */}
+      {imageToCrop && (
+        <AvatarCropModal
+          imageSrc={imageToCrop.src}
+          onConfirm={handleConfirmCrop}
+          onCancel={() => setImageToCrop(null)}
+        />
       )}
 
     </div>
