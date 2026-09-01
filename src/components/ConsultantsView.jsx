@@ -627,11 +627,11 @@ export default function ConsultantsView() {
               </div>
 
               {/* Ações do Card */}
-              <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem' }}>
+              <div style={{ display: 'flex', gap: '0.4rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem' }}>
                 {role === 'CONSULTOR' ? (
                   <button 
                     className="btn-secondary" 
-                    style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
+                    style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}
                     onClick={() => handleOpenManageStores(consultant)}
                     title="Definir Lojas da Carteira"
                   >
@@ -640,7 +640,7 @@ export default function ConsultantsView() {
                 ) : (
                   <button 
                     className="btn-secondary" 
-                    style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
+                    style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}
                     onClick={() => setManagingSubordinatesLeader(consultant)}
                     title="Definir Liderados Diretos da Equipe"
                   >
@@ -650,11 +650,44 @@ export default function ConsultantsView() {
 
                 <button 
                   className="btn-primary" 
-                  style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
+                  style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}
                   onClick={() => handleOpenEditModal(consultant)}
                   title="Editar Cadastro e Foto"
                 >
                   <Edit3 size={13} /> Editar
+                </button>
+
+                <button 
+                  type="button" 
+                  onClick={() => handleDeleteConsultant(consultant)}
+                  style={{ 
+                    color: '#991B1B', 
+                    backgroundColor: '#FEF2F2', 
+                    border: '1px solid #FECACA', 
+                    padding: '0.35rem 0.65rem', 
+                    borderRadius: 'var(--radius-sm)', 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    gap: '0.3rem', 
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#DC2626';
+                    e.currentTarget.style.color = '#FFFFFF';
+                    e.currentTarget.style.borderColor = '#DC2626';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#FEF2F2';
+                    e.currentTarget.style.color = '#991B1B';
+                    e.currentTarget.style.borderColor = '#FECACA';
+                  }}
+                  title={`Excluir ${consultant.name}`}
+                >
+                  <Trash2 size={13} /> Excluir
                 </button>
               </div>
             </div>
