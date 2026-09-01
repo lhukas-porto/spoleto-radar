@@ -23,13 +23,16 @@ import {
   Edit3,
   Trash2,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Users
 } from 'lucide-react';
+import FranchiseesView from './FranchiseesView';
 
 export default function StoresView() {
   const { 
     stores, 
     consultants, 
+    franchisees,
     visits, 
     addStore, 
     updateStore, 
@@ -38,6 +41,7 @@ export default function StoresView() {
     setSelectedVisitForReport,
     setSelectedStoreForProfile 
   } = useApp();
+  const [activeStoreTab, setActiveStoreTab] = useState('stores'); // 'stores' | 'franchisees'
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('Todos');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -264,11 +268,62 @@ export default function StoresView() {
         </button>
       </div>
 
-      {/* Barra de Busca e Filtros */}
-      <div className="card-panel" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 1fr) auto', gap: '1rem', alignItems: 'center' }}>
-          {/* Campo de Busca */}
-          <div style={{ position: 'relative', width: '100%' }}>
+      {/* Sub-abas de Navegação: Lojas Físicas vs Franqueados da Rede */}
+      <div style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
+        <button
+          type="button"
+          onClick={() => setActiveStoreTab('stores')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md)',
+            border: activeStoreTab === 'stores' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+            background: activeStoreTab === 'stores' ? 'var(--primary-brown)' : '#FFFFFF',
+            color: activeStoreTab === 'stores' ? '#FFFFFF' : 'var(--text-main)',
+            fontWeight: 800,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            boxShadow: activeStoreTab === 'stores' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Store size={16} /> Lojas Físicas ({stores.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveStoreTab('franchisees')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md)',
+            border: activeStoreTab === 'franchisees' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+            background: activeStoreTab === 'franchisees' ? 'var(--primary-brown)' : '#FFFFFF',
+            color: activeStoreTab === 'franchisees' ? '#FFFFFF' : 'var(--text-main)',
+            fontWeight: 800,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            boxShadow: activeStoreTab === 'franchisees' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Users size={16} /> Franqueados da Rede ({franchisees.length})
+        </button>
+      </div>
+
+      {activeStoreTab === 'franchisees' ? (
+        <FranchiseesView />
+      ) : (
+        <>
+          {/* Barra de Busca e Filtros */}
+          <div className="card-panel" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 1fr) auto', gap: '1rem', alignItems: 'center' }}>
+              {/* Campo de Busca */}
+              <div style={{ position: 'relative', width: '100%' }}>
             <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input 
               type="text" 
@@ -457,6 +512,8 @@ export default function StoresView() {
           );
         })}
       </div>
+      </>
+      )}
 
       {/* Modal de Cadastro de Nova Loja */}
       {isModalOpen && (

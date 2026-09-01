@@ -112,6 +112,32 @@ export function AppProvider({ children }) {
     return INITIAL_REGIONS;
   });
 
+  const [franchisees, setFranchisees] = useState(() => {
+    const saved = localStorage.getItem('trigo_franchisees_v2');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    // Inicializar franqueados a partir das lojas existentes
+    const map = {};
+    INITIAL_STORES.forEach(s => {
+      const fName = (s.franchisee || 'Franqueado Oficial').trim();
+      if (!map[fName]) {
+        map[fName] = {
+          id: 'fran-' + Math.random().toString(36).substr(2, 7),
+          name: fName,
+          email: s.email || 'franqueado@spoleto.com.br',
+          phone: s.phone || '(11) 98765-4321',
+          assignedStoreIds: []
+        };
+      }
+      map[fName].assignedStoreIds.push(s.id);
+    });
+    return Object.values(map);
+  });
+
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
   const [selectedStoreForProfile, setSelectedStoreForProfile] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
@@ -277,6 +303,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('trigo_regions_v2', JSON.stringify(regions));
   }, [regions]);
+
+  useEffect(() => {
+    localStorage.setItem('trigo_franchisees_v2', JSON.stringify(franchisees));
+  }, [franchisees]);
 
   // Toast Helper
   const showToast = (message) => {
@@ -891,6 +921,103 @@ export function AppProvider({ children }) {
     showToast('Lojas atribuídas com sucesso ao consultor!');
   };
 
+  // Franchisees CRUD (Gestão de Franqueados & Múltiplas Lojas)
+  const addFranchisee = async (data) => {
+    const newFranchisee = {
+      id: 'fran-' + Date.now(),
+      name: data.name.toUpperCase().trim(),
+      email: (data.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(data.phone),
+      assignedStoreIds: data.assignedStoreIds || []
+    };
+
+    setFranchisees(prev => [newFranchisee, ...prev]);
+
+    // Sincroniza as lojas atribuídas a esse franqueado
+    if (newFranchisee.assignedStoreIds.length > 0) {
+      setStores(prev => prev.map(s => {
+        if (newFranchisee.assignedStoreIds.includes(s.id)) {
+          return {
+            ...s,
+            franchisee: newFranchisee.name,
+            email: newFranchisee.email || s.email,
+            phone: newFranchisee.phone || s.phone
+          };
+        }
+        return s;
+      }));
+
+      if (isSupabaseConfigured && supabase) {
+        try {
+          for (const sId of newFranchisee.assignedStoreIds) {
+            await supabase.from('stores').update({
+              franchisee: newFranchisee.name,
+              email: newFranchisee.email,
+              phone: newFranchisee.phone
+            }).eq('id', sId);
+          }
+        } catch (e) {
+          console.error('Erro ao sincronizar lojas do franqueado no Supabase:', e);
+        }
+      }
+    }
+
+    showToast(`Franqueado "${newFranchisee.name}" cadastrado com sucesso!`);
+    return newFranchisee;
+  };
+
+  const updateFranchisee = async (id, data) => {
+    let updatedObj = null;
+    const newStoreIds = data.assignedStoreIds || [];
+
+    setFranchisees(prev => prev.map(f => {
+      if (f.id !== id) return f;
+      updatedObj = {
+        ...f,
+        name: data.name ? data.name.toUpperCase().trim() : f.name,
+        email: data.email !== undefined ? data.email.toLowerCase().trim() : f.email,
+        phone: data.phone !== undefined ? formatPhoneNumber(data.phone) : f.phone,
+        assignedStoreIds: newStoreIds
+      };
+      return updatedObj;
+    }));
+
+    // Atualiza as lojas que pertencem a este franqueado
+    setStores(prev => prev.map(s => {
+      if (newStoreIds.includes(s.id)) {
+        return {
+          ...s,
+          franchisee: updatedObj.name,
+          email: updatedObj.email || s.email,
+          phone: updatedObj.phone || s.phone
+        };
+      }
+      return s;
+    }));
+
+    if (isSupabaseConfigured && supabase && updatedObj) {
+      try {
+        for (const sId of newStoreIds) {
+          await supabase.from('stores').update({
+            franchisee: updatedObj.name,
+            email: updatedObj.email,
+            phone: updatedObj.phone
+          }).eq('id', sId);
+        }
+      } catch (e) {
+        console.error('Erro ao atualizar lojas do franqueado no Supabase:', e);
+      }
+    }
+
+    showToast(`Dados do franqueado "${updatedObj?.name}" atualizados com sucesso!`);
+    return updatedObj;
+  };
+
+  const deleteFranchisee = (id) => {
+    setFranchisees(prev => prev.filter(f => f.id !== id));
+    showToast('Franqueado removido com sucesso.');
+  };
+
   // Category CRUD
   const addCategory = async (categoryData) => {
     const newCategory = {
@@ -1116,6 +1243,10 @@ export function AppProvider({ children }) {
       addStore,
       updateStore,
       deleteStore,
+      franchisees,
+      addFranchisee,
+      updateFranchisee,
+      deleteFranchisee,
       addCategory,
       updateCategory,
       deleteCategory,
