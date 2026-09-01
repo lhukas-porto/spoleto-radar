@@ -57,3 +57,34 @@ src/
 - O `html2canvas` renderiza o DOM com fator de escala 2x para garantir nitidez impecável em fontes e bordas.
 - O `jspdf` gera o arquivo binário `.pdf` no formato padrão `Plano_de_Acao_Spoleto_[Loja]_[Data].pdf`.
 - O método de disparo utiliza a **Web Share API** com `navigator.canShare({ files: [file] })` para envio nativo em celulares e tablets, e download com instrução de anexo no desktop.
+
+---
+
+## 4. Régua Automática de Prazos (SLA) & Envio de E-mails
+
+### ⏰ Funcionamento da Régua Automática:
+1. **Cálculo do Menor Prazo:** Para cada visita técnica, o sistema avalia todos os planos de ação não concluídos e elege o menor prazo como o **Gargalo Crítico da Visita**.
+2. **Nível 1 • Alerta de Prevenção (D-1):** Disparado quando faltar 24h para o vencimento do menor prazo.
+3. **Nível 2 • Escalação de Atenção Total (D-0 / Atraso):** Disparado no dia do vencimento ou se houver atraso, escalando para toda a liderança.
+4. **Cadeia em Cópia Notificada:**
+   - 🏬 Franqueado da Loja (Destinatário Principal)
+   - 👨‍💼 Consultor de Negócios da Unidade (CC)
+   - 🏢 Gerente Regional (CC)
+   - 🌐 Gerente Nacional Liliane Cury (CC)
+5. **Robô na Nuvem (Vercel Cron):** Executa automaticamente todo dia às 08:00 AM (BRT) na rota `/api/cron-sla` com proteção anti-duplicidade no Supabase.
+
+---
+
+## 📌 LEMBRETE: Configuração de Domínio para Envio Global de E-mails
+
+> [!IMPORTANT]
+> **Modo Atual (Desenvolvimento / Teste):**
+> O Resend no plano gratuito permite envios de teste para a conta cadastrada (`lhukas@gmail.com`).
+> 
+> **Passo para Liberar Envio para Qualquer E-mail do Mundo (`@infodesk.net.br`, `@spoleto.com.br`, etc.):**
+> 1. Acesse o painel do **[Resend](https://resend.com/domains)**.
+> 2. Clique em **Add Domain** e insira o domínio corporativo desejado (ex: `infodesk.net.br` ou `spoleto.com.br`).
+> 3. Adicione as 3 entradas DNS fornecidas (DKIM, SPF, MX) no provedor do seu domínio (Registro.br, Cloudflare, GoDaddy, etc.).
+> 4. Após a validação (instantânea ou até 10 min), atualize o remetente em `api/cron-sla.js` e `src/services/notificationService.js` para `notificacoes@seudominio.com.br`.
+> 5. A partir desse momento, os e-mails sairão automaticamente para todos os franqueados e gerentes da rede mundial!
+
