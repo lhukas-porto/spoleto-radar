@@ -122,6 +122,16 @@ export function AppProvider({ children }) {
       if (!isSupabaseConfigured || !supabase) return;
       setIsCloudSyncing(true);
       try {
+        // Fetch Regions
+        const { data: cloudRegions } = await supabase.from('regions').select('*');
+        if (cloudRegions && cloudRegions.length > 0) {
+          const regionNames = cloudRegions.map(r => r.name).filter(Boolean);
+          setRegions(prev => {
+            const set = new Set([...INITIAL_REGIONS, ...prev, ...regionNames]);
+            return Array.from(set);
+          });
+        }
+
         // Fetch Consultants (Merge without stripping roles or losing local staff)
         const { data: cloudConsultants } = await supabase.from('consultants').select('*');
         if (cloudConsultants && cloudConsultants.length > 0) {
@@ -180,10 +190,13 @@ export function AppProvider({ children }) {
                 name: cloud.name ? cloud.name.toUpperCase().trim() : local.name,
                 state: cloud.state || local.state,
                 city: cloud.city || local.city,
+                cep: cloud.cep || local.cep || '',
+                address: cloud.address || local.address || `${cloud.name} - ${cloud.city}/${cloud.state}`,
                 franchisee: cloud.franchisee ? cloud.franchisee.toUpperCase().trim() : local.franchisee,
                 locationType: cloud.location_type || cloud.locationType || local.locationType || 'Shopping',
                 phone: cloud.phone ? formatPhoneNumber(cloud.phone) : local.phone,
-                email: (cloud.email || local.email || '').toLowerCase().trim()
+                email: (cloud.email || local.email || '').toLowerCase().trim(),
+                consultantId: cloud.consultant_id || cloud.consultantId || local.consultantId || null
               };
             });
             cloudStores.forEach(s => {
@@ -194,13 +207,14 @@ export function AppProvider({ children }) {
                   name: (s.name || '').toUpperCase().trim(),
                   state: s.state || 'SP',
                   city: s.city || '',
+                  cep: s.cep || '',
                   franchisee: (s.franchisee || '').toUpperCase().trim(),
                   locationType: s.location_type || s.locationType || 'Shopping',
-                  address: `${s.name} - ${s.city}/${s.state}`,
+                  address: s.address || `${s.name} - ${s.city}/${s.state}`,
                   phone: formatPhoneNumber(s.phone),
                   email: (s.email || '').toLowerCase().trim(),
-                  consultantId: s.consultantId || null,
-                  ratingScore: s.ratingScore || 8.5,
+                  consultantId: s.consultant_id || s.consultantId || null,
+                  ratingScore: s.rating_score || s.ratingScore || 8.5,
                   status: s.status || 'Ativa'
                 });
               }
@@ -297,6 +311,31 @@ export function AppProvider({ children }) {
           diagnostics: newVisit.diagnostics,
           signatures: newVisit.signatures || null
         }]);
+
+        // Sync individual action_plans for SQL dashboards & analytics
+        if (Array.isArray(newVisit.diagnostics) && newVisit.diagnostics.length > 0) {
+          const actionsRows = newVisit.diagnostics
+            .filter(d => d.actionPlan && d.actionPlan.what)
+            .map(d => ({
+              id: 'act-' + (d.id || Date.now() + '-' + Math.random().toString(36).substr(2, 4)),
+              visit_id: newVisit.id,
+              store_id: newVisit.storeId,
+              consultant_id: newVisit.consultantId,
+              topic_id: d.categoryId || null,
+              subtopic_id: d.subproblemId || null,
+              subtopic_title: d.subproblemTitle || d.problem || 'Ação Corretiva',
+              severity: d.severity || 'Médio',
+              action_what: d.actionPlan.what,
+              action_who: d.actionPlan.who,
+              deadline: d.actionPlan.deadline,
+              status: d.actionPlan.status || 'Não Iniciado',
+              notes: d.notes || null,
+              photos: d.photos || []
+            }));
+          if (actionsRows.length > 0) {
+            await supabase.from('action_plans').insert(actionsRows);
+          }
+        }
       } catch (e) {
         console.error('Supabase visit sync error:', e);
       }
@@ -336,6 +375,7 @@ export function AppProvider({ children }) {
     if (isSupabaseConfigured && supabase) {
       try {
         await supabase.from('visits').delete().eq('id', visitId);
+        await supabase.from('action_plans').delete().eq('visit_id', visitId);
       } catch (e) {
         console.error('Supabase visit delete error:', e);
       }
@@ -383,6 +423,32 @@ export function AppProvider({ children }) {
           general_notes: updatedObj.generalNotes,
           diagnostics: updatedObj.diagnostics
         }).eq('id', visitId);
+
+        // Sync individual action plans
+        if (Array.isArray(updatedObj.diagnostics)) {
+          await supabase.from('action_plans').delete().eq('visit_id', visitId);
+          const actionsRows = updatedObj.diagnostics
+            .filter(d => d.actionPlan && d.actionPlan.what)
+            .map(d => ({
+              id: 'act-' + (d.id || Date.now() + '-' + Math.random().toString(36).substr(2, 4)),
+              visit_id: visitId,
+              store_id: updatedObj.storeId,
+              consultant_id: updatedObj.consultantId,
+              topic_id: d.categoryId || null,
+              subtopic_id: d.subproblemId || null,
+              subtopic_title: d.subproblemTitle || d.problem || 'Ação Corretiva',
+              severity: d.severity || 'Médio',
+              action_what: d.actionPlan.what,
+              action_who: d.actionPlan.who,
+              deadline: d.actionPlan.deadline,
+              status: d.actionPlan.status || 'Não Iniciado',
+              notes: d.notes || null,
+              photos: d.photos || []
+            }));
+          if (actionsRows.length > 0) {
+            await supabase.from('action_plans').insert(actionsRows);
+          }
+        }
       } catch (e) {
         console.error('Supabase visit update error:', e);
       }
@@ -458,6 +524,10 @@ export function AppProvider({ children }) {
           region: newConsultant.region,
           phone: newConsultant.phone,
           email: newConsultant.email,
+          role: newConsultant.role,
+          reports_to: newConsultant.reportsTo,
+          photo_url: newConsultant.photoUrl,
+          active: newConsultant.active,
           assigned_stores: newConsultant.assignedStores
         }]);
       } catch (e) {
@@ -499,7 +569,11 @@ export function AppProvider({ children }) {
           name: updatedObj.name,
           region: updatedObj.region,
           email: updatedObj.email,
-          phone: updatedObj.phone
+          phone: updatedObj.phone,
+          role: updatedObj.role,
+          reports_to: updatedObj.reportsTo,
+          photo_url: updatedObj.photoUrl,
+          active: updatedObj.active
         }).eq('id', consultantId);
       } catch (e) {
         console.error('Supabase consultant update error:', e);
@@ -552,11 +626,19 @@ export function AppProvider({ children }) {
       setSelectedStaffForProfile(prev => ({ ...prev }));
     }
 
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('consultants').update({ reports_to: leaderId }).in('id', subordinateIds);
+      } catch (e) {
+        console.error('Supabase assign subordinates error:', e);
+      }
+    }
+
     showToast('Liderados atualizados com sucesso na hierarquia!');
   };
 
   // Add Region
-  const addRegion = (newRegionName) => {
+  const addRegion = async (newRegionName) => {
     const trimmed = newRegionName.trim();
     if (!trimmed) return false;
     if (regions.some(r => r.toLowerCase() === trimmed.toLowerCase())) {
@@ -565,11 +647,19 @@ export function AppProvider({ children }) {
     }
     setRegions(prev => [...prev, trimmed]);
     showToast(`Região "${trimmed}" adicionada com sucesso!`);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('regions').insert([{ id: 'reg-' + Date.now(), name: trimmed }]);
+      } catch (e) {
+        console.error('Supabase region insert error:', e);
+      }
+    }
     return true;
   };
 
   // Update Region
-  const updateRegion = (oldName, newName) => {
+  const updateRegion = async (oldName, newName) => {
     const trimmedOld = oldName.trim();
     const trimmedNew = newName.trim();
     if (!trimmedNew || trimmedOld === trimmedNew) return false;
@@ -586,9 +676,12 @@ export function AppProvider({ children }) {
     }));
 
     if (isSupabaseConfigured && supabase) {
-      supabase.from('consultants').update({ region: trimmedNew }).eq('region', trimmedOld)
-        .then(() => {})
-        .catch(e => console.error('Error updating region in Supabase:', e));
+      try {
+        await supabase.from('regions').update({ name: trimmedNew }).eq('name', trimmedOld);
+        await supabase.from('consultants').update({ region: trimmedNew }).eq('region', trimmedOld);
+      } catch (e) {
+        console.error('Error updating region in Supabase:', e);
+      }
     }
 
     showToast(`Região atualizada para "${trimmedNew}"!`);
@@ -596,10 +689,18 @@ export function AppProvider({ children }) {
   };
 
   // Delete Region
-  const deleteRegion = (regionName) => {
+  const deleteRegion = async (regionName) => {
     const trimmed = regionName.trim();
     setRegions(prev => prev.filter(r => r !== trimmed));
     showToast(`Região "${trimmed}" removida.`);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('regions').delete().eq('name', trimmed);
+      } catch (e) {
+        console.error('Supabase region delete error:', e);
+      }
+    }
     return true;
   };
 
@@ -610,8 +711,12 @@ export function AppProvider({ children }) {
       code: storeData.code.toUpperCase().trim(),
       name: storeData.name.toUpperCase().trim(),
       city: storeData.city || '',
-      state: storeData.state || 'RJ',
+      state: storeData.state || 'SP',
+      cep: storeData.cep || '',
       locationType: storeData.locationType || 'Shopping',
+      franchisee: (storeData.franchisee || '').toUpperCase().trim(),
+      phone: storeData.phone || '',
+      email: (storeData.email || '').toLowerCase().trim(),
       address: storeData.address || `${storeData.name} - ${storeData.city}/${storeData.state}`,
       consultantId: storeData.consultantId || null,
       ratingScore: 8.5,
@@ -638,7 +743,15 @@ export function AppProvider({ children }) {
           name: newStore.name,
           state: newStore.state,
           city: newStore.city,
-          location_type: newStore.locationType
+          cep: newStore.cep,
+          address: newStore.address,
+          franchisee: newStore.franchisee,
+          location_type: newStore.locationType,
+          phone: newStore.phone,
+          email: newStore.email,
+          consultant_id: newStore.consultantId,
+          rating_score: newStore.ratingScore,
+          status: newStore.status
         }]);
       } catch (e) {
         console.error('Supabase store insert error:', e);
@@ -664,6 +777,7 @@ export function AppProvider({ children }) {
           name: updatedData.name ? updatedData.name.toUpperCase().trim() : s.name,
           city: updatedData.city !== undefined ? updatedData.city.trim() : s.city,
           state: updatedData.state || s.state,
+          cep: updatedData.cep !== undefined ? updatedData.cep : s.cep,
           locationType: updatedData.locationType || s.locationType,
           franchisee: updatedData.franchisee !== undefined ? updatedData.franchisee.toUpperCase().trim() : s.franchisee,
           phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : s.phone,
@@ -697,7 +811,13 @@ export function AppProvider({ children }) {
           name: updatedObj.name,
           state: updatedObj.state,
           city: updatedObj.city,
-          location_type: updatedObj.locationType
+          cep: updatedObj.cep,
+          address: updatedObj.address,
+          franchisee: updatedObj.franchisee,
+          location_type: updatedObj.locationType,
+          phone: updatedObj.phone,
+          email: updatedObj.email,
+          consultant_id: updatedObj.consultantId
         }).eq('id', storeId);
       } catch (e) {
         console.error('Supabase store update error:', e);
