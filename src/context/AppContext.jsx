@@ -969,9 +969,27 @@ export function AppProvider({ children }) {
         }
         return s;
       }));
+    }
 
-      if (isSupabaseConfigured && supabase) {
-        try {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        // 1. Salva na tabela dedicada franchisees
+        await supabase.from('franchisees').upsert({
+          id: newFranchisee.id,
+          name: newFranchisee.name,
+          email: newFranchisee.email,
+          phone: newFranchisee.phone
+        });
+
+        // 2. Salva os vínculos na tabela store_franchisees
+        if (newFranchisee.assignedStoreIds.length > 0) {
+          const links = newFranchisee.assignedStoreIds.map(sId => ({
+            store_id: sId,
+            franchisee_id: newFranchisee.id
+          }));
+          await supabase.from('store_franchisees').upsert(links);
+
+          // 3. Atualiza os campos denormalizados na tabela stores
           for (const sId of newFranchisee.assignedStoreIds) {
             const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
             await supabase.from('stores').update({
@@ -980,9 +998,9 @@ export function AppProvider({ children }) {
               phone: partners[0]?.phone || ''
             }).eq('id', sId);
           }
-        } catch (e) {
-          console.error('Erro ao sincronizar lojas do franqueado no Supabase:', e);
         }
+      } catch (e) {
+        console.error('Erro ao sincronizar franqueado no Supabase:', e);
       }
     }
 
@@ -1022,18 +1040,36 @@ export function AppProvider({ children }) {
       return s;
     }));
 
-    if (isSupabaseConfigured && supabase && newStoreIds.length > 0) {
+    if (isSupabaseConfigured && supabase) {
       try {
-        for (const sId of newStoreIds) {
-          const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
-          await supabase.from('stores').update({
-            franchisee: partners.map(p => p.name).join(' / '),
-            email: partners.map(p => p.email).filter(Boolean).join(', '),
-            phone: partners[0]?.phone || ''
-          }).eq('id', sId);
+        // 1. Atualiza dados do franqueado
+        await supabase.from('franchisees').upsert({
+          id: id,
+          name: updatedObj.name,
+          email: updatedObj.email,
+          phone: updatedObj.phone
+        });
+
+        // 2. Atualiza vínculos de lojas
+        await supabase.from('store_franchisees').delete().eq('franchisee_id', id);
+        if (newStoreIds.length > 0) {
+          const links = newStoreIds.map(sId => ({
+            store_id: sId,
+            franchisee_id: id
+          }));
+          await supabase.from('store_franchisees').upsert(links);
+
+          for (const sId of newStoreIds) {
+            const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
+            await supabase.from('stores').update({
+              franchisee: partners.map(p => p.name).join(' / '),
+              email: partners.map(p => p.email).filter(Boolean).join(', '),
+              phone: partners[0]?.phone || ''
+            }).eq('id', sId);
+          }
         }
       } catch (e) {
-        console.error('Erro ao atualizar lojas do franqueado no Supabase:', e);
+        console.error('Erro ao atualizar franqueado no Supabase:', e);
       }
     }
 
@@ -1061,18 +1097,23 @@ export function AppProvider({ children }) {
       return s;
     }));
 
-    if (isSupabaseConfigured && supabase && affectedStoreIds.length > 0) {
+    if (isSupabaseConfigured && supabase) {
       try {
-        for (const sId of affectedStoreIds) {
-          const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
-          await supabase.from('stores').update({
-            franchisee: partners.map(p => p.name).join(' / '),
-            email: partners.map(p => p.email).filter(Boolean).join(', '),
-            phone: partners[0]?.phone || ''
-          }).eq('id', sId);
+        await supabase.from('store_franchisees').delete().eq('franchisee_id', id);
+        await supabase.from('franchisees').delete().eq('id', id);
+
+        if (affectedStoreIds.length > 0) {
+          for (const sId of affectedStoreIds) {
+            const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
+            await supabase.from('stores').update({
+              franchisee: partners.map(p => p.name).join(' / '),
+              email: partners.map(p => p.email).filter(Boolean).join(', '),
+              phone: partners[0]?.phone || ''
+            }).eq('id', sId);
+          }
         }
       } catch (e) {
-        console.error('Erro ao atualizar Supabase após exclusão de franqueado:', e);
+        console.error('Erro ao excluir franqueado no Supabase:', e);
       }
     }
 

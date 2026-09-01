@@ -75,16 +75,25 @@ src/
 
 ---
 
-## 📌 LEMBRETE: Configuração de Domínio para Envio Global de E-mails
+---
 
-> [!IMPORTANT]
-> **Modo Atual (Desenvolvimento / Teste):**
-> O Resend no plano gratuito permite envios de teste para a conta cadastrada (`lhukas@gmail.com`).
-> 
-> **Passo para Liberar Envio para Qualquer E-mail do Mundo (`@infodesk.net.br`, `@spoleto.com.br`, etc.):**
-> 1. Acesse o painel do **[Resend](https://resend.com/domains)**.
-> 2. Clique em **Add Domain** e insira o domínio corporativo desejado (ex: `infodesk.net.br` ou `spoleto.com.br`).
-> 3. Adicione as 3 entradas DNS fornecidas (DKIM, SPF, MX) no provedor do seu domínio (Registro.br, Cloudflare, GoDaddy, etc.).
-> 4. Após a validação (instantânea ou até 10 min), atualize o remetente em `api/cron-sla.js` e `src/services/notificationService.js` para `notificacoes@seudominio.com.br`.
-> 5. A partir desse momento, os e-mails sairão automaticamente para todos os franqueados e gerentes da rede mundial!
+## 5. Estrutura Oficial do Banco de Dados (Supabase / PostgreSQL)
+
+O arquivo [`supabase_schema_update.sql`](file:///c:/Vibecoding/spoleto-radar/supabase_schema_update.sql) contém toda a estrutura relacional atualizada do Spoleto Radar.
+
+### 📐 Tabelas Principais:
+1. **`stores`**: Cadastro completo das 409 unidades com Código RP, endereço, CEP, consultor e notas.
+2. **`franchisees`**: Cadastro oficial dos franqueados (Nome em Caixa Alta, E-mail em Minúsculas e WhatsApp).
+3. **`store_franchisees`**: Tabela pivô de relacionamento N:N (suporte completo a múltiplos sócios/franqueados por loja e franqueados com múltiplas lojas).
+4. **`consultants`**: Consultores, Gerentes Regionais (Rodrigo, André, Anaketlim) e Diretoria com hierarquia de liderança.
+5. **`visits`**: Visitas técnicas, diagnósticos dos 12 tópicos operacionais, prazos e assinaturas.
+6. **`categories`**: Os 12 tópicos operacionais e seus subproblemas.
+7. **`notifications`**: Log de auditoria da Régua de SLA e alertas do sininho em tempo real.
+
+### ⚡ Como Executar a Atualização no Supabase:
+1. Abra o painel do seu projeto Supabase no **[SQL Editor](https://supabase.com/dashboard/project/axcabkqjojhaxfltebgu/sql)**.
+2. Cole o conteúdo de [`supabase_schema_update.sql`](file:///c:/Vibecoding/spoleto-radar/supabase_schema_update.sql).
+3. Clique em **RUN (Executar)**.
+4. O script criará as tabelas relacionais, aplicará as políticas RLS e criará os índices de performance para consultas ultra-rápidas.
+
 
