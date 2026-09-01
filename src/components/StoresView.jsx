@@ -27,9 +27,11 @@ import {
   Users,
   Building2,
   Handshake,
-  RotateCcw
+  RotateCcw,
+  Compass
 } from 'lucide-react';
 import FranchiseesView from './FranchiseesView';
+import NetworkMapView from './NetworkMapView';
 
 export default function StoresView() {
   const { 
@@ -45,7 +47,7 @@ export default function StoresView() {
     setSelectedVisitForReport,
     setSelectedStoreForProfile 
   } = useApp();
-  const [activeStoreTab, setActiveStoreTab] = useState('stores'); // 'stores' | 'franchisees'
+  const [activeStoreTab, setActiveStoreTab] = useState('stores'); // 'stores' | 'map' | 'franchisees'
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('Todos');
   const [locationTypeFilter, setLocationTypeFilter] = useState('Todos');
@@ -342,6 +344,28 @@ export default function StoresView() {
 
         <button
           type="button"
+          onClick={() => setActiveStoreTab('map')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md)',
+            border: activeStoreTab === 'map' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+            background: activeStoreTab === 'map' ? 'var(--primary-brown)' : '#FFFFFF',
+            color: activeStoreTab === 'map' ? '#FFFFFF' : 'var(--text-main)',
+            fontWeight: 800,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            boxShadow: activeStoreTab === 'map' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Compass size={16} /> Mapa da Rede (Brasil)
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveStoreTab('franchisees')}
           style={{
             padding: '0.55rem 1.15rem',
@@ -363,7 +387,9 @@ export default function StoresView() {
         </button>
       </div>
 
-      {activeStoreTab === 'franchisees' ? (
+      {activeStoreTab === 'map' ? (
+        <NetworkMapView />
+      ) : activeStoreTab === 'franchisees' ? (
         <FranchiseesView />
       ) : (
         <>
