@@ -63,11 +63,15 @@ export default function VisitReportModal() {
 
   const reportRef = useRef(null);
 
-  if (!selectedVisitForReport) return null;
+  if (!selectedVisitForReport || typeof selectedVisitForReport !== 'object' || typeof selectedVisitForReport.then === 'function') {
+    return null;
+  }
 
   const visit = selectedVisitForReport;
-  const store = stores.find(s => s.id === visit.storeId);
-  const consultant = consultants.find(c => c.id === visit.consultantId);
+  if (!visit || !visit.id) return null;
+
+  const store = stores.find(s => s.id === visit.storeId) || { name: 'Unidade Spoleto', code: 'SPO', city: '', state: 'BR' };
+  const consultant = consultants.find(c => c.id === visit.consultantId) || { name: 'Consultor de Negócios', region: 'Nacional' };
 
   // Helper to generate PDF Blob
   const createPdfBlob = async () => {

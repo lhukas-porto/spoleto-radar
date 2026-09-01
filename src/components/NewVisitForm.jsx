@@ -294,7 +294,7 @@ export default function NewVisitForm() {
     updateActionPlanField(diagId, 'action', actionText);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!selectedStoreId) {
@@ -336,11 +336,12 @@ export default function NewVisitForm() {
     };
 
     if (editingVisit) {
-      updateVisit(editingVisit.id, visitPayload);
+      const updated = await updateVisit(editingVisit.id, visitPayload);
+      setSelectedVisitForReport(updated || { id: editingVisit.id, ...visitPayload });
       setActiveTab('reports');
     } else {
-      const savedVisit = addVisit(visitPayload);
-      setSelectedVisitForReport(savedVisit);
+      const savedVisit = await addVisit(visitPayload);
+      setSelectedVisitForReport(savedVisit || { id: 'visit-' + Date.now(), ...visitPayload });
       setActiveTab('reports');
     }
   };
