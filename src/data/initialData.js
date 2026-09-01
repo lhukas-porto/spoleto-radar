@@ -609,6 +609,61 @@ export const INITIAL_CONSULTANTS = [
       "store-409"
     ],
     "storesCount": 30
+  },
+  {
+    "id": "staff-1788284716654",
+    "name": "RAFAEL PARDO",
+    "email": "rafael.pardo@grupotrigo.com.br",
+    "phone": "",
+    "region": "Nacional / Brasil",
+    "role": "DIRETORIA",
+    "reportsTo": null,
+    "photoUrl": null,
+    "active": true
+  },
+  {
+    "id": "staff-1788278683147",
+    "name": "LILIANE TAHAN CURY TEIXEIRA DE RESENDE",
+    "email": "liliane.cury@spoleto.com.br",
+    "phone": "(61) 98134-0653",
+    "region": "Nacional / Brasil",
+    "role": "GERENTE_NACIONAL",
+    "reportsTo": "staff-1788284716654",
+    "photoUrl": null,
+    "active": true
+  },
+  {
+    "id": "staff-1788278300963",
+    "name": "ANAKETLIM WESTARB CRUZ",
+    "email": "anaketlim.cruz@spoleto.com.br",
+    "phone": "(21) 97283-4285",
+    "region": "Norte & Nordeste (AM, PA, AP, RR, RO, MA, PI)",
+    "role": "GERENTE_REGIONAL",
+    "reportsTo": "staff-1788278683147",
+    "photoUrl": null,
+    "active": true
+  },
+  {
+    "id": "staff-gr-rodrigo-marques",
+    "name": "RODRIGO SOUSA MARQUES",
+    "email": "rodrigo.marques@spoleto.com.br",
+    "phone": "(11) 99830-2382",
+    "region": "SP Capital, Campinas & Região",
+    "role": "GERENTE_REGIONAL",
+    "reportsTo": "staff-1788278683147",
+    "photoUrl": null,
+    "active": true
+  },
+  {
+    "id": "staff-gr-andre-batista",
+    "name": "ANDRÉ LUIZ LIMA BATISTA",
+    "email": "andre.batista@spoleto.com.br",
+    "phone": "(21) 99916-8362",
+    "region": "RJ Capital & Sul Fluminense",
+    "role": "GERENTE_REGIONAL",
+    "reportsTo": "staff-1788278683147",
+    "photoUrl": null,
+    "active": true
   }
 ];
 
