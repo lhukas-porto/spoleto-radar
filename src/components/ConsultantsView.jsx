@@ -10,7 +10,6 @@ import {
   Plus, 
   Calendar,
   X,
-  CheckSquare,
   Square,
   Search,
   Check,
@@ -26,8 +25,7 @@ import {
   Award,
   Layers,
   Building2,
-  User,
-  Sliders
+  User
 } from 'lucide-react';
 import AvatarCropModal from './AvatarCropModal';
 

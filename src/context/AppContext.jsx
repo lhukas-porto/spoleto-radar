@@ -128,6 +128,17 @@ export function AppProvider({ children }) {
   const [toastMessage, setToastMessage] = useState(null);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
 
+  // Cleanup deprecated legacy LocalStorage keys
+  useEffect(() => {
+    try {
+      ['trigo_franchisees_v1', 'trigo_franchisees_v2', 'trigo_franchisees_v3'].forEach(k => {
+        localStorage.removeItem(k);
+      });
+    } catch (e) {
+      // Ignore
+    }
+  }, []);
+
   // Load from Supabase on start if available
   useEffect(() => {
     async function loadFromSupabase() {

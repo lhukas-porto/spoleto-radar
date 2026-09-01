@@ -97,7 +97,7 @@ export default function App() {
           gap: '0.6rem',
           borderLeft: '4px solid var(--primary-red)'
         }}>
-          <span>{toastMessage.msg}</span>
+          <span>{typeof toastMessage === 'string' ? toastMessage : toastMessage?.msg || JSON.stringify(toastMessage)}</span>
         </div>
       )}
     </div>

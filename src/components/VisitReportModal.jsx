@@ -24,16 +24,12 @@ import {
   MessageSquare, 
   FileDown, 
   Loader2, 
-  Paperclip, 
-  Info, 
   PenTool, 
   ShieldCheck, 
   Camera, 
   ZoomIn, 
   Edit3, 
-  Trash2,
-  ChevronDown,
-  MoreVertical
+  Trash2
 } from 'lucide-react';
 
 function getVisitTimeFormatted(startTime, endTime) {
