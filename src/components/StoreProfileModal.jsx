@@ -417,31 +417,31 @@ export default function StoreProfileModal({ store, onClose }) {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
                 <div style={{ 
                   background: isScoreImproving ? '#ECFDF5' : isScoreDeclining ? '#FEF2F2' : '#EFF6FF', 
-                  border: isScoreImproving ? '1px solid #10B981' : isScoreDeclining ? '1px solid #EF4444' : '1px solid #3B82F6', 
+                  border: isScoreImproving ? '1.5px solid #10B981' : isScoreDeclining ? '1.5px solid #EF4444' : '1.5px solid #3B82F6', 
                   color: isScoreImproving ? '#065F46' : isScoreDeclining ? '#991B1B' : '#1E40AF',
-                  padding: '0.25rem 0.65rem',
+                  padding: '0.35rem 0.85rem',
                   borderRadius: 'var(--radius-full)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.84rem',
                   fontWeight: 800,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.3rem'
+                  gap: '0.35rem'
                 }}>
                   {isScoreImproving ? '🚀 Em Ascensão (+ ' + scoreDelta + ' pts)' : isScoreDeclining ? '⚠️ Em Queda (' + scoreDelta + ' pts)' : '⚖️ Estável (' + scoreDelta + ' pts)'}
                 </div>
 
-                <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 700 }}>
-                  Pico: <strong style={{ color: 'var(--accent-gold)' }}>{maxScoreEver}</strong> &bull; Média: <strong style={{ color: 'var(--primary-brown)' }}>{avgScorePeriod}</strong>
+                <div style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 800 }}>
+                  Pico: <strong style={{ color: 'var(--accent-gold)', fontSize: '0.95rem' }}>{maxScoreEver}</strong> &bull; Média: <strong style={{ color: 'var(--primary-brown)', fontSize: '0.95rem' }}>{avgScorePeriod}</strong>
                 </div>
               </div>
             </div>
 
-            <div style={{ width: '100%', height: '140px', position: 'relative' }}>
+            <div style={{ width: '100%', height: '160px', position: 'relative' }}>
               <svg 
-                viewBox="0 0 600 120" 
+                viewBox="0 0 600 135" 
                 style={{ width: '100%', height: '100%', overflow: 'visible' }}
               >
                 <defs>
@@ -451,20 +451,20 @@ export default function StoreProfileModal({ store, onClose }) {
                   </linearGradient>
                 </defs>
 
-                <line x1="40" y1="20" x2="570" y2="20" stroke="#E2D9D2" strokeWidth="1" strokeDasharray="3,3" />
-                <text x="32" y="23" textAnchor="end" fontSize="9" fill="#94A3B8" fontWeight="700">10</text>
+                <line x1="40" y1="20" x2="570" y2="20" stroke="#E2D9D2" strokeWidth="1.5" strokeDasharray="4,4" />
+                <text x="30" y="24" textAnchor="end" fontSize="11" fill="#64748B" fontWeight="800">10.0</text>
 
-                <line x1="40" y1="60" x2="570" y2="60" stroke="#E2D9D2" strokeWidth="1" strokeDasharray="3,3" />
-                <text x="32" y="63" textAnchor="end" fontSize="9" fill="#94A3B8" fontWeight="700">8.0</text>
+                <line x1="40" y1="60" x2="570" y2="60" stroke="#E2D9D2" strokeWidth="1.5" strokeDasharray="4,4" />
+                <text x="30" y="64" textAnchor="end" fontSize="11" fill="#64748B" fontWeight="800">8.0</text>
 
-                <line x1="40" y1="100" x2="570" y2="100" stroke="#E2D9D2" strokeWidth="1" strokeDasharray="3,3" />
-                <text x="32" y="103" textAnchor="end" fontSize="9" fill="#94A3B8" fontWeight="700">6.0</text>
+                <line x1="40" y1="100" x2="570" y2="100" stroke="#E2D9D2" strokeWidth="1.5" strokeDasharray="4,4" />
+                <text x="30" y="104" textAnchor="end" fontSize="11" fill="#64748B" fontWeight="800">6.0</text>
 
                 {(() => {
                   if (!scoreHistorySeries || scoreHistorySeries.length === 0) return null;
 
-                  const paddingX = 70;
-                  const availableWidth = 500;
+                  const paddingX = 80;
+                  const availableWidth = 480;
                   const stepX = scoreHistorySeries.length > 1 ? (availableWidth / (scoreHistorySeries.length - 1)) : availableWidth / 2;
 
                   const points = scoreHistorySeries.map((item, idx) => {
@@ -478,7 +478,7 @@ export default function StoreProfileModal({ store, onClose }) {
 
                   const lastPoint = points[points.length - 1];
                   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-                  const areaPath = `${linePath} L ${lastPoint.x} 110 L ${points[0].x} 110 Z`;
+                  const areaPath = `${linePath} L ${lastPoint.x} 115 L ${points[0].x} 115 Z`;
 
                   return (
                     <g>
@@ -487,7 +487,7 @@ export default function StoreProfileModal({ store, onClose }) {
                         d={linePath} 
                         fill="none" 
                         stroke="var(--primary-brown)" 
-                        strokeWidth="3.5" 
+                        strokeWidth="4" 
                         strokeLinecap="round" 
                         strokeLinejoin="round" 
                       />
@@ -496,24 +496,25 @@ export default function StoreProfileModal({ store, onClose }) {
                         return (
                           <g key={i} transform={`translate(${p.x}, ${p.y})`}>
                             <circle 
-                              r={isLast ? "7" : "5"} 
+                              r={isLast ? "8" : "6"} 
                               fill={isLast ? "var(--accent-gold)" : "#FFFFFF"} 
                               stroke="var(--primary-brown)" 
-                              strokeWidth="2.5" 
+                              strokeWidth="3" 
                             />
                             <rect 
-                              x="-14" 
-                              y="-22" 
-                              width="28" 
-                              height="14" 
-                              rx="3" 
+                              x="-18" 
+                              y="-26" 
+                              width="36" 
+                              height="18" 
+                              rx="4" 
                               fill="var(--primary-brown)" 
+                              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
                             />
                             <text 
                               x="0" 
-                              y="-12" 
+                              y="-13" 
                               textAnchor="middle" 
-                              fontSize="9" 
+                              fontSize="11" 
                               fontWeight="900" 
                               fill="#FFFFFF"
                             >
@@ -521,12 +522,12 @@ export default function StoreProfileModal({ store, onClose }) {
                             </text>
                             <text 
                               x="0" 
-                              y="110" 
-                              transform={`translate(0, ${110 - p.y})`}
+                              y="115" 
+                              transform={`translate(0, ${115 - p.y})`}
                               textAnchor="middle" 
-                              fontSize="9" 
-                              fontWeight="700" 
-                              fill="#64748B"
+                              fontSize="11" 
+                              fontWeight="800" 
+                              fill="#475569"
                             >
                               {new Date(p.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
                             </text>

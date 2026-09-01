@@ -212,31 +212,31 @@ export default function NetworkMapView() {
         </div>
 
         {/* Legenda de Nível de Maturidade */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)', flexWrap: 'wrap', fontSize: '0.8rem' }}>
-          <span style={{ fontWeight: 700, color: 'var(--text-muted)' }}>Média de Auditoria:</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)', flexWrap: 'wrap', fontSize: '0.92rem' }}>
+          <span style={{ fontWeight: 800, color: 'var(--text-main)' }}>Legenda do Mapa:</span>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#DCFCE7', border: '1px solid #16A34A', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#14532D' }}>Excelente (&ge; 8.5)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#DCFCE7', border: '2px solid #16A34A', display: 'inline-block' }} />
+            <span style={{ fontWeight: 700, color: '#14532D' }}>Excelente (&ge; 8.5)</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#FEF3C7', border: '1px solid #D97706', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#78350F' }}>Atenção (7.5 - 8.4)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#FEF3C7', border: '2px solid #D97706', display: 'inline-block' }} />
+            <span style={{ fontWeight: 700, color: '#78350F' }}>Atenção (7.5 - 8.4)</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#FEE2E2', border: '1px solid #DC2626', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#7F1D1D' }}>Crítico (&lt; 7.5)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#FEE2E2', border: '2px solid #DC2626', display: 'inline-block' }} />
+            <span style={{ fontWeight: 700, color: '#7F1D1D' }}>Crítico (&lt; 7.5)</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#E2E8F0', border: '1px solid #CBD5E1', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#64748B' }}>Sem Lojas</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#E2E8F0', border: '2px solid #CBD5E1', display: 'inline-block' }} />
+            <span style={{ fontWeight: 700, color: '#64748B' }}>Sem Lojas</span>
           </div>
 
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
-            <span style={{ background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.3rem 0.75rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
+            <span style={{ background: '#FAF8F5', border: '1.5px solid var(--border-subtle)', padding: '0.4rem 0.9rem', borderRadius: 'var(--radius-full)', fontWeight: 800, color: 'var(--text-main)', fontSize: '0.88rem' }}>
               Rede: {stores.length} restaurantes em 21 estados
             </span>
           </div>
@@ -244,49 +244,51 @@ export default function NetworkMapView() {
       </div>
 
       {/* 2. Grid Principal: Mapa Cartográfico Vetorial à Esquerda + Drilldown da UF à Direita */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(380px, 1.35fr) minmax(320px, 1fr)', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(400px, 1.35fr) minmax(340px, 1fr)', gap: '1.5rem' }}>
         
         {/* Painel do Mapa Cartográfico SVG do Brasil */}
-        <div className="card-panel" style={{ padding: '1.25rem', position: 'relative', overflow: 'hidden', minHeight: '580px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div className="card-panel" style={{ padding: '1.25rem', position: 'relative', overflow: 'hidden', minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: 900, color: 'var(--primary-brown)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Cartografia Territorial do Brasil (IBGE)
             </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               Passe o mouse ou clique no estado
             </span>
           </div>
 
           {/* SVG Map Container */}
-          <div style={{ flex: 1, position: 'relative', width: '100%', minHeight: '500px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'radial-gradient(circle, #FAF8F5 0%, #EFE9E2 100%)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', padding: '0.75rem' }}>
+          <div style={{ flex: 1, position: 'relative', width: '100%', minHeight: '520px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'radial-gradient(circle, #FAF8F5 0%, #EFE9E2 100%)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', padding: '0.75rem' }}>
             
             {/* Tooltip Flutuante de Hover */}
             {activeHoverData && (
               <div style={{
                 position: 'absolute',
-                top: '12px',
-                left: '12px',
+                top: '14px',
+                left: '14px',
                 zIndex: 20,
                 background: 'rgba(61, 34, 20, 0.95)',
                 color: '#FFFFFF',
-                padding: '0.5rem 0.85rem',
+                padding: '0.65rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
                 pointerEvents: 'none',
-                backdropFilter: 'blur(4px)',
-                fontSize: '0.78rem',
-                border: '1px solid rgba(196, 154, 69, 0.4)'
+                backdropFilter: 'blur(6px)',
+                fontSize: '0.88rem',
+                border: '1.5px solid rgba(196, 154, 69, 0.6)'
               }}>
-                <div style={{ fontWeight: 800, color: 'var(--primary-gold)', fontSize: '0.84rem' }}>
+                <div style={{ fontWeight: 900, color: 'var(--primary-gold)', fontSize: '0.98rem' }}>
                   {activeHoverData.name} ({activeHoverData.uf})
                 </div>
-                <div>{activeHoverData.count} restaurantes &bull; Média: <strong>{activeHoverData.avgScore}</strong></div>
+                <div style={{ marginTop: '0.2rem' }}>
+                  <strong>{activeHoverData.count}</strong> restaurantes &bull; Média: <strong style={{ color: 'var(--primary-gold)' }}>{activeHoverData.avgScore}</strong>
+                </div>
               </div>
             )}
 
             <svg 
               viewBox="0 0 600 600" 
-              style={{ width: '100%', height: '100%', maxHeight: '540px', filter: 'drop-shadow(0 4px 10px rgba(93,56,38,0.1))' }}
+              style={{ width: '100%', height: '100%', maxHeight: '560px', filter: 'drop-shadow(0 4px 12px rgba(93,56,38,0.12))' }}
             >
               {/* Renderizar Polígonos de Cada Estado do Brasil */}
               {Object.entries(BRAZIL_SVG_STATES).map(([uf, stateInfo]) => {
@@ -302,8 +304,8 @@ export default function NetworkMapView() {
                     d={stateInfo.d}
                     fill={colorConfig.fill}
                     stroke={colorConfig.stroke}
-                    strokeWidth={colorConfig.strokeWidth}
-                    opacity={isRegionMatch ? 1 : 0.35}
+                    strokeWidth={isSelected ? 3 : isHovered ? 2.5 : 1.2}
+                    opacity={isRegionMatch ? 1 : 0.25}
                     style={{
                       cursor: 'pointer',
                       transition: 'all 0.18s ease-in-out',
@@ -327,6 +329,9 @@ export default function NetworkMapView() {
 
                 if (!stateInfo.center || !isRegionMatch) return null;
 
+                const badgeWidth = data.count >= 100 ? 44 : data.count >= 10 ? 38 : 32;
+                const badgeHeight = 24;
+
                 return (
                   <g 
                     key={`label-${uf}`}
@@ -336,38 +341,42 @@ export default function NetworkMapView() {
                     onMouseLeave={() => setHoveredUF(null)}
                     style={{ cursor: 'pointer', pointerEvents: 'all' }}
                   >
-                    {/* Badge Redondo para Estados com Lojas */}
                     {hasStores ? (
                       <g>
-                        {/* Glow ao selecionar */}
-                        {isSelected && (
-                          <circle 
-                            r="14" 
+                        {/* Glow ao selecionar ou hover */}
+                        {(isSelected || isHovered) && (
+                          <rect 
+                            x={-badgeWidth / 2 - 4} 
+                            y={-badgeHeight / 2 - 4} 
+                            width={badgeWidth + 8} 
+                            height={badgeHeight + 8} 
+                            rx="14" 
                             fill="none" 
                             stroke="var(--primary-gold)" 
-                            strokeWidth="2.5" 
-                            strokeDasharray="3,3"
+                            strokeWidth="3" 
+                            strokeDasharray="4,4"
                           />
                         )}
 
+                        {/* Pílula / Badge do Estado */}
                         <rect 
-                          x={data.count >= 10 ? "-15" : "-12"} 
-                          y="-10" 
-                          width={data.count >= 10 ? "30" : "24"} 
-                          height="20" 
-                          rx="4" 
+                          x={-badgeWidth / 2} 
+                          y={-badgeHeight / 2} 
+                          width={badgeWidth} 
+                          height={badgeHeight} 
+                          rx="6" 
                           fill={isSelected ? '#3D2214' : colorConfig.badgeBg}
-                          stroke="#FFFFFF" 
-                          strokeWidth="1.5"
-                          style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.18))' }}
+                          stroke={isSelected ? 'var(--primary-gold)' : '#FFFFFF'} 
+                          strokeWidth="2"
+                          style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))' }}
                         />
 
-                        {/* Sigla UF */}
+                        {/* Sigla UF (Linha Superior) */}
                         <text 
                           x="0" 
-                          y="-1" 
+                          y="-2" 
                           textAnchor="middle" 
-                          fontSize="7.5" 
+                          fontSize="9.5" 
                           fontWeight="900" 
                           fill="#FFFFFF"
                           style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -375,12 +384,12 @@ export default function NetworkMapView() {
                           {uf}
                         </text>
 
-                        {/* Quantidade de Lojas */}
+                        {/* Quantidade de Lojas (Linha Inferior) */}
                         <text 
                           x="0" 
-                          y="7" 
+                          y="8" 
                           textAnchor="middle" 
-                          fontSize="7.5" 
+                          fontSize="9.5" 
                           fontWeight="900" 
                           fill={isSelected ? 'var(--primary-gold)' : '#FFFFFF'}
                           style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -389,15 +398,15 @@ export default function NetworkMapView() {
                         </text>
                       </g>
                     ) : (
-                      // Apenas sigla discreta para estados sem loja
+                      // Sigla nítida para estados sem lojas
                       <text 
                         x="0" 
-                        y="3" 
+                        y="4" 
                         textAnchor="middle" 
-                        fontSize="8" 
-                        fontWeight="700" 
+                        fontSize="11" 
+                        fontWeight="800" 
                         fill="#64748B"
-                        opacity="0.8"
+                        opacity="0.9"
                         style={{ pointerEvents: 'none', userSelect: 'none' }}
                       >
                         {uf}
