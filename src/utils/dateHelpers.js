@@ -21,30 +21,22 @@ export function formatBrDate(dateStr) {
   }
 }
 
-// Format Brazilian Phone Number with mask: (XX) XXXXX-XXXX or (XX) XXXX-XXXX
+// Format Brazilian Phone/Mobile Number with mask: (XX) XXXXX-XXXX or (XX) XXXX-XXXX
 export function formatPhoneNumber(phone) {
   if (!phone) return '';
-  const cleaned = ('' + phone).replace(/\D/g, '');
-  if (!cleaned) return '';
+  const digits = ('' + phone).replace(/\D/g, '').slice(0, 11);
+  if (!digits) return '';
   
-  if (cleaned.length === 11) {
-    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
-  } else if (cleaned.length === 10) {
-    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
-  } else if (cleaned.length === 9) {
-    return `${cleaned.slice(0, 5)}-${cleaned.slice(5)}`;
-  } else if (cleaned.length === 8) {
-    return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
-  } else if (cleaned.length > 2) {
-    if (cleaned.length <= 6) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`;
-    } else if (cleaned.length <= 10) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
-    } else {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7, 11)}`;
-    }
+  if (digits.length <= 2) {
+    return `(${digits}`;
   }
-  return phone;
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
 }
 
 // Calculate the expected target Due Date of an Action Plan based on visitDate and deadline rule

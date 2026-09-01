@@ -440,10 +440,10 @@ export default function FranchiseesView() {
                   <input
                     type="text"
                     required
-                    placeholder="Ex: Carlos Alberto Silveira ou Grupo Alvorada Gastronomia"
+                    placeholder="EX: CARLOS ALBERTO SILVEIRA OU GRUPO ALVORADA"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    style={{ width: '100%', padding: '0.65rem 0.85rem' }}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value.toUpperCase() })}
+                    style={{ width: '100%', padding: '0.65rem 0.85rem', textTransform: 'uppercase' }}
                   />
                 </div>
 
@@ -458,8 +458,8 @@ export default function FranchiseesView() {
                       required
                       placeholder="franqueado@spoleto.com.br"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      style={{ width: '100%', padding: '0.65rem 0.85rem' }}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value.toLowerCase().trim() })}
+                      style={{ width: '100%', padding: '0.65rem 0.85rem', textTransform: 'lowercase' }}
                     />
                   </div>
 
@@ -468,9 +468,10 @@ export default function FranchiseesView() {
                       Celular / WhatsApp com DDD *
                     </label>
                     <input
-                      type="text"
+                      type="tel"
                       required
                       placeholder="(11) 98765-4321"
+                      maxLength={15}
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
                       style={{ width: '100%', padding: '0.65rem 0.85rem' }}
