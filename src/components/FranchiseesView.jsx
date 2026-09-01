@@ -115,20 +115,22 @@ export default function FranchiseesView() {
   const filteredFranchisees = franchisees.filter(f => {
     const q = searchTerm.toLowerCase().trim();
     if (!q) return true;
+    const cleanDigits = q.replace(/\D/g, '');
 
     const matchesFran = 
       f.name.toLowerCase().includes(q) ||
       (f.email || '').toLowerCase().includes(q) ||
-      (f.phone || '').includes(q);
+      (cleanDigits && (f.phone || '').replace(/\D/g, '').includes(cleanDigits));
 
     if (matchesFran) return true;
 
     // Check if any of his stores match
     const hisStores = stores.filter(s => (f.assignedStoreIds || []).includes(s.id));
     return hisStores.some(s => 
-      s.name.toLowerCase().includes(q) ||
-      s.code.toLowerCase().includes(q) ||
-      s.city.toLowerCase().includes(q)
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.code || '').toLowerCase().includes(q) ||
+      (s.city || '').toLowerCase().includes(q) ||
+      (s.state || '').toLowerCase().includes(q)
     );
   });
 

@@ -846,14 +846,26 @@ export default function StoresView() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Nome do Franqueado Responsável</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label className="form-label">Nome do Franqueado / Sócios</label>
+                    <span 
+                      onClick={() => { setEditingStore(null); setActiveStoreTab('franchisees'); }}
+                      style={{ fontSize: '0.72rem', color: 'var(--primary-brown)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 700 }}
+                      title="Ir para a aba de Franqueados para gestão de múltiplos sócios"
+                    >
+                      🤝 Gerenciar Sócios
+                    </span>
+                  </div>
                   <input 
                     type="text" 
                     value={editStoreForm.franchisee} 
                     onChange={(e) => setEditStoreForm({ ...editStoreForm, franchisee: e.target.value.toUpperCase() })} 
-                    placeholder="NOME COMPLETO DO FRANQUEADO" 
+                    placeholder="NOME COMPLETO DO FRANQUEADO OU SÓCIOS" 
                     style={{ textTransform: 'uppercase' }}
                   />
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                    Dica: Para vincular múltiplos sócios nesta loja, use a aba <strong>Franqueados da Rede</strong>.
+                  </span>
                 </div>
 
                 <div className="form-group">

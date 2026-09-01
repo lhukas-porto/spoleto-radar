@@ -15,6 +15,7 @@ import {
   Zap
 } from 'lucide-react';
 import { getVisitCriticalSla, formatBrDate } from '../utils/dateHelpers';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
 
 export default function NotificationBell() {
   const { 
@@ -29,6 +30,7 @@ export default function NotificationBell() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [filterType, setFilterType] = useState('all'); // 'all' | 'sla' | 'visits' | 'completed'
+  const [cloudNotifs, setCloudNotifs] = useState([]);
   const [readIds, setReadIds] = useState(() => {
     try {
       const saved = localStorage.getItem('spoleto_read_notifs');
@@ -49,6 +51,27 @@ export default function NotificationBell() {
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Fetch Cloud notifications log from Supabase
+  useEffect(() => {
+    async function loadCloudNotifs() {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data } = await supabase
+            .from('notifications')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(10);
+          if (data && data.length > 0) {
+            setCloudNotifs(data);
+          }
+        } catch (e) {
+          console.log('Error loading cloud notifications log:', e.message);
+        }
+      }
+    }
+    loadCloudNotifs();
   }, []);
 
   // Compute smart notifications from active visits and stores
@@ -132,6 +155,23 @@ export default function NotificationBell() {
           icon: <CheckCircle2 size={15} color="#065F46" />
         });
       }
+    });
+  });
+
+  // 4. Cloud Dispatches from Supabase (Histórico do Cron 08:00 AM)
+  cloudNotifs.forEach(cn => {
+    const store = stores.find(s => s.id === cn.store_id);
+    notifications.push({
+      id: `cloud-${cn.id}`,
+      type: 'sla',
+      level: (cn.type || '').includes('D0') || (cn.type || '').includes('ESCALATION') ? 'd-0' : 'd-1',
+      title: cn.title || 'Alerta de SLA Enviado',
+      description: `${cn.message || 'Disparo de e-mail'} • Para: ${cn.recipient_email || 'Franqueado / Rede'}`,
+      timestamp: cn.sent_at ? new Date(cn.sent_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '08:00',
+      targetStore: store,
+      badgeColor: '#10B981',
+      badgeBg: '#ECFDF5',
+      icon: <Zap size={15} color="#047857" />
     });
   });
 

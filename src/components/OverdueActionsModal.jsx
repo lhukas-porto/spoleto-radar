@@ -48,6 +48,7 @@ export default function OverdueActionsModal() {
     stores, 
     consultants, 
     categories, 
+    getStoreFranchisees,
     updateActionPlanStatus, 
     setSelectedVisitForReport,
     showToast 
@@ -246,11 +247,16 @@ export default function OverdueActionsModal() {
   const selectedVisitItem = notificationConfig?.visitItem;
   const isPrevention = notificationConfig?.type === 'prevention';
 
+  const storeFrans = selectedVisitItem ? (getStoreFranchisees ? getStoreFranchisees(selectedVisitItem.store?.id) : []) : [];
+  const combinedFranName = storeFrans.length > 0 
+    ? storeFrans.map(f => f.name).join(' / ') 
+    : (selectedVisitItem?.store?.franchisee || 'Franqueado Spoleto');
+
   const emailData = selectedVisitItem ? (
     isPrevention ? generateDMinusOnePreventionEmail({
       storeName: selectedVisitItem.store?.name || 'Spoleto',
       storeCode: selectedVisitItem.store?.code || 'SPO',
-      franchiseeName: selectedVisitItem.store?.franchisee || 'Franqueado',
+      franchiseeName: combinedFranName,
       consultantName: selectedVisitItem.consultant?.name,
       regionalManagerName: selectedVisitItem.regionalManager?.name,
       nationalManagerName: nationalManager?.name,
@@ -260,7 +266,7 @@ export default function OverdueActionsModal() {
     }) : generateDZeroCriticalEscalationEmail({
       storeName: selectedVisitItem.store?.name || 'Spoleto',
       storeCode: selectedVisitItem.store?.code || 'SPO',
-      franchiseeName: selectedVisitItem.store?.franchisee || 'Franqueado',
+      franchiseeName: combinedFranName,
       consultantName: selectedVisitItem.consultant?.name,
       regionalManagerName: selectedVisitItem.regionalManager?.name,
       nationalManagerName: nationalManager?.name,
@@ -276,10 +282,21 @@ export default function OverdueActionsModal() {
     const toRecipients = [];
     const ccRecipients = [];
 
-    // Franqueado como destinatário principal (TO)
-    if (includeFranchisee && selectedVisitItem.store?.email) {
-      toRecipients.push(selectedVisitItem.store.email);
-    } else if (includeConsultant && selectedVisitItem.consultant?.email) {
+    // Franqueados como destinatários principais (TO)
+    if (includeFranchisee) {
+      if (storeFrans.length > 0) {
+        storeFrans.forEach(f => {
+          if (f.email && !toRecipients.includes(f.email)) toRecipients.push(f.email);
+        });
+      } else if (selectedVisitItem.store?.email) {
+        selectedVisitItem.store.email.split(',').forEach(e => {
+          const clean = e.trim().toLowerCase();
+          if (clean && !toRecipients.includes(clean)) toRecipients.push(clean);
+        });
+      }
+    }
+
+    if (toRecipients.length === 0 && includeConsultant && selectedVisitItem.consultant?.email) {
       toRecipients.push(selectedVisitItem.consultant.email);
     }
 
@@ -299,7 +316,7 @@ export default function OverdueActionsModal() {
     const mailtoUrl = `mailto:${toStr}?subject=${encodeURIComponent(emailData.subject)}${ccParam}&body=${encodeURIComponent(emailData.body)}`;
     
     window.location.href = mailtoUrl;
-    showToast('🚀 E-mail aberto com Franqueado, Consultor, Gerente Regional e Gerente Nacional!');
+    showToast('🚀 E-mail aberto com Franqueado(s), Consultor, Gerente Regional e Gerente Nacional!');
   };
 
   const handleSendWhatsApp = () => {

@@ -338,11 +338,21 @@ export default async function handler(req, res) {
       nationalManager?.email
     ].filter(Boolean);
 
-    // Destinatário principal ou fallback para modo teste do Resend
-    let targetEmail = store?.email || consultant?.email || 'lhukas@gmail.com';
+    // Extrai todos os e-mails dos franqueados/loja (tratando múltiplos sócios separados por vírgula)
+    let storeEmails = (store?.email || '')
+      .split(',')
+      .map(e => e.trim().toLowerCase())
+      .filter(e => Boolean(e) && e.includes('@'));
+
+    if (storeEmails.length === 0 && consultant?.email) {
+      storeEmails = [consultant.email.toLowerCase().trim()];
+    }
+    if (storeEmails.length === 0) {
+      storeEmails = ['lhukas@gmail.com'];
+    }
 
     let sendRes = await sendResendEmail({
-      to: [targetEmail],
+      to: storeEmails,
       subject,
       html,
       text: `Notificação oficial Spoleto Radar (${notifType}) para ${store?.name}.`
@@ -350,7 +360,7 @@ export default async function handler(req, res) {
 
     // Se falhar por restrição de conta de teste no Resend, tenta enviar para o e-mail verificado do dono da conta
     if (!sendRes.success && sendRes.error?.includes('You can only send testing emails')) {
-      targetEmail = 'lhukas@gmail.com';
+      storeEmails = ['lhukas@gmail.com'];
       sendRes = await sendResendEmail({
         to: ['lhukas@gmail.com'],
         subject: `[TESTE AUTOMÁTICO CRON] ${subject}`,
@@ -369,7 +379,7 @@ export default async function handler(req, res) {
         type: notifType,
         title: subject,
         message: `Disparo automático de menor prazo (${sla.formattedMinDueDate}) via Vercel Cron.`,
-        recipient_email: targetEmail,
+        recipient_email: storeEmails.join(', '),
         channel: 'email',
         status: 'sent',
         store_id: store?.id,
