@@ -113,29 +113,37 @@ export function AppProvider({ children }) {
   });
 
   const [franchisees, setFranchisees] = useState(() => {
-    const saved = localStorage.getItem('trigo_franchisees_v2');
+    const saved = localStorage.getItem('trigo_franchisees_v3');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {}
     }
-    // Inicializar franqueados a partir das lojas existentes
-    const map = {};
-    INITIAL_STORES.forEach(s => {
-      const fName = (s.franchisee || 'Franqueado Oficial').trim();
-      if (!map[fName]) {
-        map[fName] = {
-          id: 'fran-' + Math.random().toString(36).substr(2, 7),
-          name: fName,
-          email: s.email || 'franqueado@spoleto.com.br',
-          phone: s.phone || '(11) 98765-4321',
-          assignedStoreIds: []
-        };
+    // Franqueados iniciais de demonstração (incluindo sociedade compartilhada)
+    return [
+      {
+        id: 'fran-1',
+        name: 'CARLOS ALBERTO SILVEIRA',
+        email: 'carlos.silveira@spoleto.com.br',
+        phone: '(11) 98765-4321',
+        assignedStoreIds: ['store-1', 'store-2', 'store-3']
+      },
+      {
+        id: 'fran-2',
+        name: 'GRUPO ALVORADA GASTRONOMIA',
+        email: 'contato@grupoalvorada.com.br',
+        phone: '(21) 99876-5432',
+        assignedStoreIds: ['store-4', 'store-5']
+      },
+      {
+        id: 'fran-3',
+        name: 'MARIANA GUIMARÃES & SÓCIOS',
+        email: 'mariana.guimaraes@spoleto.com.br',
+        phone: '(81) 98888-7777',
+        assignedStoreIds: ['store-6', 'store-1']
       }
-      map[fName].assignedStoreIds.push(s.id);
-    });
-    return Object.values(map);
+    ];
   });
 
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
@@ -305,7 +313,7 @@ export function AppProvider({ children }) {
   }, [regions]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_franchisees_v2', JSON.stringify(franchisees));
+    localStorage.setItem('trigo_franchisees_v3', JSON.stringify(franchisees));
   }, [franchisees]);
 
   // Toast Helper

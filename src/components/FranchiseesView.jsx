@@ -524,18 +524,18 @@ export default function FranchiseesView() {
 
                   {/* Lista com Checkboxes */}
                   <div style={{
-                    maxHeight: '220px',
+                    maxHeight: '260px',
                     overflowY: 'auto',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: 'var(--radius-md)',
-                    padding: '0.5rem',
+                    padding: '0.65rem',
                     background: '#FAF8F5',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                    gap: '0.4rem'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.45rem'
                   }}>
                     {modalFilteredStores.length === 0 ? (
-                      <div style={{ gridColumn: '1 / -1', padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                      <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
                         Nenhuma loja encontrada com o termo "{storeSearch}".
                       </div>
                     ) : (
@@ -548,28 +548,54 @@ export default function FranchiseesView() {
                             style={{
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '0.5rem',
-                              padding: '0.4rem 0.6rem',
+                              justifyContent: 'space-between',
+                              gap: '0.75rem',
+                              padding: '0.55rem 0.85rem',
                               borderRadius: 'var(--radius-sm)',
                               background: isChecked ? '#FEF3C7' : '#FFFFFF',
-                              border: isChecked ? '1px solid #F59E0B' : '1px solid var(--border-subtle)',
+                              border: isChecked ? '1.5px solid #F59E0B' : '1px solid var(--border-subtle)',
                               cursor: 'pointer',
-                              transition: 'all 0.1s ease'
+                              transition: 'all 0.15s ease',
+                              boxShadow: isChecked ? '0 2px 6px rgba(245, 158, 11, 0.15)' : 'none'
                             }}
                           >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => {}} // handled by parent onClick
-                              style={{ cursor: 'pointer' }}
-                            />
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <strong style={{ fontSize: '0.78rem', color: isChecked ? '#92400E' : 'var(--text-main)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                [{st.code}] {st.name.replace('SPOLETO', '').trim()}
-                              </strong>
-                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                                {st.city}/{st.state}
-                              </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {}} // handled by parent onClick
+                                style={{
+                                  width: '18px',
+                                  height: '18px',
+                                  minWidth: '18px',
+                                  minHeight: '18px',
+                                  margin: 0,
+                                  cursor: 'pointer',
+                                  accentColor: 'var(--primary-brown)'
+                                }}
+                              />
+                              <div style={{ minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                                  <span style={{
+                                    fontSize: '0.74rem',
+                                    fontWeight: 800,
+                                    background: isChecked ? '#B45309' : 'var(--primary-brown-light)',
+                                    color: isChecked ? '#FFFFFF' : 'var(--primary-brown)',
+                                    padding: '0.15rem 0.45rem',
+                                    borderRadius: '4px',
+                                    letterSpacing: '0.3px'
+                                  }}>
+                                    {st.code}
+                                  </span>
+                                  <span style={{ fontSize: '0.84rem', fontWeight: isChecked ? 800 : 600, color: isChecked ? '#92400E' : 'var(--text-main)' }}>
+                                    {st.name.replace('SPOLETO', '').trim()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div style={{ fontSize: '0.74rem', color: isChecked ? '#92400E' : 'var(--text-muted)', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                              📍 {st.city}/{st.state}
                             </div>
                           </div>
                         );
