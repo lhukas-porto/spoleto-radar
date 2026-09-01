@@ -37,17 +37,15 @@ import {
 } from 'lucide-react';
 
 function getVisitTimeFormatted(startTime, endTime) {
-  if (!startTime) return { range: '14:00', duration: null };
-  if (!endTime || startTime === endTime) {
-    return { range: startTime, duration: null };
-  }
+  const start = startTime || '14:00';
+  const end = endTime || start;
 
   try {
-    const [startH, startM] = startTime.split(':').map(Number);
-    const [endH, endM] = endTime.split(':').map(Number);
+    const [startH, startM] = start.split(':').map(Number);
+    const [endH, endM] = end.split(':').map(Number);
 
     if (isNaN(startH) || isNaN(startM) || isNaN(endH) || isNaN(endM)) {
-      return { range: `${startTime} às ${endTime}`, duration: null };
+      return { start, end, duration: null };
     }
 
     const startMinutes = startH * 60 + startM;
@@ -67,17 +65,18 @@ function getVisitTimeFormatted(startTime, endTime) {
     } else if (hours > 0) {
       durationStr = `${hours}h`;
     } else if (mins > 0) {
-      durationStr = `${mins} min`;
+      durationStr = `${mins}min`;
     } else {
-      durationStr = '< 1 min';
+      durationStr = '< 1min';
     }
 
     return {
-      range: `${startTime} às ${endTime}`,
+      start,
+      end,
       duration: durationStr
     };
   } catch (e) {
-    return { range: `${startTime} às ${endTime}`, duration: null };
+    return { start, end, duration: null };
   }
 }
 
@@ -866,20 +865,23 @@ export default function VisitReportModal() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
                   <span>📅 Data: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong></span>
                   <span style={{ color: '#CBD5E1' }}>&bull;</span>
-                  <span>⏱️ Período de Atuação: <strong>{timeFormatted.range}</strong></span>
+                  <span>Início da Visita: <strong>{timeFormatted.start}</strong></span>
+                  <span style={{ color: '#CBD5E1' }}>&bull;</span>
+                  <span>Término da Visita: <strong>{timeFormatted.end}</strong></span>
                   {timeFormatted.duration && (
                     <span style={{ 
                       background: '#FEF3C7', 
                       color: '#92400E', 
-                      padding: '0.1rem 0.45rem', 
+                      padding: '0.12rem 0.5rem', 
                       borderRadius: '4px', 
-                      fontSize: '0.72rem', 
+                      fontSize: '0.74rem', 
                       fontWeight: 700,
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.2rem'
+                      gap: '0.25rem',
+                      border: '1px solid #FDE68A'
                     }}>
-                      ⌛ {timeFormatted.duration} em loja
+                      ⌛ {timeFormatted.duration} de auditoria
                     </span>
                   )}
                 </div>
