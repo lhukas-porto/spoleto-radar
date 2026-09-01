@@ -36,6 +36,51 @@ import {
   MoreVertical
 } from 'lucide-react';
 
+function getVisitTimeFormatted(startTime, endTime) {
+  if (!startTime) return { range: '14:00', duration: null };
+  if (!endTime || startTime === endTime) {
+    return { range: startTime, duration: null };
+  }
+
+  try {
+    const [startH, startM] = startTime.split(':').map(Number);
+    const [endH, endM] = endTime.split(':').map(Number);
+
+    if (isNaN(startH) || isNaN(startM) || isNaN(endH) || isNaN(endM)) {
+      return { range: `${startTime} às ${endTime}`, duration: null };
+    }
+
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+
+    let diffMinutes = endMinutes - startMinutes;
+    if (diffMinutes < 0) {
+      diffMinutes += 24 * 60;
+    }
+
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+
+    let durationStr = '';
+    if (hours > 0 && mins > 0) {
+      durationStr = `${hours}h ${mins}min`;
+    } else if (hours > 0) {
+      durationStr = `${hours}h`;
+    } else if (mins > 0) {
+      durationStr = `${mins} min`;
+    } else {
+      durationStr = '< 1 min';
+    }
+
+    return {
+      range: `${startTime} às ${endTime}`,
+      duration: durationStr
+    };
+  } catch (e) {
+    return { range: `${startTime} às ${endTime}`, duration: null };
+  }
+}
+
 export default function VisitReportModal() {
   const { 
     selectedVisitForReport, 
@@ -72,6 +117,7 @@ export default function VisitReportModal() {
 
   const store = stores.find(s => s.id === visit.storeId) || { name: 'Unidade Spoleto', code: 'SPO', city: '', state: 'BR' };
   const consultant = consultants.find(c => c.id === visit.consultantId) || { name: 'Consultor de Negócios', region: 'Nacional' };
+  const timeFormatted = getVisitTimeFormatted(visit.time, visit.endTime);
 
   // Helper to generate PDF Blob
   const createPdfBlob = async () => {
@@ -799,27 +845,48 @@ export default function VisitReportModal() {
             </div>
 
             <div>
-              <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Dados da Consultoria</div>
-              <div>
-                Consultor(a):{' '}
-                {consultant ? (
-                  <strong 
-                    onClick={() => setSelectedStaffForProfile(consultant)}
-                    style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--primary-brown)' }}
-                    title="Ver Ficha do Colaborador"
-                  >
-                    {consultant.name}
-                  </strong>
-                ) : (
-                  <strong>Não atribuído</strong>
-                )}{' '}
-                ({consultant?.region || 'Nacional'})
-              </div>
-              <div>
-                Data da Visita: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong> &bull; Horário: <strong>{visit.time ? (visit.endTime ? `${visit.time} às ${visit.endTime}` : `${visit.time}`) : '14:00'}</strong>
-              </div>
-              <div style={{ marginTop: '0.2rem' }}>
-                Tipo de Visita: <strong style={{ color: visit.visitType === 'Visita surpresa' ? 'var(--primary-brown)' : '#0F172A' }}>{visit.visitType || 'Visita agendada'}</strong>
+              <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700, marginBottom: '0.2rem' }}>Dados da Consultoria</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.84rem' }}>
+                <div>
+                  👤 Consultor(a):{' '}
+                  {consultant ? (
+                    <strong 
+                      onClick={() => setSelectedStaffForProfile(consultant)}
+                      style={{ cursor: 'pointer', textDecoration: 'underline', color: 'var(--primary-brown)' }}
+                      title="Ver Ficha do Colaborador"
+                    >
+                      {consultant.name}
+                    </strong>
+                  ) : (
+                    <strong>Não atribuído</strong>
+                  )}{' '}
+                  <span style={{ color: '#64748B', fontSize: '0.78rem' }}>({consultant?.region || 'Nacional'})</span>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                  <span>📅 Data: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong></span>
+                  <span style={{ color: '#CBD5E1' }}>&bull;</span>
+                  <span>⏱️ Período de Atuação: <strong>{timeFormatted.range}</strong></span>
+                  {timeFormatted.duration && (
+                    <span style={{ 
+                      background: '#FEF3C7', 
+                      color: '#92400E', 
+                      padding: '0.1rem 0.45rem', 
+                      borderRadius: '4px', 
+                      fontSize: '0.72rem', 
+                      fontWeight: 700,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.2rem'
+                    }}>
+                      ⌛ {timeFormatted.duration} em loja
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  🎯 Tipo de Visita: <strong style={{ color: visit.visitType === 'Visita surpresa' ? 'var(--primary-brown)' : '#0F172A' }}>{visit.visitType || 'Visita agendada'}</strong>
+                </div>
               </div>
             </div>
           </div>
