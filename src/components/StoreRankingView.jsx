@@ -129,6 +129,11 @@ export default function StoreRankingView() {
     return true;
   });
 
+  // Se houver termo na busca ou filtro por UF, exibe todos os resultados correspondentes.
+  // Caso contrário, exibe estritamente o TOP 5 para manter o layout limpo.
+  const isSearchingOrFiltering = searchTerm.trim().length > 0 || selectedStateFilter !== 'Todos';
+  const displayedRankedStores = isSearchingOrFiltering ? filteredRankedStores : filteredRankedStores.slice(0, 5);
+
   const top3 = rankedStores.slice(0, 3);
   const states = ['Todos', ...Array.from(new Set(stores.map(s => s.state))).sort()];
 
@@ -379,7 +384,7 @@ export default function StoreRankingView() {
               </tr>
             </thead>
             <tbody>
-              {filteredRankedStores.map((item, index) => (
+              {displayedRankedStores.map((item, index) => (
                 <tr key={item.store.id}>
                   <td style={{ textAlign: 'center', fontWeight: 800, fontSize: '0.92rem', color: index === 0 ? '#B45309' : index === 1 ? '#475569' : index === 2 ? '#92400E' : 'var(--text-muted)' }}>
                     {index === 0 ? '🥇 1º' : index === 1 ? '🥈 2º' : index === 2 ? '🥉 3º' : `${index + 1}º`}
@@ -432,6 +437,14 @@ export default function StoreRankingView() {
             </tbody>
           </table>
         </div>
+
+        {/* Rodapé explicativo do TOP 5 */}
+        {!isSearchingOrFiltering && (
+          <div style={{ padding: '0.85rem 1rem', background: '#FAF8F5', borderTop: '1px solid var(--border-subtle)', textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.45rem' }}>
+            <Sparkles size={14} color="var(--accent-gold)" />
+            <span>Exibindo os <strong>5 primeiros colocados</strong> do Brasil. Digite o nome ou código de qualquer unidade na barra de pesquisa para consultar sua posição no ranking!</span>
+          </div>
+        )}
       </div>
 
     </div>
