@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Trophy,
   BarChart3,
-  Sparkles
+  Sparkles,
+  Handshake
 } from 'lucide-react';
 import RegionalBenchmarkView from './RegionalBenchmarkView';
 import StoreRankingView from './StoreRankingView';
@@ -28,6 +29,7 @@ export default function DashboardView() {
     consultants,
     categories,
     visits,
+    franchisees = [],
     setActiveTab,
     setSelectedVisitForReport,
     setIsOverdueModalOpen,
@@ -41,6 +43,9 @@ export default function DashboardView() {
 
   // High level KPIs
   const totalStores = stores.length;
+  const totalFranchisees = franchisees.length > 0 
+    ? franchisees.length 
+    : Array.from(new Set(stores.map(s => s.franchisee).filter(Boolean))).length;
   const totalStaff = consultants.length;
   const totalVisits = visits.length;
 
@@ -221,6 +226,17 @@ export default function DashboardView() {
             <div className="kpi-label">Rede de Lojas Spoleto</div>
             <div className="kpi-value">{totalStores}</div>
             <div className="kpi-subtext">Lojas cadastradas (Código RP)</div>
+          </div>
+        </div>
+
+        <div className="kpi-card" onClick={() => setActiveTab('stores')} style={{ cursor: 'pointer' }}>
+          <div className="kpi-icon-wrapper" style={{ background: '#ECFDF5', color: '#059669' }}>
+            <Handshake size={24} />
+          </div>
+          <div>
+            <div className="kpi-label">Franqueados da Rede</div>
+            <div className="kpi-value">{totalFranchisees}</div>
+            <div className="kpi-subtext">Sócios & Grupos Franqueados</div>
           </div>
         </div>
 

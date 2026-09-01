@@ -218,8 +218,8 @@ h1, h2, h3, .brand-title, .report-title {
    ========================================================================= */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.15rem;
   margin-bottom: 1.75rem;
 }
 
