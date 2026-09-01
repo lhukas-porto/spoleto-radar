@@ -19,7 +19,9 @@ import {
   BarChart3,
   Sparkles,
   Handshake,
-  PieChart as PieIcon
+  PieChart as PieIcon,
+  Flame,
+  Send
 } from 'lucide-react';
 import RegionalBenchmarkView from './RegionalBenchmarkView';
 import StoreRankingView from './StoreRankingView';
