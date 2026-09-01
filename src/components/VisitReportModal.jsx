@@ -13,25 +13,27 @@ import {
   User, 
   Calendar, 
   Clock, 
-  FileText,
-  Building2,
-  Tag,
-  Share2,
-  Mail,
-  Send,
-  Check,
-  Download,
-  MessageSquare,
-  FileDown,
-  Loader2,
-  Paperclip,
-  Info,
-  PenTool,
-  ShieldCheck,
-  Camera,
-  ZoomIn,
-  Edit3,
-  Trash2
+  FileText, 
+  Building2, 
+  Tag, 
+  Share2, 
+  Mail, 
+  Send, 
+  Check, 
+  Download, 
+  MessageSquare, 
+  FileDown, 
+  Loader2, 
+  Paperclip, 
+  Info, 
+  PenTool, 
+  ShieldCheck, 
+  Camera, 
+  ZoomIn, 
+  Edit3, 
+  Trash2,
+  ChevronDown,
+  MoreVertical
 } from 'lucide-react';
 
 export default function VisitReportModal() {
@@ -42,14 +44,16 @@ export default function VisitReportModal() {
     consultants, 
     categories, 
     showToast, 
-    updateVisit,
-    startEditVisit,
-    deleteVisit,
+    updateVisit, 
+    startEditVisit, 
+    deleteVisit, 
     setSelectedStaffForProfile
   } = useApp();
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [isShareDropdownOpen, setIsShareDropdownOpen] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [zoomedPhoto, setZoomedPhoto] = useState(null);
   const [shareChannel, setShareChannel] = useState('whatsapp'); // 'whatsapp' | 'email' | 'both'
   const [recipientPhone, setRecipientPhone] = useState('');
@@ -284,16 +288,59 @@ export default function VisitReportModal() {
           <X size={20} />
         </button>
 
-        {/* Modal Controls Bar (No Print) */}
-        <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem', paddingRight: '2.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              Laudo & Plano de Ação Oficial Spoleto
+        {/* Modal Controls Bar - Modelo 1 (Split Dropdown Inteligente) */}
+        <div className="no-print" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '1.25rem', 
+          borderBottom: '1px solid var(--border-subtle)', 
+          paddingBottom: '1rem', 
+          paddingRight: '3rem', 
+          flexWrap: 'wrap', 
+          gap: '0.85rem' 
+        }}>
+          {/* Lado Esquerdo: Título & Badge de Assinatura */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontWeight: 800 }}>
+              Laudo & Plano de Ação Oficial
             </span>
+            {visit.signatures?.consultantImg || visit.signatures?.storeImg ? (
+              <span style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.3rem', 
+                fontSize: '0.72rem', 
+                fontWeight: 700, 
+                padding: '0.2rem 0.6rem', 
+                borderRadius: 'var(--radius-full)', 
+                backgroundColor: '#DCFCE7', 
+                color: '#15803D',
+                border: '1px solid #BBF7D0'
+              }}>
+                <CheckCircle2 size={12} /> Assinado Digitalmente
+              </span>
+            ) : (
+              <span style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.3rem', 
+                fontSize: '0.72rem', 
+                fontWeight: 600, 
+                padding: '0.2rem 0.6rem', 
+                borderRadius: 'var(--radius-full)', 
+                backgroundColor: '#FEF3C7', 
+                color: '#B45309',
+                border: '1px solid #FDE68A'
+              }}>
+                <Clock size={12} /> Pendente de Assinatura
+              </span>
+            )}
           </div>
 
-          {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Lado Direito: Ações Elegantes e Organizadas (Apenas 3 botões) */}
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', position: 'relative' }}>
+            {/* 1. Botão de Assinatura */}
             <button 
               type="button"
               className="btn-secondary" 
@@ -303,110 +350,400 @@ export default function VisitReportModal() {
                 padding: '0.45rem 0.85rem', 
                 display: 'inline-flex', 
                 alignItems: 'center', 
-                gap: '0.35rem',
+                gap: '0.4rem',
                 borderColor: visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#86EFAC' : 'var(--border-strong)',
                 backgroundColor: visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#F0FDF4' : '#FFFFFF',
                 color: visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#166534' : 'var(--text-main)',
                 fontWeight: 700
               }}
-              title="Coletar assinaturas digitais na tela com o dedo ou mouse"
+              title="Coletar assinaturas digitais"
             >
-              <PenTool size={15} color={visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#16A34A' : 'var(--accent-gold-dark)'} />
-              {visit.signatures?.consultantImg || visit.signatures?.storeImg ? 'Assinado Digitalmente ✍️' : 'Coletar Assinaturas ✍️'}
+              <PenTool size={14} color={visit.signatures?.consultantImg || visit.signatures?.storeImg ? '#16A34A' : 'var(--accent-gold-dark)'} />
+              {visit.signatures?.consultantImg || visit.signatures?.storeImg ? 'Assinaturas ✍️' : 'Coletar Assinatura ✍️'}
             </button>
 
-            {/* Native Share button if supported */}
-            {typeof navigator !== 'undefined' && navigator.canShare && (
+            {/* 2. Dropdown Inteligente de Compartilhamento & Exportação */}
+            <div style={{ position: 'relative' }}>
               <button 
                 type="button"
-                className="btn-primary"
-                onClick={handleNativeShareFile}
-                style={{ backgroundColor: '#0284C7', borderColor: '#0284C7', fontSize: '0.82rem', padding: '0.45rem 0.85rem' }}
-                title="Compartilhar arquivo PDF direto (Windows / Celular)"
+                className="btn-primary" 
+                onClick={() => {
+                  setIsShareDropdownOpen(!isShareDropdownOpen);
+                  setIsMoreMenuOpen(false);
+                }}
+                style={{ 
+                  backgroundColor: 'var(--primary-brown)', 
+                  borderColor: 'var(--primary-brown)', 
+                  fontSize: '0.82rem', 
+                  padding: '0.45rem 0.9rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+                title="Compartilhar ou Baixar Laudo"
                 disabled={isGeneratingPdf}
               >
-                <Share2 size={15} /> Compartilhar Arquivo PDF
+                {isGeneratingPdf ? <Loader2 size={14} className="spin" /> : <Share2 size={14} />}
+                <span>Compartilhar PDF</span>
+                <ChevronDown size={14} style={{ transform: isShareDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s ease' }} />
               </button>
-            )}
 
-            <button 
-              type="button"
-              className="btn-primary" 
-              onClick={() => handleOpenShareModal('whatsapp')}
-              style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: '#FFFFFF', fontSize: '0.82rem', padding: '0.45rem 0.85rem' }}
-              title="Gerar PDF e enviar pelo WhatsApp"
-              disabled={isGeneratingPdf}
-            >
-              <MessageSquare size={15} /> WhatsApp
-            </button>
+              {/* Menu Dropdown de Compartilhamento */}
+              {isShareDropdownOpen && (
+                <>
+                  <div 
+                    style={{ position: 'fixed', inset: 0, zIndex: 90 }} 
+                    onClick={() => setIsShareDropdownOpen(false)} 
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 6px)',
+                    right: 0,
+                    width: '240px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--border-subtle)',
+                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2), 0 8px 10px -6px rgba(0,0,0,0.1)',
+                    zIndex: 100,
+                    padding: '0.4rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px',
+                    animation: 'fadeIn 0.15s ease'
+                  }}>
+                    <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.35rem 0.6rem 0.2rem 0.6rem', letterSpacing: '0.5px' }}>
+                      Canais de Envio
+                    </div>
 
-            <button 
-              type="button"
-              className="btn-primary" 
-              onClick={() => handleOpenShareModal('email')}
-              style={{ backgroundColor: '#1E40AF', borderColor: '#1E40AF', color: '#FFFFFF', fontSize: '0.82rem', padding: '0.45rem 0.85rem' }}
-              title="Gerar PDF e enviar por E-mail"
-              disabled={isGeneratingPdf}
-            >
-              <Mail size={15} /> E-mail
-            </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsShareDropdownOpen(false);
+                        handleOpenShareModal('whatsapp');
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-main)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F0FDF4';
+                        e.currentTarget.style.color = '#15803D';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--text-main)';
+                      }}
+                    >
+                      <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16A34A', flexShrink: 0 }}>
+                        <MessageSquare size={13} />
+                      </span>
+                      <span>Enviar via WhatsApp</span>
+                    </button>
 
-            <button 
-              type="button"
-              className="btn-primary" 
-              onClick={() => handleOpenShareModal('both')}
-              style={{ backgroundColor: 'var(--primary-brown)', fontSize: '0.82rem', padding: '0.45rem 0.85rem' }}
-              title="Gerar PDF e disparar por WhatsApp + E-mail"
-              disabled={isGeneratingPdf}
-            >
-              <Send size={15} /> Ambos
-            </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsShareDropdownOpen(false);
+                        handleOpenShareModal('email');
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-main)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#EFF6FF';
+                        e.currentTarget.style.color = '#1D4ED8';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--text-main)';
+                      }}
+                    >
+                      <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', flexShrink: 0 }}>
+                        <Mail size={13} />
+                      </span>
+                      <span>Enviar via E-mail</span>
+                    </button>
 
-            <button 
-              type="button"
-              className="btn-secondary" 
-              onClick={generateAndDownloadPDF}
-              style={{ fontSize: '0.82rem', padding: '0.45rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-              title="Baixar arquivo PDF diretamente"
-              disabled={isGeneratingPdf}
-            >
-              {isGeneratingPdf ? <Loader2 size={15} className="animate-spin" /> : <FileDown size={15} color="var(--primary-brown)" />}
-              {isGeneratingPdf ? 'Gerando...' : 'Baixar PDF'}
-            </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsShareDropdownOpen(false);
+                        handleOpenShareModal('both');
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-main)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#FAF5EF';
+                        e.currentTarget.style.color = 'var(--primary-brown)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--text-main)';
+                      }}
+                    >
+                      <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--primary-brown-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-brown)', flexShrink: 0 }}>
+                        <Send size={13} />
+                      </span>
+                      <span>Disparar Ambos (Whats + Mail)</span>
+                    </button>
 
-            <button 
-              type="button"
-              className="btn-secondary" 
-              onClick={() => window.print()}
-              style={{ fontSize: '0.82rem', padding: '0.45rem 0.8rem' }}
-              title="Imprimir laudo"
-            >
-              <Printer size={15} /> Imprimir
-            </button>
+                    {typeof navigator !== 'undefined' && navigator.canShare && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsShareDropdownOpen(false);
+                          handleNativeShareFile();
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.6rem',
+                          width: '100%',
+                          padding: '0.5rem 0.65rem',
+                          border: 'none',
+                          background: 'transparent',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.82rem',
+                          color: 'var(--text-main)',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.12s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F0F9FF';
+                          e.currentTarget.style.color = '#0284C7';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = 'var(--text-main)';
+                        }}
+                      >
+                        <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284C7', flexShrink: 0 }}>
+                          <Share2 size={13} />
+                        </span>
+                        <span>Compartilhar Arquivo Direto</span>
+                      </button>
+                    )}
 
-            <button 
-              type="button"
-              className="btn-secondary" 
-              onClick={() => startEditVisit(visit)}
-              style={{ fontSize: '0.82rem', padding: '0.45rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-              title="Editar este relatório e planos de ação"
-            >
-              <Edit3 size={15} color="var(--primary-brown)" /> Editar Laudo
-            </button>
+                    <div style={{ height: '1px', backgroundColor: 'var(--border-subtle)', margin: '0.35rem 0.2rem' }} />
 
-            <button 
-              type="button"
-              className="btn-secondary" 
-              onClick={() => {
-                if (confirm(`Tem certeza que deseja excluir permanentemente este relatório da unidade "${store?.name}" realizado em ${new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}? Esta ação não pode ser desfeita.`)) {
-                  deleteVisit(visit.id);
-                }
-              }}
-              style={{ fontSize: '0.82rem', padding: '0.45rem 0.65rem', color: '#991B1B', borderColor: '#FECACA' }}
-              title="Excluir este relatório"
-            >
-              <Trash2 size={15} />
-            </button>
+                    <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.2rem 0.6rem', letterSpacing: '0.5px' }}>
+                      Exportar & Imprimir
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsShareDropdownOpen(false);
+                        generateAndDownloadPDF();
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-main)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F3F4F6';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-brown)', flexShrink: 0 }}>
+                        <FileDown size={13} />
+                      </span>
+                      <span>Baixar Arquivo PDF</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsShareDropdownOpen(false);
+                        window.print();
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-main)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F3F4F6';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      <span style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4B5563', flexShrink: 0 }}>
+                        <Printer size={13} />
+                      </span>
+                      <span>Imprimir Documento</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* 3. Menu Mais Opções (Editar e Excluir) */}
+            <div style={{ position: 'relative' }}>
+              <button 
+                type="button"
+                className="btn-secondary" 
+                onClick={() => {
+                  setIsMoreMenuOpen(!isMoreMenuOpen);
+                  setIsShareDropdownOpen(false);
+                }}
+                style={{ 
+                  padding: '0.45rem 0.65rem', 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  color: 'var(--text-secondary)'
+                }}
+                title="Mais opções de gerenciamento"
+              >
+                <MoreVertical size={16} />
+              </button>
+
+              {isMoreMenuOpen && (
+                <>
+                  <div 
+                    style={{ position: 'fixed', inset: 0, zIndex: 90 }} 
+                    onClick={() => setIsMoreMenuOpen(false)} 
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 6px)',
+                    right: 0,
+                    width: '180px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--border-subtle)',
+                    boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2)',
+                    zIndex: 100,
+                    padding: '0.4rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px',
+                    animation: 'fadeIn 0.15s ease'
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMoreMenuOpen(false);
+                        startEditVisit(visit);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-main)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F3F4F6'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <Edit3 size={14} color="var(--primary-brown)" />
+                      <span>Editar Laudo</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMoreMenuOpen(false);
+                        if (confirm(`Tem certeza que deseja excluir permanentemente este relatório da unidade "${store?.name}" realizado em ${new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}? Esta ação não pode ser desfeita.`)) {
+                          deleteVisit(visit.id);
+                        }
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        width: '100%',
+                        padding: '0.5rem 0.65rem',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.82rem',
+                        color: '#DC2626',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.12s ease'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <Trash2 size={14} color="#DC2626" />
+                      <span>Excluir Laudo</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
