@@ -312,12 +312,17 @@ export default function NewVisitForm() {
     const hasSignatures = storeSignature || consultantSignature;
     const currentConsultant = consultants.find(c => c.id === selectedConsultantId);
 
+    // Preenche automaticamente o horário de término com a hora do momento exato da finalização
+    const now = new Date();
+    const currentTimeFormatted = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    const finalEndTime = (endTime && endTime.trim() !== '') ? endTime.trim() : currentTimeFormatted;
+
     const visitPayload = {
       storeId: selectedStoreId,
       consultantId: selectedConsultantId,
       date,
       time,
-      endTime,
+      endTime: finalEndTime,
       visitType,
       generalNotes,
       diagnostics: validDiagnostics,
@@ -548,13 +553,36 @@ export default function NewVisitForm() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Horário de Fim (Término)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label" style={{ margin: 0 }}>Horário de Fim (Término)</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const now = new Date();
+                    const cur = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+                    setEndTime(cur);
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--primary-brown)',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    padding: 0
+                  }}
+                >
+                  ⏱️ Agora
+                </button>
+              </div>
               <input 
                 type="time" 
                 value={endTime} 
                 onChange={(e) => setEndTime(e.target.value)} 
                 placeholder="--:--"
               />
+              <span className="form-help">Preenchido automaticamente ao finalizar a visita</span>
             </div>
 
             {/* Compact Tipo de Visita Pill Toggle */}
