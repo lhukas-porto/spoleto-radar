@@ -408,41 +408,44 @@ export default function DashboardView() {
                       />
 
                       {/* Slices */}
-                      {activeChartData.map((item, idx) => {
-                        const percent = activeTotalCount > 0 ? (item.count / activeTotalCount) : 0;
-                        const strokeDasharray = `${percent * circumference} ${circumference}`;
-                        const strokeDashoffset = -accumulatedPercent * circumference;
-                        accumulatedPercent += percent;
-                        const color = item.color || chartColors[idx % chartColors.length];
-                        const isHovered = hoveredSlice === item.id;
+                      {(() => {
+                        let accumulatedPercent = 0;
+                        return activeChartData.map((item, idx) => {
+                          const percent = activeTotalCount > 0 ? (item.count / activeTotalCount) : 0;
+                          const strokeDasharray = `${percent * circumference} ${circumference}`;
+                          const strokeDashoffset = -accumulatedPercent * circumference;
+                          accumulatedPercent += percent;
+                          const color = item.color || chartColors[idx % chartColors.length];
+                          const isHovered = hoveredSlice === item.id;
 
-                        return (
-                          <circle
-                            key={item.id}
-                            cx="80"
-                            cy="80"
-                            r={radius}
-                            fill="transparent"
-                            stroke={color}
-                            strokeWidth={isHovered ? 28 : 24}
-                            strokeDasharray={strokeDasharray}
-                            strokeDashoffset={strokeDashoffset}
-                            style={{
-                              transition: 'all 0.25s ease',
-                              cursor: 'pointer',
-                              filter: isHovered ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))' : 'none'
-                            }}
-                            onMouseEnter={() => setHoveredSlice(item.id)}
-                            onMouseLeave={() => setHoveredSlice(null)}
-                            onClick={() => {
-                              if (!drilldownCategory) {
-                                setDrilldownCategory(item.id);
-                                setHoveredSlice(null);
-                              }
-                            }}
-                          />
-                        );
-                      })}
+                          return (
+                            <circle
+                              key={item.id}
+                              cx="80"
+                              cy="80"
+                              r={radius}
+                              fill="transparent"
+                              stroke={color}
+                              strokeWidth={isHovered ? 28 : 24}
+                              strokeDasharray={strokeDasharray}
+                              strokeDashoffset={strokeDashoffset}
+                              style={{
+                                transition: 'all 0.25s ease',
+                                cursor: 'pointer',
+                                filter: isHovered ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))' : 'none'
+                              }}
+                              onMouseEnter={() => setHoveredSlice(item.id)}
+                              onMouseLeave={() => setHoveredSlice(null)}
+                              onClick={() => {
+                                if (!drilldownCategory) {
+                                  setDrilldownCategory(item.id);
+                                  setHoveredSlice(null);
+                                }
+                              }}
+                            />
+                          );
+                        });
+                      })()}
                     </svg>
 
                     {/* Center Text in Donut */}
