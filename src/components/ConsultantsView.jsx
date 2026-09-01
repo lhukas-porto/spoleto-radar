@@ -535,11 +535,11 @@ export default function ConsultantsView() {
                   <div 
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (consultant.photoUrl) {
-                        setZoomedPhoto({ url: consultant.photoUrl, name: consultant.name, role: consultant.role });
-                      } else {
-                        setSelectedStaffForProfile(consultant);
-                      }
+                      setZoomedPhoto({ 
+                        url: consultant.photoUrl || null, 
+                        name: consultant.name, 
+                        role: consultant.role 
+                      });
                     }}
                     style={{
                       width: '56px',
@@ -561,7 +561,7 @@ export default function ConsultantsView() {
                     }}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                    title={consultant.photoUrl ? "Clique para ampliar a foto" : "Clique para abrir a Ficha 360°"}
+                    title="Clique para ver a foto ampliada"
                   >
                     {consultant.photoUrl ? (
                       <img src={consultant.photoUrl} alt={consultant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1313,13 +1313,23 @@ export default function ConsultantsView() {
               overflow: 'hidden', 
               border: '4px solid var(--accent-gold)', 
               boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-              backgroundColor: 'var(--primary-brown-light)'
+              backgroundColor: 'var(--primary-brown-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '4.5rem',
+              fontWeight: 800,
+              color: 'var(--primary-brown)'
             }}>
-              <img 
-                src={zoomedPhoto.url} 
-                alt={zoomedPhoto.name} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-              />
+              {zoomedPhoto.url ? (
+                <img 
+                  src={zoomedPhoto.url} 
+                  alt={zoomedPhoto.name} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                zoomedPhoto.name.split(' ').map(n => n[0]).slice(0, 2).join('')
+              )}
             </div>
 
             <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
