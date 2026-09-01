@@ -151,17 +151,6 @@ export default function DashboardView() {
           <h1 className="section-title">Painel Executivo Spoleto</h1>
           <p className="section-subtitle">Acompanhamento consolidado de visitas, conformidade de rede e gargalos operacionais.</p>
         </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button
-            className="btn-secondary"
-            style={{ borderColor: totalOverduePlans > 0 ? '#991B1B' : 'var(--border-strong)', color: totalOverduePlans > 0 ? '#991B1B' : 'var(--text-main)', fontWeight: 700 }}
-            onClick={() => setIsOverdueModalOpen(true)}
-          >
-            <BellRing size={16} color={totalOverduePlans > 0 ? '#991B1B' : 'var(--primary-brown)'} />
-            Central de Atrasos ({totalOverduePlans})
-          </button>
-        </div>
       </div>
 
       {/* =========================================================================
