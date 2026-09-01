@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { evaluateActionPlanStatus } from '../utils/dateHelpers';
-import { 
-  Building2, 
-  Users, 
-  ClipboardCheck, 
-  AlertTriangle, 
-  TrendingUp, 
+import {
+  Building2,
+  Users,
+  ClipboardCheck,
+  AlertTriangle,
+  TrendingUp,
   ArrowRight,
   ArrowLeft,
   ShieldAlert,
   Clock,
-  CheckCircle2, 
-  FileText, 
-  PieChart as PieIcon, 
+  CheckCircle2,
+  FileText,
+  PieChart as PieIcon,
   Layers,
   BellRing,
   Flame,
@@ -22,12 +22,12 @@ import {
 } from 'lucide-react';
 
 export default function DashboardView() {
-  const { 
-    stores, 
-    consultants, 
-    categories, 
-    visits, 
-    setActiveTab, 
+  const {
+    stores,
+    consultants,
+    categories,
+    visits,
+    setActiveTab,
     setSelectedVisitForReport,
     setIsOverdueModalOpen,
     setSelectedStaffForProfile,
@@ -76,7 +76,7 @@ export default function DashboardView() {
 
   // Calculate bottlenecks by aggregating all diagnostics from all visits
   const categoryCounts = {};
-  
+
   visits.forEach(v => {
     (v.diagnostics || []).forEach(d => {
       const catId = d.categoryId || d.category_id || 'outros';
@@ -126,7 +126,7 @@ export default function DashboardView() {
   const totalSubBottlenecks = subproblemBottlenecks.reduce((sum, s) => sum + s.count, 0);
 
   // Delivery specific metric
-  const deliveryVisitsWithIssues = visits.filter(v => 
+  const deliveryVisitsWithIssues = visits.filter(v =>
     (v.diagnostics || []).some(d => d.categoryId === 'cat-delivery' || d.categoryId === 'cat-ifood')
   ).length;
 
@@ -147,17 +147,13 @@ export default function DashboardView() {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button 
-            className="btn-secondary" 
+          <button
+            className="btn-secondary"
             style={{ borderColor: totalOverduePlans > 0 ? '#991B1B' : 'var(--border-strong)', color: totalOverduePlans > 0 ? '#991B1B' : 'var(--text-main)', fontWeight: 700 }}
             onClick={() => setIsOverdueModalOpen(true)}
           >
-            <BellRing size={16} color={totalOverduePlans > 0 ? '#991B1B' : 'var(--primary-brown)'} /> 
+            <BellRing size={16} color={totalOverduePlans > 0 ? '#991B1B' : 'var(--primary-brown)'} />
             Central de Atrasos ({totalOverduePlans})
-          </button>
-
-          <button className="btn-primary" onClick={() => setActiveTab('new-visit')}>
-            <ClipboardCheck size={18} /> Iniciar Nova Visita
           </button>
         </div>
       </div>
@@ -209,7 +205,7 @@ export default function DashboardView() {
             </div>
           </div>
 
-          <button 
+          <button
             className="btn-primary"
             onClick={() => setIsOverdueModalOpen(true)}
             style={{
@@ -275,7 +271,7 @@ export default function DashboardView() {
 
       {/* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
-        
+
         {/* =========================================================================
             GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM DRILLDOWN
             ========================================================================= */}
@@ -288,7 +284,7 @@ export default function DashboardView() {
                   {drilldownCategory ? 'Detalhamento por Subtópicos' : 'Itens de Oportunidade'}
                 </h3>
                 <p className="section-subtitle">
-                  {drilldownCategory 
+                  {drilldownCategory
                     ? `Distribuição dos problemas específicos do tema "${activeDrilldownCat?.name.split('(')[0].trim()}".`
                     : 'Distribuição percentual dos temas principais apontados. Clique em um tema para abrir seus subtópicos.'}
                 </p>
@@ -296,8 +292,8 @@ export default function DashboardView() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 {drilldownCategory && (
-                  <button 
-                    className="btn-secondary" 
+                  <button
+                    className="btn-secondary"
                     onClick={() => setDrilldownCategory(null)}
                     style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', gap: '0.3rem' }}
                   >
@@ -376,12 +372,12 @@ export default function DashboardView() {
                     maxWidth: '110px'
                   }}>
                     <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
-                      {hoveredSlice 
+                      {hoveredSlice
                         ? activeChartData.find(c => c.id === hoveredSlice)?.count
                         : activeTotalCount}
                     </span>
                     <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {hoveredSlice 
+                      {hoveredSlice
                         ? activeChartData.find(c => c.id === hoveredSlice)?.name
                         : (drilldownCategory ? 'Subtópicos' : 'Gargalos')}
                     </span>
@@ -396,7 +392,7 @@ export default function DashboardView() {
                     const isHovered = hoveredSlice === item.id;
 
                     return (
-                      <div 
+                      <div
                         key={item.id}
                         onMouseEnter={() => setHoveredSlice(item.id)}
                         onMouseLeave={() => setHoveredSlice(null)}
@@ -448,8 +444,8 @@ export default function DashboardView() {
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               {drilldownCategory ? 'Exibindo detalhamento específico.' : 'Dica: clique em qualquer tema para ver subtópicos.'}
             </span>
-            <button 
-              className="btn-secondary" 
+            <button
+              className="btn-secondary"
               style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
               onClick={() => setActiveTab('taxonomy')}
             >
@@ -465,7 +461,7 @@ export default function DashboardView() {
               <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)' }}>
                 Últimas Visitas de Consultoria
               </h3>
-              <button 
+              <button
                 onClick={() => setActiveTab('reports')}
                 style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
               >
@@ -480,7 +476,7 @@ export default function DashboardView() {
                 const hasIssues = visit.diagnostics?.length > 0;
 
                 return (
-                  <div 
+                  <div
                     key={visit.id}
                     onClick={() => setSelectedVisitForReport(visit)}
                     style={{
@@ -498,16 +494,16 @@ export default function DashboardView() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FAFAFA'}
                   >
                     <div>
-                      <strong 
+                      <strong
                         onClick={(e) => {
                           if (store) {
                             e.stopPropagation();
                             setSelectedStoreForProfile(store);
                           }
                         }}
-                        style={{ 
-                          fontSize: '0.92rem', 
-                          color: 'var(--text-main)', 
+                        style={{
+                          fontSize: '0.92rem',
+                          color: 'var(--text-main)',
                           display: 'block',
                           textDecoration: 'underline',
                           cursor: 'pointer'
@@ -517,7 +513,7 @@ export default function DashboardView() {
                         {store?.name}
                       </strong>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                        <span 
+                        <span
                           onClick={(e) => {
                             if (consultant) {
                               e.stopPropagation();
@@ -543,12 +539,12 @@ export default function DashboardView() {
           </div>
 
           <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
-            <button 
-              className="btn-primary" 
+            <button
+              className="btn-primary"
               style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem' }}
               onClick={() => setActiveTab('new-visit')}
             >
-              <ClipboardCheck size={16} /> Preencher Novo Diagnóstico
+              <ClipboardCheck size={16} /> Iniciar Nova Visita
             </button>
           </div>
         </div>
