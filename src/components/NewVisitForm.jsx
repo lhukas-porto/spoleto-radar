@@ -570,10 +570,11 @@ export default function NewVisitForm() {
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '0.85rem',
                     fontWeight: visitType === 'Visita agendada' ? 700 : 500,
-                    backgroundColor: visitType === 'Visita agendada' ? '#FFFFFF' : 'transparent',
-                    color: visitType === 'Visita agendada' ? 'var(--text-main)' : 'var(--text-secondary)',
+                    backgroundColor: visitType === 'Visita agendada' ? 'var(--primary-brown)' : 'transparent',
+                    color: visitType === 'Visita agendada' ? '#FFFFFF' : 'var(--text-secondary)',
                     boxShadow: visitType === 'Visita agendada' ? 'var(--shadow-sm)' : 'none',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    cursor: 'pointer'
                   }}
                 >
                   Visita agendada
@@ -590,7 +591,8 @@ export default function NewVisitForm() {
                     backgroundColor: visitType === 'Visita surpresa' ? 'var(--primary-brown)' : 'transparent',
                     color: visitType === 'Visita surpresa' ? '#FFFFFF' : 'var(--text-secondary)',
                     boxShadow: visitType === 'Visita surpresa' ? 'var(--shadow-sm)' : 'none',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    cursor: 'pointer'
                   }}
                 >
                   Visita surpresa
