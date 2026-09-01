@@ -18,7 +18,8 @@ import {
   Trophy,
   BarChart3,
   Sparkles,
-  Handshake
+  Handshake,
+  PieChart as PieIcon
 } from 'lucide-react';
 import RegionalBenchmarkView from './RegionalBenchmarkView';
 import StoreRankingView from './StoreRankingView';
