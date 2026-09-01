@@ -921,7 +921,11 @@ export function AppProvider({ children }) {
     showToast('Lojas atribuídas com sucesso ao consultor!');
   };
 
-  // Franchisees CRUD (Gestão de Franqueados & Múltiplas Lojas)
+  // Franchisees CRUD (Gestão de Multi-Franqueados / Sócios por Loja)
+  const getStoreFranchisees = (storeId) => {
+    return franchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(storeId));
+  };
+
   const addFranchisee = async (data) => {
     const newFranchisee = {
       id: 'fran-' + Date.now(),
@@ -931,38 +935,26 @@ export function AppProvider({ children }) {
       assignedStoreIds: data.assignedStoreIds || []
     };
 
-    setFranchisees(prev => [newFranchisee, ...prev]);
+    const nextFranchisees = [newFranchisee, ...franchisees];
+    setFranchisees(nextFranchisees);
 
-    // Sincroniza as lojas atribuídas a esse franqueado
+    // Sincroniza as lojas atribuídas a esse franqueado (preservando multi-franqueados)
     if (newFranchisee.assignedStoreIds.length > 0) {
       setStores(prev => prev.map(s => {
         if (newFranchisee.assignedStoreIds.includes(s.id)) {
+          const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(s.id));
           return {
             ...s,
-            franchisee: newFranchisee.name,
-            email: newFranchisee.email || s.email,
-            phone: newFranchisee.phone || s.phone
+            franchisee: partners.map(p => p.name).join(' / '),
+            email: partners.map(p => p.email).filter(Boolean).join(', ') || s.email,
+            phone: partners[0]?.phone || s.phone
           };
         }
         return s;
       }));
-
-      if (isSupabaseConfigured && supabase) {
-        try {
-          for (const sId of newFranchisee.assignedStoreIds) {
-            await supabase.from('stores').update({
-              franchisee: newFranchisee.name,
-              email: newFranchisee.email,
-              phone: newFranchisee.phone
-            }).eq('id', sId);
-          }
-        } catch (e) {
-          console.error('Erro ao sincronizar lojas do franqueado no Supabase:', e);
-        }
-      }
     }
 
-    showToast(`Franqueado "${newFranchisee.name}" cadastrado com sucesso!`);
+    showToast(`Franqueado(a) "${newFranchisee.name}" cadastrado(a) com sucesso!`);
     return newFranchisee;
   };
 
@@ -970,7 +962,7 @@ export function AppProvider({ children }) {
     let updatedObj = null;
     const newStoreIds = data.assignedStoreIds || [];
 
-    setFranchisees(prev => prev.map(f => {
+    const nextFranchisees = franchisees.map(f => {
       if (f.id !== id) return f;
       updatedObj = {
         ...f,
@@ -980,41 +972,46 @@ export function AppProvider({ children }) {
         assignedStoreIds: newStoreIds
       };
       return updatedObj;
-    }));
+    });
 
-    // Atualiza as lojas que pertencem a este franqueado
+    setFranchisees(nextFranchisees);
+
+    // Atualiza as lojas que pertencem a este franqueado e outros sócios
     setStores(prev => prev.map(s => {
-      if (newStoreIds.includes(s.id)) {
+      const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(s.id));
+      if (partners.length > 0) {
         return {
           ...s,
-          franchisee: updatedObj.name,
-          email: updatedObj.email || s.email,
-          phone: updatedObj.phone || s.phone
+          franchisee: partners.map(p => p.name).join(' / '),
+          email: partners.map(p => p.email).filter(Boolean).join(', ') || s.email,
+          phone: partners[0]?.phone || s.phone
         };
       }
       return s;
     }));
 
-    if (isSupabaseConfigured && supabase && updatedObj) {
-      try {
-        for (const sId of newStoreIds) {
-          await supabase.from('stores').update({
-            franchisee: updatedObj.name,
-            email: updatedObj.email,
-            phone: updatedObj.phone
-          }).eq('id', sId);
-        }
-      } catch (e) {
-        console.error('Erro ao atualizar lojas do franqueado no Supabase:', e);
-      }
-    }
-
-    showToast(`Dados do franqueado "${updatedObj?.name}" atualizados com sucesso!`);
+    showToast(`Dados do(a) franqueado(a) "${updatedObj?.name}" atualizados com sucesso!`);
     return updatedObj;
   };
 
   const deleteFranchisee = (id) => {
-    setFranchisees(prev => prev.filter(f => f.id !== id));
+    const nextFranchisees = franchisees.filter(f => f.id !== id);
+    setFranchisees(nextFranchisees);
+
+    // Atualiza as lojas recalculando os sócios restantes
+    setStores(prev => prev.map(s => {
+      const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(s.id));
+      if (partners.length > 0) {
+        return {
+          ...s,
+          franchisee: partners.map(p => p.name).join(' / '),
+          email: partners.map(p => p.email).filter(Boolean).join(', ') || s.email,
+          phone: partners[0]?.phone || s.phone
+        };
+      }
+      return s;
+    }));
+
     showToast('Franqueado removido com sucesso.');
   };
 
@@ -1244,6 +1241,7 @@ export function AppProvider({ children }) {
       updateStore,
       deleteStore,
       franchisees,
+      getStoreFranchisees,
       addFranchisee,
       updateFranchisee,
       deleteFranchisee,

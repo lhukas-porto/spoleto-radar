@@ -28,6 +28,8 @@ export default function StoreProfileModal({ store, onClose }) {
     visits, 
     consultants, 
     categories, 
+    franchisees,
+    getStoreFranchisees,
     setSelectedVisitForReport, 
     setSelectedStaffForProfile,
     updateActionPlanStatus
@@ -36,6 +38,8 @@ export default function StoreProfileModal({ store, onClose }) {
   const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' | 'actions' | 'reoccurrences'
 
   if (!store) return null;
+
+  const storeFranchisees = getStoreFranchisees ? getStoreFranchisees(store.id) : [];
 
   // Lojas e Visitas
   const storeVisits = visits
@@ -222,7 +226,12 @@ export default function StoreProfileModal({ store, onClose }) {
               {store.city} - {store.state} {store.cep ? `• CEP ${store.cep}` : ''}
             </span>
             <span>
-              Franqueado(a): <strong style={{ color: '#FFFFFF' }}>{store.franchisee || 'Franquia Oficial Spoleto'}</strong>
+              {storeFranchisees.length > 1 ? 'Sócios / Franqueados: ' : 'Franqueado(a): '}
+              <strong style={{ color: '#FFFFFF' }}>
+                {storeFranchisees.length > 0 
+                  ? storeFranchisees.map(f => f.name).join(' • ') 
+                  : (store.franchisee || 'Franquia Oficial Spoleto')}
+              </strong>
             </span>
           </div>
         </div>
@@ -254,16 +263,39 @@ export default function StoreProfileModal({ store, onClose }) {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '1.25rem', color: 'var(--text-secondary)' }}>
-            {store.phone && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <Phone size={13} color="var(--text-muted)" /> {formatPhoneNumber(store.phone)}
-              </span>
-            )}
-            {store.email && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <Mail size={13} color="var(--text-muted)" /> {store.email}
-              </span>
+          <div style={{ display: 'flex', gap: '0.75rem', color: 'var(--text-secondary)', flexWrap: 'wrap', alignItems: 'center' }}>
+            {storeFranchisees.length > 0 ? (
+              storeFranchisees.map(f => {
+                const cleanPhone = (f.phone || '').replace(/\D/g, '');
+                return (
+                  <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#FFFFFF', padding: '0.25rem 0.6rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)', fontSize: '0.78rem' }}>
+                    <strong style={{ color: 'var(--primary-brown)' }}>{f.name.split(' ')[0]}:</strong>
+                    {cleanPhone && (
+                      <a href={`https://wa.me/55${cleanPhone}`} target="_blank" rel="noreferrer" style={{ color: '#166534', textDecoration: 'underline', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                        <Phone size={11} /> {f.phone}
+                      </a>
+                    )}
+                    {f.email && (
+                      <a href={`mailto:${f.email}`} title={f.email} style={{ color: 'var(--primary-brown)', textDecoration: 'underline', display: 'flex', alignItems: 'center' }}>
+                        <Mail size={12} />
+                      </a>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <>
+                {store.phone && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Phone size={13} color="var(--text-muted)" /> {formatPhoneNumber(store.phone)}
+                  </span>
+                )}
+                {store.email && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Mail size={13} color="var(--text-muted)" /> {store.email}
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>

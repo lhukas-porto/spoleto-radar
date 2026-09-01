@@ -33,6 +33,7 @@ export default function StoresView() {
     stores, 
     consultants, 
     franchisees,
+    getStoreFranchisees,
     visits, 
     addStore, 
     updateStore, 
@@ -368,6 +369,7 @@ export default function StoresView() {
           );
           const storeVisits = visits.filter(v => v.storeId === store.id);
           const lastVisit = storeVisits[0];
+          const storeFranchisees = getStoreFranchisees ? getStoreFranchisees(store.id) : [];
 
           return (
             <div 
@@ -423,10 +425,18 @@ export default function StoresView() {
                   {store.city} - {store.state}
                 </div>
 
-                <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.82rem' }}>
+                <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.82rem' }}>
                   <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Franqueado(a):</span> <strong>{store.franchisee || 'Franquia Oficial Spoleto'}</strong>
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      {storeFranchisees.length > 1 ? 'Sócios / Franqueados:' : 'Franqueado(a):'}
+                    </span>{' '}
+                    <strong>
+                      {storeFranchisees.length > 0
+                        ? storeFranchisees.map(f => f.name).join(' • ')
+                        : (store.franchisee || 'Franquia Oficial Spoleto')}
+                    </strong>
                   </div>
+
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>Consultor(a):</span>{' '}
                     {consultant ? (
@@ -441,7 +451,30 @@ export default function StoresView() {
                       <strong>Não atribuído</strong>
                     )}
                   </div>
-                  {store.phone && (
+
+                  {/* Contatos dos Franqueados / Sócios ou da Loja */}
+                  {storeFranchisees.length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.2rem' }}>
+                      {storeFranchisees.map(f => {
+                        const cleanPhone = (f.phone || '').replace(/\D/g, '');
+                        return (
+                          <div key={f.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.2rem 0.45rem', borderRadius: '4px', fontSize: '0.74rem' }}>
+                            <span style={{ fontWeight: 700, color: 'var(--primary-brown)' }}>{f.name.split(' ')[0]}:</span>
+                            {cleanPhone && (
+                              <a href={`https://wa.me/55${cleanPhone}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: '#166534', display: 'flex', alignItems: 'center' }} title={`WhatsApp de ${f.name}: ${f.phone}`}>
+                                <Phone size={11} />
+                              </a>
+                            )}
+                            {f.email && (
+                              <a href={`mailto:${f.email}`} onClick={(e) => e.stopPropagation()} style={{ color: 'var(--primary-brown)', display: 'flex', alignItems: 'center' }} title={`E-mail de ${f.name}: ${f.email}`}>
+                                <Mail size={11} />
+                              </a>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : store.phone && (
                     <a 
                       href={`https://wa.me/55${store.phone.replace(/\D/g, '')}`}
                       target="_blank"
@@ -452,16 +485,7 @@ export default function StoresView() {
                         alignItems: 'center', 
                         gap: '0.4rem', 
                         color: 'var(--text-secondary)',
-                        textDecoration: 'none',
-                        transition: 'color 0.15s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#15803D';
-                        e.currentTarget.style.textDecoration = 'underline';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'var(--text-secondary)';
-                        e.currentTarget.style.textDecoration = 'none';
+                        textDecoration: 'none'
                       }}
                       title="Conversar com a loja no WhatsApp"
                     >
