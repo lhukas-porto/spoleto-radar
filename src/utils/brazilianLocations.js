@@ -146,6 +146,51 @@ export async function fetchAddressByCEP(rawCep) {
 }
 
 /**
+ * Busca CEP e endereços correspondentes a partir do nome da rua, shopping ou bairro via ViaCEP
+ */
+export async function searchCepByText(uf, city, text) {
+  if (!uf || !city || !text) return [];
+  const cleanText = text
+    .replace(/spoleto/gi, '')
+    .replace(/shopping/gi, '')
+    .replace(/[^\w\s]/gi, '')
+    .trim();
+  const query = cleanText.length >= 3 ? cleanText : text.replace(/[^\w\s]/gi, '').trim();
+  if (query.length < 3) return [];
+
+  // Normalizar acentos
+  const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const cleanCity = encodeURIComponent(normalize(city).trim());
+  const cleanUF = encodeURIComponent(uf.toUpperCase().trim());
+  const cleanQuery = encodeURIComponent(normalize(query).trim());
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`https://viacep.com.br/ws/${cleanUF}/${cleanCity}/${cleanQuery}/json/`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+
+    return data.map(item => ({
+      cep: formatCEP(item.cep),
+      state: item.uf,
+      city: item.localidade,
+      neighborhood: item.bairro || '',
+      street: item.logradouro || '',
+      fullAddress: [item.logradouro, item.bairro].filter(Boolean).join(', ')
+    }));
+  } catch (err) {
+    console.warn('ViaCEP search by text offline or error:', err);
+    return [];
+  }
+}
+
+/**
  * Busca todas as cidades oficiais de um estado (IBGE API com cache e fallback)
  */
 export async function getCitiesForState(uf) {
