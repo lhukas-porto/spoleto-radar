@@ -9,6 +9,7 @@ import {
   Users, 
   Settings2
 } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 export default function Header() {
   const { activeTab, setActiveTab, stores, visits, consultants, categories } = useApp();
@@ -75,6 +76,11 @@ export default function Header() {
             <Settings2 size={16} /> Matriz de Tópicos
           </button>
         </nav>
+
+        {/* Sininho de Atividades & Alertas em Tempo Real */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <NotificationBell />
+        </div>
       </div>
     </header>
   );

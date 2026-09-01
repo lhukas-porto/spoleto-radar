@@ -18,8 +18,13 @@ import {
   BellRing,
   Flame,
   Send,
-  ChevronRight
+  ChevronRight,
+  Trophy,
+  BarChart3,
+  Sparkles
 } from 'lucide-react';
+import RegionalBenchmarkView from './RegionalBenchmarkView';
+import StoreRankingView from './StoreRankingView';
 
 export default function DashboardView() {
   const {
@@ -36,6 +41,7 @@ export default function DashboardView() {
 
   const [hoveredSlice, setHoveredSlice] = useState(null);
   const [drilldownCategory, setDrilldownCategory] = useState(null); // null = Main Topics; categoryId = Subtopics
+  const [dashboardSubTab, setDashboardSubTab] = useState('overview'); // 'overview' | 'benchmark' | 'ranking'
 
   // High level KPIs
   const totalStores = stores.length;
@@ -269,8 +275,81 @@ export default function DashboardView() {
         </div>
       </div>
 
-      {/* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+      {/* Navegador Executivo do Painel */}
+      <div style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.5rem', flexWrap: 'wrap', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
+        <button
+          type="button"
+          onClick={() => setDashboardSubTab('overview')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md)',
+            border: dashboardSubTab === 'overview' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+            background: dashboardSubTab === 'overview' ? 'var(--primary-brown)' : '#FFFFFF',
+            color: dashboardSubTab === 'overview' ? '#FFFFFF' : 'var(--text-main)',
+            fontWeight: 800,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            boxShadow: dashboardSubTab === 'overview' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <PieIcon size={16} /> Visão Geral & Gargalos
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setDashboardSubTab('benchmark')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md)',
+            border: dashboardSubTab === 'benchmark' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+            background: dashboardSubTab === 'benchmark' ? 'var(--primary-brown)' : '#FFFFFF',
+            color: dashboardSubTab === 'benchmark' ? '#FFFFFF' : 'var(--text-main)',
+            fontWeight: 800,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            boxShadow: dashboardSubTab === 'benchmark' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <BarChart3 size={16} /> Benchmark de Regionais (Liliane & Diretoria)
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setDashboardSubTab('ranking')}
+          style={{
+            padding: '0.55rem 1.15rem',
+            borderRadius: 'var(--radius-md)',
+            border: dashboardSubTab === 'ranking' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+            background: dashboardSubTab === 'ranking' ? 'var(--primary-brown)' : '#FFFFFF',
+            color: dashboardSubTab === 'ranking' ? '#FFFFFF' : 'var(--text-main)',
+            fontWeight: 800,
+            fontSize: '0.84rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            boxShadow: dashboardSubTab === 'ranking' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Trophy size={16} color={dashboardSubTab === 'ranking' ? '#FDE68A' : '#D97706'} /> Ranking de Excelência & Top Lojas
+        </button>
+      </div>
+
+      {dashboardSubTab === 'benchmark' && <RegionalBenchmarkView />}
+      {dashboardSubTab === 'ranking' && <StoreRankingView />}
+
+      {dashboardSubTab === 'overview' && (
+        /* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
 
         {/* =========================================================================
             GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM DRILLDOWN
@@ -549,6 +628,7 @@ export default function DashboardView() {
           </div>
         </div>
       </div>
+    )}
     </div>
   );
 }
