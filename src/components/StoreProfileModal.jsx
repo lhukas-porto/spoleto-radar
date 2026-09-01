@@ -84,7 +84,7 @@ export default function StoreProfileModal({ store, onClose }) {
   const chronologicalVisits = [...storeVisits].sort((a, b) => new Date(a.date) - new Date(b.date));
   
   // Construir série histórica de notas e diagnósticos
-  const currentStoreScore = store.rating_score || store.ratingScore || 8.5;
+  const currentStoreScore = Number((store.rating_score || store.ratingScore || 8.5).toFixed ? (store.rating_score || store.ratingScore || 8.5).toFixed(1) : (store.rating_score || store.ratingScore || 8.5));
   let scoreHistorySeries = chronologicalVisits.map((v, idx) => ({
     visitIndex: idx + 1,
     date: v.date,
@@ -93,35 +93,42 @@ export default function StoreProfileModal({ store, onClose }) {
     visitType: v.visitType || 'Auditoria Periódica'
   }));
 
-  // Se houver apenas 1 visita registrada, gerar série de evolução baseline para comparação visual
-  if (scoreHistorySeries.length === 1) {
-    const mainVisit = scoreHistorySeries[0];
-    const visitDateObj = new Date(mainVisit.date + 'T12:00:00');
+  // Se houver 0 ou 1 visita registrada, gerar série de evolução baseline para visualização consistente
+  if (scoreHistorySeries.length <= 1) {
+    const mainVisitDate = scoreHistorySeries[0]?.date || new Date().toISOString().split('T')[0];
+    const mainProblemCount = scoreHistorySeries[0]?.problemCount || 0;
+    const visitDateObj = new Date(mainVisitDate + 'T12:00:00');
     
     const d1 = new Date(visitDateObj);
     d1.setDate(d1.getDate() - 60);
     const d2 = new Date(visitDateObj);
     d2.setDate(d2.getDate() - 30);
 
-    const baseScore1 = Number(Math.max(6.0, currentStoreScore - 1.2).toFixed(1));
-    const baseScore2 = Number(Math.max(6.5, currentStoreScore - 0.5).toFixed(1));
+    const baseScore1 = Number(Math.max(6.0, currentStoreScore - 0.8).toFixed(1));
+    const baseScore2 = Number(Math.max(6.5, currentStoreScore - 0.3).toFixed(1));
 
     scoreHistorySeries = [
       {
         visitIndex: 1,
         date: d1.toISOString().split('T')[0],
         score: baseScore1,
-        problemCount: Math.min(8, mainVisit.problemCount + 3),
+        problemCount: Math.min(8, mainProblemCount + 3),
         visitType: 'Auditoria Inicial / Diagnóstico'
       },
       {
         visitIndex: 2,
         date: d2.toISOString().split('T')[0],
         score: baseScore2,
-        problemCount: Math.min(6, mainVisit.problemCount + 1),
+        problemCount: Math.min(6, mainProblemCount + 1),
         visitType: 'Acompanhamento de Metas'
       },
-      mainVisit
+      scoreHistorySeries[0] || {
+        visitIndex: 3,
+        date: mainVisitDate,
+        score: currentStoreScore,
+        problemCount: mainProblemCount,
+        visitType: 'Avaliação Operacional Atual'
+      }
     ];
   }
 
@@ -132,8 +139,8 @@ export default function StoreProfileModal({ store, onClose }) {
   
   const isScoreImproving = scoreDelta >= 0.3;
   const isScoreDeclining = scoreDelta <= -0.3;
-  const maxScoreEver = Math.max(...scoreHistorySeries.map(s => s.score));
-  const avgScorePeriod = Number((scoreHistorySeries.reduce((acc, s) => acc + s.score, 0) / scoreHistorySeries.length).toFixed(1));
+  const maxScoreEver = scoreHistorySeries.length > 0 ? Math.max(...scoreHistorySeries.map(s => s.score)) : currentStoreScore;
+  const avgScorePeriod = scoreHistorySeries.length > 0 ? Number((scoreHistorySeries.reduce((acc, s) => acc + s.score, 0) / scoreHistorySeries.length).toFixed(1)) : currentStoreScore;
 
   // Detector de Reincidência nesta loja
   const subproblemFrequency = {};
@@ -454,19 +461,24 @@ export default function StoreProfileModal({ store, onClose }) {
                 <text x="32" y="103" textAnchor="end" fontSize="9" fill="#94A3B8" fontWeight="700">6.0</text>
 
                 {(() => {
+                  if (!scoreHistorySeries || scoreHistorySeries.length === 0) return null;
+
                   const paddingX = 70;
                   const availableWidth = 500;
                   const stepX = scoreHistorySeries.length > 1 ? (availableWidth / (scoreHistorySeries.length - 1)) : availableWidth / 2;
 
                   const points = scoreHistorySeries.map((item, idx) => {
                     const x = paddingX + (idx * stepX);
-                    const clampedScore = Math.min(10, Math.max(5, item.score));
+                    const clampedScore = Math.min(10, Math.max(5, item.score || 8.5));
                     const y = 20 + ((10 - clampedScore) / 5) * 80;
                     return { ...item, x, y };
                   });
 
+                  if (points.length === 0) return null;
+
+                  const lastPoint = points[points.length - 1];
                   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-                  const areaPath = `${linePath} L ${points[points.length - 1].x} 110 L ${points[0].x} 110 Z`;
+                  const areaPath = `${linePath} L ${lastPoint.x} 110 L ${points[0].x} 110 Z`;
 
                   return (
                     <g>
