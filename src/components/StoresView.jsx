@@ -24,7 +24,10 @@ import {
   Trash2,
   Loader2,
   CheckCircle2,
-  Users
+  Users,
+  Building2,
+  Handshake,
+  RotateCcw
 } from 'lucide-react';
 import FranchiseesView from './FranchiseesView';
 
@@ -32,7 +35,7 @@ export default function StoresView() {
   const { 
     stores, 
     consultants, 
-    franchisees,
+    franchisees = [],
     getStoreFranchisees,
     visits, 
     addStore, 
@@ -45,6 +48,9 @@ export default function StoresView() {
   const [activeStoreTab, setActiveStoreTab] = useState('stores'); // 'stores' | 'franchisees'
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('Todos');
+  const [locationTypeFilter, setLocationTypeFilter] = useState('Todos');
+  const [franchiseeFilter, setFranchiseeFilter] = useState('Todos');
+  const [consultantFilter, setConsultantFilter] = useState('Todos');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStore, setEditingStore] = useState(null);
 
@@ -171,17 +177,58 @@ export default function StoresView() {
     }
   };
 
-  // Extract unique states currently present in stores
+  // Extract unique lists for filters
   const presentStates = Array.from(new Set(stores.map(s => s.state).filter(Boolean))).sort();
 
+  const availableFranchisees = Array.from(new Set(
+    franchisees.length > 0
+      ? franchisees.map(f => f.name.trim().toUpperCase())
+      : stores.map(s => (s.franchisee || '').trim().toUpperCase()).filter(Boolean)
+  )).filter(Boolean).sort((a, b) => a.localeCompare(b));
+
+  const availableConsultants = consultants
+    .filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR')
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   const filteredStores = stores.filter(store => {
-    const term = searchTerm.toLowerCase();
-    const matchesSearch = (store.name || '').toLowerCase().includes(term) ||
-                          (store.city || '').toLowerCase().includes(term) ||
-                          (store.code || '').toLowerCase().includes(term) ||
-                          (store.franchisee || '').toLowerCase().includes(term);
+    const term = searchTerm.toLowerCase().trim();
+    const cleanDigits = term.replace(/\D/g, '');
+
+    // 1. Busca textual ampla
+    const matchesSearch = !term ||
+      (store.name || '').toLowerCase().includes(term) ||
+      (store.city || '').toLowerCase().includes(term) ||
+      (store.code || '').toLowerCase().includes(term) ||
+      (store.franchisee || '').toLowerCase().includes(term) ||
+      (cleanDigits && (store.phone || '').replace(/\D/g, '').includes(cleanDigits));
+
+    // 2. Filtro por Estado (UF)
     const matchesState = stateFilter === 'Todos' || store.state === stateFilter;
-    return matchesSearch && matchesState;
+
+    // 3. Filtro por Tipo de Ponto (Shopping, Rua, Aeroporto, Hipermercado)
+    const matchesLocationType = locationTypeFilter === 'Todos' ||
+      (store.locationType || '').toLowerCase().includes(locationTypeFilter.toLowerCase());
+
+    // 4. Filtro por Franqueado Responsável / Sócios
+    let matchesFranchisee = franchiseeFilter === 'Todos';
+    if (!matchesFranchisee) {
+      const storeFrans = getStoreFranchisees ? getStoreFranchisees(store.id) : [];
+      if (storeFrans.length > 0) {
+        matchesFranchisee = storeFrans.some(f => f.name.toUpperCase() === franchiseeFilter.toUpperCase());
+      } else {
+        matchesFranchisee = (store.franchisee || '').toUpperCase().includes(franchiseeFilter.toUpperCase());
+      }
+    }
+
+    // 5. Filtro por Consultor de Negócios
+    let matchesConsultant = consultantFilter === 'Todos';
+    if (!matchesConsultant) {
+      const c = consultants.find(co => co.id === consultantFilter);
+      matchesConsultant = store.consultantId === consultantFilter ||
+        (c?.assignedStores && Array.isArray(c.assignedStores) && c.assignedStores.includes(store.id));
+    }
+
+    return matchesSearch && matchesState && matchesLocationType && matchesFranchisee && matchesConsultant;
   });
 
   const handleSaveStore = (e) => {
@@ -320,45 +367,141 @@ export default function StoresView() {
         <FranchiseesView />
       ) : (
         <>
-          {/* Barra de Busca e Filtros */}
+          {/* Barra de Busca e Filtros Avançados */}
           <div className="card-panel" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 1fr) auto', gap: '1rem', alignItems: 'center' }}>
-              {/* Campo de Busca */}
-              <div style={{ position: 'relative', width: '100%' }}>
-            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input 
-              type="text" 
-              placeholder="Buscar por nome da loja, Código RP, cidade ou franqueado..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '2.4rem', width: '100%', height: '42px', margin: 0 }}
-            />
-          </div>
+            {/* Linha Superior: Busca Textual + Contador de Lojas + Botão Limpar */}
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
+                <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input 
+                  type="text" 
+                  placeholder="Buscar por nome da loja, Código RP, cidade, telefone ou franqueado..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ paddingLeft: '2.4rem', width: '100%', height: '42px', margin: 0 }}
+                />
+              </div>
 
-          {/* Filtro de Estado (UF) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-              <Filter size={15} /> Estado (UF):
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text-main)', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.45rem 0.85rem', borderRadius: 'var(--radius-full)', whiteSpace: 'nowrap' }}>
+                  {filteredStores.length} de {stores.length} lojas
+                </span>
+
+                {(searchTerm || stateFilter !== 'Todos' || locationTypeFilter !== 'Todos' || franchiseeFilter !== 'Todos' || consultantFilter !== 'Todos') && (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setStateFilter('Todos');
+                      setLocationTypeFilter('Todos');
+                      setFranchiseeFilter('Todos');
+                      setConsultantFilter('Todos');
+                    }}
+                    style={{ fontSize: '0.78rem', padding: '0.45rem 0.85rem', color: 'var(--primary-red)', borderColor: '#FCA5A5', background: '#FEF2F2', gap: '0.35rem', display: 'flex', alignItems: 'center' }}
+                    title="Limpar todos os filtros ativos"
+                  >
+                    <RotateCcw size={13} /> Limpar
+                  </button>
+                )}
+              </div>
             </div>
-            
-            <select 
-              value={stateFilter} 
-              onChange={(e) => setStateFilter(e.target.value)}
-              style={{ fontSize: '0.84rem', height: '42px', minWidth: '220px', margin: 0, padding: '0 0.75rem' }}
-            >
-              <option value="Todos">Todos os Estados ({stores.length} lojas)</option>
-              {BRAZILIAN_STATES.map(s => {
-                const count = stores.filter(st => st.state === s.uf).length;
-                return (
-                  <option key={s.uf} value={s.uf}>
-                    {s.uf} - {s.name} ({count})
-                  </option>
-                );
-              })}
-            </select>
+
+            {/* Linha Inferior: 4 Filtros em Grid (Estado, Tipo de Ponto, Franqueado, Consultor) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)' }}>
+              {/* 1. Filtro de Estado (UF) */}
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                  <MapPin size={13} color="var(--primary-brown)" /> Estado (UF)
+                </label>
+                <select 
+                  value={stateFilter} 
+                  onChange={(e) => setStateFilter(e.target.value)}
+                  style={{ fontSize: '0.84rem', height: '38px', width: '100%', margin: 0, padding: '0 0.65rem' }}
+                >
+                  <option value="Todos">Todos os Estados ({stores.length})</option>
+                  {BRAZILIAN_STATES.map(s => {
+                    const count = stores.filter(st => st.state === s.uf).length;
+                    if (count === 0) return null;
+                    return (
+                      <option key={s.uf} value={s.uf}>
+                        {s.uf} - {s.name} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* 2. Filtro de Tipo de Ponto (Shopping, Rua, Aeroporto, Hipermercado) */}
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                  <Building2 size={13} color="var(--primary-brown)" /> Tipo de Ponto
+                </label>
+                <select 
+                  value={locationTypeFilter} 
+                  onChange={(e) => setLocationTypeFilter(e.target.value)}
+                  style={{ fontSize: '0.84rem', height: '38px', width: '100%', margin: 0, padding: '0 0.65rem' }}
+                >
+                  <option value="Todos">Todos os Tipos ({stores.length})</option>
+                  <option value="Shopping">Shopping Center ({stores.filter(s => (s.locationType || '').toLowerCase().includes('shopping')).length})</option>
+                  <option value="Rua">Loja de Rua ({stores.filter(s => (s.locationType || '').toLowerCase().includes('rua')).length})</option>
+                  <option value="Aeroporto">Aeroporto ({stores.filter(s => (s.locationType || '').toLowerCase().includes('aeroporto')).length})</option>
+                  <option value="Hipermercado">Hipermercado / Galeria ({stores.filter(s => (s.locationType || '').toLowerCase().includes('hipermercado') || (s.locationType || '').toLowerCase().includes('galeria')).length})</option>
+                </select>
+              </div>
+
+              {/* 3. Filtro de Franqueado Responsável / Grupo */}
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                  <Handshake size={13} color="var(--primary-brown)" /> Franqueado / Grupo
+                </label>
+                <select 
+                  value={franchiseeFilter} 
+                  onChange={(e) => setFranchiseeFilter(e.target.value)}
+                  style={{ fontSize: '0.84rem', height: '38px', width: '100%', margin: 0, padding: '0 0.65rem' }}
+                >
+                  <option value="Todos">Todos os Franqueados ({availableFranchisees.length})</option>
+                  {availableFranchisees.map(franName => {
+                    const count = stores.filter(s => {
+                      const storeFrans = getStoreFranchisees ? getStoreFranchisees(s.id) : [];
+                      if (storeFrans.length > 0) return storeFrans.some(f => f.name.toUpperCase() === franName.toUpperCase());
+                      return (s.franchisee || '').toUpperCase().includes(franName.toUpperCase());
+                    }).length;
+                    return (
+                      <option key={franName} value={franName}>
+                        {franName} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* 4. Filtro de Consultor de Negócios */}
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                  <User size={13} color="var(--primary-brown)" /> Consultor Responsável
+                </label>
+                <select 
+                  value={consultantFilter} 
+                  onChange={(e) => setConsultantFilter(e.target.value)}
+                  style={{ fontSize: '0.84rem', height: '38px', width: '100%', margin: 0, padding: '0 0.65rem' }}
+                >
+                  <option value="Todos">Todos os Consultores ({availableConsultants.length})</option>
+                  {availableConsultants.map(c => {
+                    const count = stores.filter(s => 
+                      s.consultantId === c.id || 
+                      (c.assignedStores && Array.isArray(c.assignedStores) && c.assignedStores.includes(s.id))
+                    ).length;
+                    return (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
       {/* Grid de Cards de Lojas */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
