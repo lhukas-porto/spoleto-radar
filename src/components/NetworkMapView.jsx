@@ -17,39 +17,18 @@ import {
   ShieldCheck,
   Compass,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Info
 } from 'lucide-react';
 import { BRAZILIAN_STATES } from '../utils/brazilianLocations';
+import { BRAZIL_SVG_STATES } from '../utils/brazilSvgPaths';
 
-// 27 Brazilian States with Macro-regions, geographic coordinates & centers for interactive SVG layout
-const BRAZIL_STATE_COORDS = {
-  'RR': { x: 260, y: 55, region: 'Norte' },
-  'AP': { x: 380, y: 70, region: 'Norte' },
-  'AM': { x: 175, y: 130, region: 'Norte' },
-  'PA': { x: 340, y: 145, region: 'Norte' },
-  'MA': { x: 440, y: 145, region: 'Nordeste' },
-  'PI': { x: 465, y: 185, region: 'Nordeste' },
-  'CE': { x: 520, y: 145, region: 'Nordeste' },
-  'RN': { x: 555, y: 165, region: 'Nordeste' },
-  'PB': { x: 560, y: 195, region: 'Nordeste' },
-  'PE': { x: 545, y: 220, region: 'Nordeste' },
-  'AL': { x: 555, y: 245, region: 'Nordeste' },
-  'SE': { x: 535, y: 265, region: 'Nordeste' },
-  'BA': { x: 485, y: 285, region: 'Nordeste' },
-  'AC': { x: 80, y: 210, region: 'Norte' },
-  'RO': { x: 175, y: 225, region: 'Norte' },
-  'TO': { x: 375, y: 240, region: 'Norte' },
-  'MT': { x: 265, y: 285, region: 'Centro-Oeste' },
-  'GO': { x: 360, y: 325, region: 'Centro-Oeste' },
-  'DF': { x: 395, y: 320, region: 'Centro-Oeste' },
-  'MS': { x: 275, y: 390, region: 'Centro-Oeste' },
-  'MG': { x: 440, y: 375, region: 'Sudeste' },
-  'ES': { x: 505, y: 390, region: 'Sudeste' },
-  'RJ': { x: 475, y: 435, region: 'Sudeste' },
-  'SP': { x: 385, y: 430, region: 'Sudeste' },
-  'PR': { x: 335, y: 475, region: 'Sul' },
-  'SC': { x: 350, y: 515, region: 'Sul' },
-  'RS': { x: 310, y: 555, region: 'Sul' }
+const REGION_BY_UF = {
+  'RR': 'Norte', 'AP': 'Norte', 'AM': 'Norte', 'PA': 'Norte', 'AC': 'Norte', 'RO': 'Norte', 'TO': 'Norte',
+  'MA': 'Nordeste', 'PI': 'Nordeste', 'CE': 'Nordeste', 'RN': 'Nordeste', 'PB': 'Nordeste', 'PE': 'Nordeste', 'AL': 'Nordeste', 'SE': 'Nordeste', 'BA': 'Nordeste',
+  'MT': 'Centro-Oeste', 'GO': 'Centro-Oeste', 'DF': 'Centro-Oeste', 'MS': 'Centro-Oeste',
+  'MG': 'Sudeste', 'ES': 'Sudeste', 'RJ': 'Sudeste', 'SP': 'Sudeste',
+  'PR': 'Sul', 'SC': 'Sul', 'RS': 'Sul'
 };
 
 export default function NetworkMapView() {
@@ -62,6 +41,7 @@ export default function NetworkMapView() {
   } = useApp();
 
   const [selectedUF, setSelectedUF] = useState('SP');
+  const [hoveredUF, setHoveredUF] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState('Todas');
   const [scoreTierFilter, setScoreTierFilter] = useState('Todas');
   const [localSearch, setLocalSearch] = useState('');
@@ -80,7 +60,7 @@ export default function NetworkMapView() {
         stores: stateStores,
         count: stateStores.length,
         avgScore: avgScore > 0 ? Number(avgScore.toFixed(1)) : 0,
-        region: BRAZIL_STATE_COORDS[st.uf]?.region || 'Outro'
+        region: REGION_BY_UF[st.uf] || 'Outro'
       };
     });
     return stats;
@@ -112,13 +92,78 @@ export default function NetworkMapView() {
     });
   }, [currentSelectedStateData, localSearch]);
 
-  // Cores de Heatmap baseadas na média de nota
-  const getScoreColor = (score, count) => {
-    if (count === 0) return { bg: '#E2E8F0', border: '#CBD5E1', text: '#64748B', label: 'Sem Lojas' };
-    if (score >= 8.5) return { bg: '#ECFDF5', border: '#10B981', text: '#065F46', pin: '#059669', label: 'Excelente' };
-    if (score >= 7.5) return { bg: '#FEFCE8', border: '#F59E0B', text: '#92400E', pin: '#D97706', label: 'Atenção' };
-    return { bg: '#FEF2F2', border: '#EF4444', text: '#991B1B', pin: '#DC2626', label: 'Crítico' };
+  // Cores de Heatmap baseadas na média de nota e densidade
+  const getStateColor = (uf, isSelected, isHovered) => {
+    const data = stateStats[uf] || { count: 0, avgScore: 0 };
+    const hasStores = data.count > 0;
+
+    if (isSelected) {
+      return {
+        fill: '#5D3826',
+        stroke: '#C49A45',
+        strokeWidth: 2.5,
+        textColor: '#FFFFFF',
+        badgeBg: 'var(--primary-gold)',
+        badgeText: '#3D2214'
+      };
+    }
+
+    if (isHovered) {
+      return {
+        fill: hasStores ? '#8C5839' : '#CBD5E1',
+        stroke: '#C49A45',
+        strokeWidth: 2,
+        textColor: '#FFFFFF',
+        badgeBg: '#5D3826',
+        badgeText: '#FFFFFF'
+      };
+    }
+
+    if (!hasStores) {
+      return {
+        fill: '#E2E8F0',
+        stroke: '#CBD5E1',
+        strokeWidth: 0.8,
+        textColor: '#94A3B8',
+        badgeBg: '#CBD5E1',
+        badgeText: '#64748B'
+      };
+    }
+
+    // Heatmap por nota média
+    if (data.avgScore >= 8.5) {
+      return {
+        fill: '#DCFCE7',
+        stroke: '#16A34A',
+        strokeWidth: 1.2,
+        textColor: '#14532D',
+        badgeBg: '#15803D',
+        badgeText: '#FFFFFF'
+      };
+    }
+
+    if (data.avgScore >= 7.5) {
+      return {
+        fill: '#FEF3C7',
+        stroke: '#D97706',
+        strokeWidth: 1.2,
+        textColor: '#78350F',
+        badgeBg: '#D97706',
+        badgeText: '#FFFFFF'
+      };
+    }
+
+    return {
+      fill: '#FEE2E2',
+      stroke: '#DC2626',
+      strokeWidth: 1.2,
+      textColor: '#7F1D1D',
+      badgeBg: '#DC2626',
+      badgeText: '#FFFFFF'
+    };
   };
+
+  const activeHoverData = hoveredUF ? stateStats[hoveredUF] : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '0.5rem' }}>
@@ -130,11 +175,11 @@ export default function NetworkMapView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Compass size={22} color="var(--primary-brown)" />
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>
-                Mapa Geoespacial da Rede Spoleto
+                Mapa Cartográfico Oficial da Rede Spoleto (Brasil)
               </h2>
             </div>
             <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-              Visão nacional de calor, densidade de unidades e nível de maturidade operacional por Estado (UF).
+              Mapa vetorial georreferenciado com os 27 estados (UFs), densidade de restaurantes e notas médias de auditoria.
             </p>
           </div>
 
@@ -168,149 +213,195 @@ export default function NetworkMapView() {
 
         {/* Legenda de Nível de Maturidade */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)', flexWrap: 'wrap', fontSize: '0.8rem' }}>
-          <span style={{ fontWeight: 700, color: 'var(--text-muted)' }}>Nível Médio de Auditoria:</span>
+          <span style={{ fontWeight: 700, color: 'var(--text-muted)' }}>Média de Auditoria:</span>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#059669', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#065F46' }}>Excelente (Nota &ge; 8.5)</span>
+            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#DCFCE7', border: '1px solid #16A34A', display: 'inline-block' }} />
+            <span style={{ fontWeight: 600, color: '#14532D' }}>Excelente (&ge; 8.5)</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#D97706', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#92400E' }}>Atenção (Nota 7.5 - 8.4)</span>
+            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#FEF3C7', border: '1px solid #D97706', display: 'inline-block' }} />
+            <span style={{ fontWeight: 600, color: '#78350F' }}>Atenção (7.5 - 8.4)</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#DC2626', display: 'inline-block' }} />
-            <span style={{ fontWeight: 600, color: '#991B1B' }}>Crítico (Nota &lt; 7.5)</span>
+            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#FEE2E2', border: '1px solid #DC2626', display: 'inline-block' }} />
+            <span style={{ fontWeight: 600, color: '#7F1D1D' }}>Crítico (&lt; 7.5)</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span style={{ width: '12px', height: '12px', borderRadius: '3px', background: '#E2E8F0', border: '1px solid #CBD5E1', display: 'inline-block' }} />
+            <span style={{ fontWeight: 600, color: '#64748B' }}>Sem Lojas</span>
           </div>
 
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
             <span style={{ background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.3rem 0.75rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
-              Total: {stores.length} lojas ativas
+              Rede: {stores.length} restaurantes em 21 estados
             </span>
           </div>
         </div>
       </div>
 
-      {/* 2. Grid Principal: Mapa Interativo à Esquerda + Drilldown da UF à Direita */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 1.25fr) minmax(320px, 1fr)', gap: '1.5rem' }}>
+      {/* 2. Grid Principal: Mapa Cartográfico Vetorial à Esquerda + Drilldown da UF à Direita */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(380px, 1.35fr) minmax(320px, 1fr)', gap: '1.5rem' }}>
         
-        {/* Painel do Mapa SVG do Brasil */}
-        <div className="card-panel" style={{ padding: '1.25rem', position: 'relative', overflow: 'hidden', minHeight: '560px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        {/* Painel do Mapa Cartográfico SVG do Brasil */}
+        <div className="card-panel" style={{ padding: '1.25rem', position: 'relative', overflow: 'hidden', minHeight: '580px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-brown)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Distribuição Nacional por Estados (UFs)
+              Cartografia Territorial do Brasil (IBGE)
             </span>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Clique em um estado para inspecionar
+              Passe o mouse ou clique no estado
             </span>
           </div>
 
           {/* SVG Map Container */}
-          <div style={{ flex: 1, position: 'relative', width: '100%', minHeight: '480px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'radial-gradient(circle, #FAF8F5 0%, #F3EFEA 100%)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', padding: '1rem' }}>
-            <svg 
-              viewBox="0 0 620 600" 
-              style={{ width: '100%', height: '100%', maxHeight: '520px' }}
-            >
-              {/* Conexões e Linhas de Estrutura Geográfica */}
-              <g opacity="0.15" stroke="var(--primary-brown)" strokeWidth="1" strokeDasharray="3,3">
-                <line x1="260" y1="55" x2="340" y2="145" />
-                <line x1="340" y1="145" x2="440" y2="145" />
-                <line x1="440" y1="145" x2="520" y2="145" />
-                <line x1="520" y1="145" x2="560" y2="195" />
-                <line x1="560" y1="195" x2="485" y2="285" />
-                <line x1="485" y1="285" x2="440" y2="375" />
-                <line x1="440" y1="375" x2="385" y2="430" />
-                <line x1="385" y1="430" x2="335" y2="475" />
-                <line x1="335" y1="475" x2="310" y2="555" />
-                <line x1="360" y1="325" x2="395" y2="320" />
-                <line x1="265" y1="285" x2="360" y2="325" />
-              </g>
+          <div style={{ flex: 1, position: 'relative', width: '100%', minHeight: '500px', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'radial-gradient(circle, #FAF8F5 0%, #EFE9E2 100%)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', padding: '0.75rem' }}>
+            
+            {/* Tooltip Flutuante de Hover */}
+            {activeHoverData && (
+              <div style={{
+                position: 'absolute',
+                top: '12px',
+                left: '12px',
+                zIndex: 20,
+                background: 'rgba(61, 34, 20, 0.95)',
+                color: '#FFFFFF',
+                padding: '0.5rem 0.85rem',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+                pointerEvents: 'none',
+                backdropFilter: 'blur(4px)',
+                fontSize: '0.78rem',
+                border: '1px solid rgba(196, 154, 69, 0.4)'
+              }}>
+                <div style={{ fontWeight: 800, color: 'var(--primary-gold)', fontSize: '0.84rem' }}>
+                  {activeHoverData.name} ({activeHoverData.uf})
+                </div>
+                <div>{activeHoverData.count} restaurantes &bull; Média: <strong>{activeHoverData.avgScore}</strong></div>
+              </div>
+            )}
 
-              {/* Renderizar Nós de Cada Estado (UF) */}
-              {Object.entries(BRAZIL_STATE_COORDS).map(([uf, coord]) => {
-                const data = stateStats[uf] || { count: 0, avgScore: 0, name: uf };
+            <svg 
+              viewBox="0 0 600 600" 
+              style={{ width: '100%', height: '100%', maxHeight: '540px', filter: 'drop-shadow(0 4px 10px rgba(93,56,38,0.1))' }}
+            >
+              {/* Renderizar Polígonos de Cada Estado do Brasil */}
+              {Object.entries(BRAZIL_SVG_STATES).map(([uf, stateInfo]) => {
                 const isSelected = selectedUF === uf;
-                const colors = getScoreColor(data.avgScore, data.count);
+                const isHovered = hoveredUF === uf;
+                const colorConfig = getStateColor(uf, isSelected, isHovered);
+                const data = stateStats[uf] || { count: 0, avgScore: 0 };
+                const isRegionMatch = selectedRegion === 'Todas' || data.region === selectedRegion;
+
+                return (
+                  <path
+                    key={uf}
+                    d={stateInfo.d}
+                    fill={colorConfig.fill}
+                    stroke={colorConfig.stroke}
+                    strokeWidth={colorConfig.strokeWidth}
+                    opacity={isRegionMatch ? 1 : 0.35}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'all 0.18s ease-in-out',
+                      outline: 'none'
+                    }}
+                    onMouseEnter={() => setHoveredUF(uf)}
+                    onMouseLeave={() => setHoveredUF(null)}
+                    onClick={() => setSelectedUF(uf)}
+                  />
+                );
+              })}
+
+              {/* Renderizar Labels e Badges de Lojas no Centroide de cada Estado */}
+              {Object.entries(BRAZIL_SVG_STATES).map(([uf, stateInfo]) => {
+                const data = stateStats[uf] || { count: 0, avgScore: 0 };
+                const isSelected = selectedUF === uf;
+                const isHovered = hoveredUF === uf;
+                const colorConfig = getStateColor(uf, isSelected, isHovered);
                 const hasStores = data.count > 0;
-                
-                // Raio do nó baseado na quantidade de lojas
-                const radius = hasStores ? Math.min(32, Math.max(16, 14 + Math.sqrt(data.count) * 2.8)) : 11;
+                const isRegionMatch = selectedRegion === 'Todas' || data.region === selectedRegion;
+
+                if (!stateInfo.center || !isRegionMatch) return null;
 
                 return (
                   <g 
-                    key={uf} 
-                    transform={`translate(${coord.x}, ${coord.y})`}
+                    key={`label-${uf}`}
+                    transform={`translate(${stateInfo.center.x}, ${stateInfo.center.y})`}
                     onClick={() => setSelectedUF(uf)}
-                    style={{ cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                    onMouseEnter={() => setHoveredUF(uf)}
+                    onMouseLeave={() => setHoveredUF(null)}
+                    style={{ cursor: 'pointer', pointerEvents: 'all' }}
                   >
-                    {/* Efeito Glow / Seleção */}
-                    {isSelected && (
-                      <circle 
-                        r={radius + 8} 
-                        fill="none" 
-                        stroke="var(--primary-gold)" 
-                        strokeWidth="3"
-                        strokeDasharray="4,4"
-                        opacity="0.8"
-                      >
-                        <animateTransform 
-                          attributeName="transform" 
-                          type="rotate" 
-                          from="0" 
-                          to="360" 
-                          dur="12s" 
-                          repeatCount="indefinite" 
+                    {/* Badge Redondo para Estados com Lojas */}
+                    {hasStores ? (
+                      <g>
+                        {/* Glow ao selecionar */}
+                        {isSelected && (
+                          <circle 
+                            r="14" 
+                            fill="none" 
+                            stroke="var(--primary-gold)" 
+                            strokeWidth="2.5" 
+                            strokeDasharray="3,3"
+                          />
+                        )}
+
+                        <rect 
+                          x={data.count >= 10 ? "-15" : "-12"} 
+                          y="-10" 
+                          width={data.count >= 10 ? "30" : "24"} 
+                          height="20" 
+                          rx="4" 
+                          fill={isSelected ? '#3D2214' : colorConfig.badgeBg}
+                          stroke="#FFFFFF" 
+                          strokeWidth="1.5"
+                          style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.18))' }}
                         />
-                      </circle>
-                    )}
 
-                    {/* Círculo Principal do Estado */}
-                    <circle 
-                      r={radius} 
-                      fill={isSelected ? 'var(--primary-brown)' : (hasStores ? colors.bg : '#F8FAFC')}
-                      stroke={isSelected ? 'var(--primary-gold)' : colors.border}
-                      strokeWidth={isSelected ? '3' : (hasStores ? '2' : '1')}
-                      style={{ filter: hasStores ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' : 'none' }}
-                    />
+                        {/* Sigla UF */}
+                        <text 
+                          x="0" 
+                          y="-1" 
+                          textAnchor="middle" 
+                          fontSize="7.5" 
+                          fontWeight="900" 
+                          fill="#FFFFFF"
+                          style={{ pointerEvents: 'none', userSelect: 'none' }}
+                        >
+                          {uf}
+                        </text>
 
-                    {/* Sigla da UF */}
-                    <text 
-                      textAnchor="middle" 
-                      dy={hasStores ? "-2" : "4"} 
-                      fontSize={hasStores ? "11" : "9"} 
-                      fontWeight="800" 
-                      fill={isSelected ? '#FFFFFF' : (hasStores ? colors.text : '#94A3B8')}
-                      style={{ pointerEvents: 'none', userSelect: 'none' }}
-                    >
-                      {uf}
-                    </text>
-
-                    {/* Badge com Quantidade de Lojas */}
-                    {hasStores && (
+                        {/* Quantidade de Lojas */}
+                        <text 
+                          x="0" 
+                          y="7" 
+                          textAnchor="middle" 
+                          fontSize="7.5" 
+                          fontWeight="900" 
+                          fill={isSelected ? 'var(--primary-gold)' : '#FFFFFF'}
+                          style={{ pointerEvents: 'none', userSelect: 'none' }}
+                        >
+                          {data.count}
+                        </text>
+                      </g>
+                    ) : (
+                      // Apenas sigla discreta para estados sem loja
                       <text 
+                        x="0" 
+                        y="3" 
                         textAnchor="middle" 
-                        dy="10" 
-                        fontSize="9" 
+                        fontSize="8" 
                         fontWeight="700" 
-                        fill={isSelected ? 'var(--primary-gold)' : colors.pin}
+                        fill="#64748B"
+                        opacity="0.8"
                         style={{ pointerEvents: 'none', userSelect: 'none' }}
                       >
-                        {data.count} {data.count === 1 ? 'lj' : 'ljs'}
+                        {uf}
                       </text>
-                    )}
-
-                    {/* Indicador de Média no Topo do Pino */}
-                    {hasStores && (
-                      <circle 
-                        cx={radius - 4} 
-                        cy={-radius + 4} 
-                        r="4" 
-                        fill={colors.pin} 
-                        stroke="#FFFFFF" 
-                        strokeWidth="1" 
-                      />
                     )}
                   </g>
                 );
@@ -319,9 +410,9 @@ export default function NetworkMapView() {
           </div>
 
           {/* Atalhos Rápidos para Estados com Maior Rede */}
-          <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ marginTop: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>Principais Praças:</span>
-            {filteredStatesList.slice(0, 7).map(st => (
+            {filteredStatesList.slice(0, 8).map(st => (
               <button
                 key={st.uf}
                 type="button"
@@ -373,8 +464,8 @@ export default function NetworkMapView() {
                     {currentSelectedStateData.avgScore}
                   </span>
                 </div>
-                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: getScoreColor(currentSelectedStateData.avgScore, currentSelectedStateData.count).text }}>
-                  {getScoreColor(currentSelectedStateData.avgScore, currentSelectedStateData.count).label}
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: currentSelectedStateData.avgScore >= 8.5 ? '#15803D' : currentSelectedStateData.avgScore >= 7.5 ? '#D97706' : '#DC2626' }}>
+                  {currentSelectedStateData.avgScore >= 8.5 ? 'Excelente' : currentSelectedStateData.avgScore >= 7.5 ? 'Atenção' : 'Crítico'}
                 </span>
               </div>
             )}
