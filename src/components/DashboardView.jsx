@@ -296,7 +296,7 @@ export default function DashboardView() {
             transition: 'all 0.15s ease'
           }}
         >
-          <PieIcon size={16} /> Visão Geral & Gargalos
+          <PieIcon size={16} /> Visão Geral
         </button>
 
         <button
@@ -318,7 +318,7 @@ export default function DashboardView() {
             transition: 'all 0.15s ease'
           }}
         >
-          <BarChart3 size={16} /> Benchmark de Regionais (Liliane & Diretoria)
+          <BarChart3 size={16} /> Benchmark de Regionais (Gerente Nacional & Diretoria)
         </button>
 
         <button
@@ -351,85 +351,128 @@ export default function DashboardView() {
         /* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
 
-        {/* =========================================================================
+          {/* =========================================================================
             GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM DRILLDOWN
             ========================================================================= */}
-        <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-              <div>
-                <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <PieIcon size={20} color="var(--primary-brown)" />
-                  {drilldownCategory ? 'Detalhamento por Subtópicos' : 'Itens de Oportunidade'}
-                </h3>
-                <p className="section-subtitle">
-                  {drilldownCategory
-                    ? `Distribuição dos problemas específicos do tema "${activeDrilldownCat?.name.split('(')[0].trim()}".`
-                    : 'Distribuição percentual dos temas principais apontados. Clique em um tema para abrir seus subtópicos.'}
-                </p>
+          <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <PieIcon size={20} color="var(--primary-brown)" />
+                    {drilldownCategory ? 'Detalhamento por Subtópicos' : 'Itens de Oportunidade'}
+                  </h3>
+                  <p className="section-subtitle">
+                    {drilldownCategory
+                      ? `Distribuição dos problemas específicos do tema "${activeDrilldownCat?.name.split('(')[0].trim()}".`
+                      : 'Distribuição percentual dos temas principais apontados. Clique em um tema para abrir seus subtópicos.'}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {drilldownCategory && (
+                    <button
+                      className="btn-secondary"
+                      onClick={() => setDrilldownCategory(null)}
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', gap: '0.3rem' }}
+                    >
+                      <ArrowLeft size={13} /> Voltar aos Tópicos
+                    </button>
+                  )}
+
+                  <span style={{ fontSize: '0.78rem', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
+                    Total: {activeTotalCount} apontamentos
+                  </span>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {drilldownCategory && (
-                  <button
-                    className="btn-secondary"
-                    onClick={() => setDrilldownCategory(null)}
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', gap: '0.3rem' }}
-                  >
-                    <ArrowLeft size={13} /> Voltar aos Tópicos
-                  </button>
-                )}
+              {activeChartData.length === 0 ? (
+                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  Nenhum apontamento registrado para este tema. Realize novas visitas para visualizar a distribuição.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem', margin: '1rem 0' }}>
+                  {/* SVG Donut / Pie Chart */}
+                  <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="200" height="200" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+                      {/* Background circle */}
+                      <circle
+                        cx="80"
+                        cy="80"
+                        r={radius}
+                        fill="transparent"
+                        stroke="#F1ECE6"
+                        strokeWidth="24"
+                      />
 
-                <span style={{ fontSize: '0.78rem', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
-                  Total: {activeTotalCount} apontamentos
-                </span>
-              </div>
-            </div>
+                      {/* Slices */}
+                      {activeChartData.map((item, idx) => {
+                        const percent = activeTotalCount > 0 ? (item.count / activeTotalCount) : 0;
+                        const strokeDasharray = `${percent * circumference} ${circumference}`;
+                        const strokeDashoffset = -accumulatedPercent * circumference;
+                        accumulatedPercent += percent;
+                        const color = item.color || chartColors[idx % chartColors.length];
+                        const isHovered = hoveredSlice === item.id;
 
-            {activeChartData.length === 0 ? (
-              <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                Nenhum apontamento registrado para este tema. Realize novas visitas para visualizar a distribuição.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem', margin: '1rem 0' }}>
-                {/* SVG Donut / Pie Chart */}
-                <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="200" height="200" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
-                    {/* Background circle */}
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r={radius}
-                      fill="transparent"
-                      stroke="#F1ECE6"
-                      strokeWidth="24"
-                    />
+                        return (
+                          <circle
+                            key={item.id}
+                            cx="80"
+                            cy="80"
+                            r={radius}
+                            fill="transparent"
+                            stroke={color}
+                            strokeWidth={isHovered ? 28 : 24}
+                            strokeDasharray={strokeDasharray}
+                            strokeDashoffset={strokeDashoffset}
+                            style={{
+                              transition: 'all 0.25s ease',
+                              cursor: 'pointer',
+                              filter: isHovered ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))' : 'none'
+                            }}
+                            onMouseEnter={() => setHoveredSlice(item.id)}
+                            onMouseLeave={() => setHoveredSlice(null)}
+                            onClick={() => {
+                              if (!drilldownCategory) {
+                                setDrilldownCategory(item.id);
+                                setHoveredSlice(null);
+                              }
+                            }}
+                          />
+                        );
+                      })}
+                    </svg>
 
-                    {/* Slices */}
+                    {/* Center Text in Donut */}
+                    <div style={{
+                      position: 'absolute',
+                      textAlign: 'center',
+                      pointerEvents: 'none',
+                      maxWidth: '110px'
+                    }}>
+                      <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
+                        {hoveredSlice
+                          ? activeChartData.find(c => c.id === hoveredSlice)?.count
+                          : activeTotalCount}
+                      </span>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {hoveredSlice
+                          ? activeChartData.find(c => c.id === hoveredSlice)?.name
+                          : (drilldownCategory ? 'Subtópicos' : 'Gargalos')}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Legendas & Percentuais Interativas com 1-Clique */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, minWidth: '200px', maxHeight: '240px', overflowY: 'auto' }}>
                     {activeChartData.map((item, idx) => {
-                      const percent = activeTotalCount > 0 ? (item.count / activeTotalCount) : 0;
-                      const strokeDasharray = `${percent * circumference} ${circumference}`;
-                      const strokeDashoffset = -accumulatedPercent * circumference;
-                      accumulatedPercent += percent;
+                      const percent = activeTotalCount > 0 ? Math.round((item.count / activeTotalCount) * 100) : 0;
                       const color = item.color || chartColors[idx % chartColors.length];
                       const isHovered = hoveredSlice === item.id;
 
                       return (
-                        <circle
+                        <div
                           key={item.id}
-                          cx="80"
-                          cy="80"
-                          r={radius}
-                          fill="transparent"
-                          stroke={color}
-                          strokeWidth={isHovered ? 28 : 24}
-                          strokeDasharray={strokeDasharray}
-                          strokeDashoffset={strokeDashoffset}
-                          style={{
-                            transition: 'all 0.25s ease',
-                            cursor: 'pointer',
-                            filter: isHovered ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))' : 'none'
-                          }}
                           onMouseEnter={() => setHoveredSlice(item.id)}
                           onMouseLeave={() => setHoveredSlice(null)}
                           onClick={() => {
@@ -438,197 +481,154 @@ export default function DashboardView() {
                               setHoveredSlice(null);
                             }
                           }}
-                        />
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.35rem 0.6rem',
+                            borderRadius: 'var(--radius-sm)',
+                            backgroundColor: isHovered ? 'var(--primary-brown-light)' : 'transparent',
+                            transition: 'background-color 0.15s ease',
+                            cursor: 'pointer'
+                          }}
+                          title={!drilldownCategory ? 'Clique para abrir o gráfico dos subtópicos' : ''}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
+                            <span style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: color, flexShrink: 0 }} />
+                            <span style={{ fontSize: '0.82rem', fontWeight: isHovered ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {item.name}
+                            </span>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+                            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: color }}>
+                              {percent}%
+                            </span>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                              ({item.count})
+                            </span>
+                            {!drilldownCategory && (
+                              <ChevronRight size={13} color="var(--text-muted)" />
+                            )}
+                          </div>
+                        </div>
                       );
                     })}
-                  </svg>
-
-                  {/* Center Text in Donut */}
-                  <div style={{
-                    position: 'absolute',
-                    textAlign: 'center',
-                    pointerEvents: 'none',
-                    maxWidth: '110px'
-                  }}>
-                    <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
-                      {hoveredSlice
-                        ? activeChartData.find(c => c.id === hoveredSlice)?.count
-                        : activeTotalCount}
-                    </span>
-                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {hoveredSlice
-                        ? activeChartData.find(c => c.id === hoveredSlice)?.name
-                        : (drilldownCategory ? 'Subtópicos' : 'Gargalos')}
-                    </span>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Legendas & Percentuais Interativas com 1-Clique */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, minWidth: '200px', maxHeight: '240px', overflowY: 'auto' }}>
-                  {activeChartData.map((item, idx) => {
-                    const percent = activeTotalCount > 0 ? Math.round((item.count / activeTotalCount) * 100) : 0;
-                    const color = item.color || chartColors[idx % chartColors.length];
-                    const isHovered = hoveredSlice === item.id;
-
-                    return (
-                      <div
-                        key={item.id}
-                        onMouseEnter={() => setHoveredSlice(item.id)}
-                        onMouseLeave={() => setHoveredSlice(null)}
-                        onClick={() => {
-                          if (!drilldownCategory) {
-                            setDrilldownCategory(item.id);
-                            setHoveredSlice(null);
-                          }
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.35rem 0.6rem',
-                          borderRadius: 'var(--radius-sm)',
-                          backgroundColor: isHovered ? 'var(--primary-brown-light)' : 'transparent',
-                          transition: 'background-color 0.15s ease',
-                          cursor: 'pointer'
-                        }}
-                        title={!drilldownCategory ? 'Clique para abrir o gráfico dos subtópicos' : ''}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                          <span style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: color, flexShrink: 0 }} />
-                          <span style={{ fontSize: '0.82rem', fontWeight: isHovered ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {item.name}
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
-                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: color }}>
-                            {percent}%
-                          </span>
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                            ({item.count})
-                          </span>
-                          {!drilldownCategory && (
-                            <ChevronRight size={13} color="var(--text-muted)" />
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              {drilldownCategory ? 'Exibindo detalhamento específico.' : 'Dica: clique em qualquer tema para ver subtópicos.'}
-            </span>
-            <button
-              className="btn-secondary"
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
-              onClick={() => setActiveTab('taxonomy')}
-            >
-              Ver Matriz de Tópicos <ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
-
-        {/* Últimas Visitas de Consultoria de Negócios Realizadas */}
-        <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)' }}>
-                Últimas Visitas de Consultoria
-              </h3>
+            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                {drilldownCategory ? 'Exibindo detalhamento específico.' : 'Dica: clique em qualquer tema para ver subtópicos.'}
+              </span>
               <button
-                onClick={() => setActiveTab('reports')}
-                style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                className="btn-secondary"
+                style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+                onClick={() => setActiveTab('taxonomy')}
               >
-                Ver todas <ArrowRight size={14} />
+                Ver Matriz de Tópicos <ArrowRight size={14} />
               </button>
             </div>
+          </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {visits.slice(0, 4).map(visit => {
-                const store = stores.find(s => s.id === visit.storeId);
-                const consultant = consultants.find(c => c.id === visit.consultantId);
-                const hasIssues = visit.diagnostics?.length > 0;
+          {/* Últimas Visitas de Consultoria de Negócios Realizadas */}
+          <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)' }}>
+                  Últimas Visitas de Consultoria
+                </h3>
+                <button
+                  onClick={() => setActiveTab('reports')}
+                  style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                >
+                  Ver todas <ArrowRight size={14} />
+                </button>
+              </div>
 
-                return (
-                  <div
-                    key={visit.id}
-                    onClick={() => setSelectedVisitForReport(visit)}
-                    style={{
-                      padding: '0.85rem 1rem',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--border-subtle)',
-                      background: '#FAFAFA',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FAF8F5'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FAFAFA'}
-                  >
-                    <div>
-                      <strong
-                        onClick={(e) => {
-                          if (store) {
-                            e.stopPropagation();
-                            setSelectedStoreForProfile(store);
-                          }
-                        }}
-                        style={{
-                          fontSize: '0.92rem',
-                          color: 'var(--text-main)',
-                          display: 'block',
-                          textDecoration: 'underline',
-                          cursor: 'pointer'
-                        }}
-                        title="Ver Ficha 360° e Linha do Tempo da Unidade"
-                      >
-                        {store?.name}
-                      </strong>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                        <span
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {visits.slice(0, 4).map(visit => {
+                  const store = stores.find(s => s.id === visit.storeId);
+                  const consultant = consultants.find(c => c.id === visit.consultantId);
+                  const hasIssues = visit.diagnostics?.length > 0;
+
+                  return (
+                    <div
+                      key={visit.id}
+                      onClick={() => setSelectedVisitForReport(visit)}
+                      style={{
+                        padding: '0.85rem 1rem',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-subtle)',
+                        background: '#FAFAFA',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FAF8F5'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FAFAFA'}
+                    >
+                      <div>
+                        <strong
                           onClick={(e) => {
-                            if (consultant) {
+                            if (store) {
                               e.stopPropagation();
-                              setSelectedStaffForProfile(consultant);
+                              setSelectedStoreForProfile(store);
                             }
                           }}
-                          style={{ textDecoration: consultant ? 'underline' : 'none', cursor: consultant ? 'pointer' : 'default', fontWeight: 600 }}
+                          style={{
+                            fontSize: '0.92rem',
+                            color: 'var(--text-main)',
+                            display: 'block',
+                            textDecoration: 'underline',
+                            cursor: 'pointer'
+                          }}
+                          title="Ver Ficha 360° e Linha do Tempo da Unidade"
                         >
-                          {consultant?.name}
-                        </span> &bull; {new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')} &bull; Código RP: {store?.code}
+                          {store?.name}
+                        </strong>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                          <span
+                            onClick={(e) => {
+                              if (consultant) {
+                                e.stopPropagation();
+                                setSelectedStaffForProfile(consultant);
+                              }
+                            }}
+                            style={{ textDecoration: consultant ? 'underline' : 'none', cursor: consultant ? 'pointer' : 'default', fontWeight: 600 }}
+                          >
+                            {consultant?.name}
+                          </span> &bull; {new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')} &bull; Código RP: {store?.code}
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: 'right' }}>
+                        <span className={`badge ${hasIssues ? 'badge-critica' : 'badge-concluido'}`} style={{ fontSize: '0.72rem' }}>
+                          {hasIssues ? `${visit.diagnostics.length} não-conformidade${visit.diagnostics.length > 1 ? 's' : ''}` : '100% Padrão'}
+                        </span>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            </div>
 
-                    <div style={{ textAlign: 'right' }}>
-                      <span className={`badge ${hasIssues ? 'badge-critica' : 'badge-concluido'}`} style={{ fontSize: '0.72rem' }}>
-                        {hasIssues ? `${visit.diagnostics.length} não-conformidade${visit.diagnostics.length > 1 ? 's' : ''}` : '100% Padrão'}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
+              <button
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem' }}
+                onClick={() => setActiveTab('new-visit')}
+              >
+                <ClipboardCheck size={16} /> Iniciar Nova Visita
+              </button>
             </div>
           </div>
-
-          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
-            <button
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem' }}
-              onClick={() => setActiveTab('new-visit')}
-            >
-              <ClipboardCheck size={16} /> Iniciar Nova Visita
-            </button>
-          </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
   );
 }

@@ -367,15 +367,15 @@ export default function StoreRankingView() {
           <table className="spoleto-table">
             <thead>
               <tr>
-                <th style="text-align: center; width: 60px;">Posição</th>
+                <th style={{ textAlign: 'center', width: '60px' }}>Posição</th>
                 <th>Unidade & Código RP</th>
                 <th>Franqueado(a) & Consultor(a)</th>
-                <th style="text-align: center;">Score de Excelência</th>
-                <th style="text-align: center;">Visitas</th>
-                <th style="text-align: center;">Planos Concluídos</th>
-                <th style="text-align: center;">Atrasos</th>
+                <th style={{ textAlign: 'center' }}>Score de Excelência</th>
+                <th style={{ textAlign: 'center' }}>Visitas</th>
+                <th style={{ textAlign: 'center' }}>Planos Concluídos</th>
+                <th style={{ textAlign: 'center' }}>Atrasos</th>
                 <th>Classificação de Honra</th>
-                <th style="text-align: center;">Ação</th>
+                <th style={{ textAlign: 'center' }}>Ação</th>
               </tr>
             </thead>
             <tbody>

@@ -364,12 +364,12 @@ export default function RegionalBenchmarkView() {
             <thead>
               <tr>
                 <th>Gerência Regional</th>
-                <th style="text-align: center;">Lojas Ativas</th>
-                <th style="text-align: center;">Visitas Realizadas</th>
-                <th style="text-align: center;">Planos Criados</th>
-                <th style="text-align: center;">Concluídos</th>
-                <th style="text-align: center;">Em Atraso</th>
-                <th style="text-align: center;">Índice no Prazo (SLA)</th>
+                <th style={{ textAlign: 'center' }}>Lojas Ativas</th>
+                <th style={{ textAlign: 'center' }}>Visitas Realizadas</th>
+                <th style={{ textAlign: 'center' }}>Planos Criados</th>
+                <th style={{ textAlign: 'center' }}>Concluídos</th>
+                <th style={{ textAlign: 'center' }}>Em Atraso</th>
+                <th style={{ textAlign: 'center' }}>Índice no Prazo (SLA)</th>
                 <th>Principal Gargalo</th>
               </tr>
             </thead>
