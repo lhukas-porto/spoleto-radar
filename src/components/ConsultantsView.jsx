@@ -634,18 +634,60 @@ export default function ConsultantsView() {
                 )}
 
                 {(consultant.email || consultant.phone) ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     {consultant.email && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                        <Mail size={13} color="var(--text-muted)" />
-                        {consultant.email}
-                      </div>
+                      <a 
+                        href={`mailto:${consultant.email}`}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '0.45rem', 
+                          color: 'var(--text-main)', 
+                          textDecoration: 'none',
+                          transition: 'color 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'var(--primary-brown)';
+                          e.currentTarget.style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-main)';
+                          e.currentTarget.style.textDecoration = 'none';
+                        }}
+                        title={`Enviar e-mail para ${consultant.email}`}
+                      >
+                        <Mail size={13} color="var(--primary-brown)" />
+                        <span>{consultant.email}</span>
+                      </a>
                     )}
                     {consultant.phone && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                        <Phone size={13} color="var(--text-muted)" />
-                        {formatPhoneNumber(consultant.phone)}
-                      </div>
+                      <a 
+                        href={`https://wa.me/55${consultant.phone.replace(/\D/g, '')}`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '0.45rem', 
+                          color: 'var(--text-main)', 
+                          textDecoration: 'none',
+                          transition: 'color 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#15803D';
+                          e.currentTarget.style.textDecoration = 'underline';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-main)';
+                          e.currentTarget.style.textDecoration = 'none';
+                        }}
+                        title={`Conversar com ${consultant.name} no WhatsApp`}
+                      >
+                        <Phone size={13} color="#16A34A" />
+                        <span>{formatPhoneNumber(consultant.phone)}</span>
+                      </a>
                     )}
                   </div>
                 ) : null}

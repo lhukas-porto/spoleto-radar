@@ -387,10 +387,32 @@ export default function StoresView() {
                     )}
                   </div>
                   {store.phone && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-secondary)' }}>
-                      <Phone size={12} color="var(--text-muted)" />
+                    <a 
+                      href={`https://wa.me/55${store.phone.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: '0.4rem', 
+                        color: 'var(--text-secondary)',
+                        textDecoration: 'none',
+                        transition: 'color 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#15803D';
+                        e.currentTarget.style.textDecoration = 'underline';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-secondary)';
+                        e.currentTarget.style.textDecoration = 'none';
+                      }}
+                      title="Conversar com a loja no WhatsApp"
+                    >
+                      <Phone size={12} color="#16A34A" />
                       <span>{formatPhoneNumber(store.phone)}</span>
-                    </div>
+                    </a>
                   )}
                 </div>
               </div>
