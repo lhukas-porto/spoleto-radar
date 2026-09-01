@@ -125,7 +125,7 @@ export default function SubordinatesModal() {
   };
 
   return (
-    <div className="modal-overlay" onClick={() => setManagingSubordinatesLeader(null)}>
+    <div className="modal-overlay" style={{ zIndex: 10050 }} onClick={() => setManagingSubordinatesLeader(null)}>
       <div 
         className="modal-card" 
         style={{ maxWidth: '850px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: '1.75rem' }} 

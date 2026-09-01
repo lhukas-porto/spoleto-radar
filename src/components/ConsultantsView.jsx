@@ -985,7 +985,6 @@ export default function ConsultantsView() {
                       className="btn-secondary"
                       style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
                       onClick={() => {
-                        setEditingConsultant(null);
                         setManagingSubordinatesLeader(editingConsultant);
                       }}
                     >
