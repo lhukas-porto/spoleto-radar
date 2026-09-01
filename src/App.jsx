@@ -11,6 +11,7 @@ import VisitReportModal from './components/VisitReportModal';
 import StaffProfileModal from './components/StaffProfileModal';
 import OverdueActionsModal from './components/OverdueActionsModal';
 import SubordinatesModal from './components/SubordinatesModal';
+import StoreProfileModal from './components/StoreProfileModal';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -20,7 +21,14 @@ export default function App() {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Carregando Spoleto Radar...</div>;
   }
 
-  const { activeTab, visits, setSelectedVisitForReport, toastMessage } = context;
+  const { 
+    activeTab, 
+    visits, 
+    setSelectedVisitForReport, 
+    selectedStoreForProfile, 
+    setSelectedStoreForProfile, 
+    toastMessage 
+  } = context;
 
   // Check URL parameters on mount to open shared web report automatically
   useEffect(() => {
@@ -67,6 +75,7 @@ export default function App() {
       {/* Global Modals */}
       <VisitReportModal />
       <StaffProfileModal />
+      <StoreProfileModal store={selectedStoreForProfile} onClose={() => setSelectedStoreForProfile(null)} />
       <OverdueActionsModal />
       <SubordinatesModal />
 

@@ -113,6 +113,7 @@ export function AppProvider({ children }) {
   });
 
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
+  const [selectedStoreForProfile, setSelectedStoreForProfile] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
 
@@ -1092,6 +1093,8 @@ export function AppProvider({ children }) {
       deleteVisit,
       selectedStaffForProfile,
       setSelectedStaffForProfile,
+      selectedStoreForProfile,
+      setSelectedStoreForProfile,
       isOverdueModalOpen,
       setIsOverdueModalOpen,
       managingSubordinatesLeader,

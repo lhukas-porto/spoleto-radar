@@ -27,7 +27,8 @@ import {
   ShieldCheck,
   Camera,
   ZoomIn,
-  Image as ImageIcon
+  Image as ImageIcon,
+  RotateCcw
 } from 'lucide-react';
 
 export default function NewVisitForm() {
@@ -35,6 +36,7 @@ export default function NewVisitForm() {
     stores, 
     consultants, 
     categories, 
+    visits,
     addVisit, 
     updateVisit,
     editingVisit,
@@ -292,6 +294,32 @@ export default function NewVisitForm() {
 
   const setSuggestedAction = (diagId, actionText) => {
     updateActionPlanField(diagId, 'action', actionText);
+  };
+
+  // Detector Inteligente de Reincidência de Não-Conformidade nesta loja
+  const getReoccurrenceInfo = (subproblemId, categoryId) => {
+    if (!selectedStoreId || (!subproblemId && !categoryId)) return null;
+
+    const previousStoreVisits = visits
+      .filter(v => v.storeId === selectedStoreId && (!editingVisit || v.id !== editingVisit.id))
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (previousStoreVisits.length === 0) return null;
+
+    const matchingVisits = previousStoreVisits.filter(pv => 
+      (pv.diagnostics || []).some(d => (subproblemId && d.subproblemId === subproblemId) || (!subproblemId && d.categoryId === categoryId))
+    );
+
+    if (matchingVisits.length === 0) return null;
+
+    const lastMatchDate = new Date(matchingVisits[0].date + 'T12:00:00').toLocaleDateString('pt-BR');
+    const totalOccurrences = matchingVisits.length + 1;
+
+    return {
+      count: totalOccurrences,
+      lastDate: lastMatchDate,
+      times: matchingVisits.length
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -733,6 +761,32 @@ export default function NewVisitForm() {
                         </select>
                         <span className="form-help">Escolha o diagnóstico exato verificado na loja</span>
                       </div>
+
+                      {/* Alerta Inteligente de Reincidência */}
+                      {(() => {
+                        const reoccurrence = getReoccurrenceInfo(diag.subproblemId, diag.categoryId);
+                        if (!reoccurrence) return null;
+                        return (
+                          <div style={{
+                            gridColumn: '1 / -1',
+                            background: '#FFFBEB',
+                            border: '1px solid #FDE68A',
+                            borderRadius: 'var(--radius-sm)',
+                            padding: '0.55rem 0.85rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            fontSize: '0.8rem',
+                            color: '#92400E',
+                            fontWeight: 600
+                          }}>
+                            <RotateCcw size={16} color="#D97706" style={{ flexShrink: 0 }} />
+                            <span>
+                              ⚠️ <strong>Alerta de Reincidência:</strong> Esta não-conformidade já foi apontada nesta loja em <strong>{reoccurrence.lastDate}</strong> ({reoccurrence.count}ª ocorrência identificada).
+                            </span>
+                          </div>
+                        );
+                      })()}
 
                       {/* Severidade do Tópico */}
                       <div className="form-group">

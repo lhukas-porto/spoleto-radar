@@ -87,6 +87,7 @@ export default function VisitReportModal() {
     stores, 
     consultants, 
     categories, 
+    visits,
     showToast, 
     updateVisit, 
     startEditVisit, 
@@ -117,6 +118,12 @@ export default function VisitReportModal() {
   const store = stores.find(s => s.id === visit.storeId) || { name: 'Unidade Spoleto', code: 'SPO', city: '', state: 'BR' };
   const consultant = consultants.find(c => c.id === visit.consultantId) || { name: 'Consultor de Negócios', region: 'Nacional' };
   const timeFormatted = getVisitTimeFormatted(visit.time, visit.endTime);
+
+  const checkIsReoccurringInStore = (subproblemId, categoryId) => {
+    if (!visit.storeId || !visits) return false;
+    const earlierVisits = visits.filter(v => v.storeId === visit.storeId && v.id !== visit.id && new Date(v.date) <= new Date(visit.date));
+    return earlierVisits.some(ev => (ev.diagnostics || []).some(d => (subproblemId && d.subproblemId === subproblemId) || (!subproblemId && d.categoryId === categoryId)));
+  };
 
   // Helper to generate PDF Blob
   const createPdfBlob = async () => {
@@ -930,6 +937,8 @@ export default function VisitReportModal() {
                         statusColor = '#15803D';
                       }
 
+                      const isReoccurring = checkIsReoccurringInStore(diag.subproblemId, diag.categoryId);
+
                       return (
                         <tr key={diag.id} style={{ borderBottom: '1px solid #CBD5E1', background: idx % 2 === 0 ? '#FFFFFF' : '#F8FAFC' }}>
                           <td style={{ padding: '0.65rem 0.5rem', borderRight: '1px solid #CBD5E1', textAlign: 'center', fontWeight: 600 }}>
@@ -937,7 +946,12 @@ export default function VisitReportModal() {
                           </td>
 
                           <td style={{ padding: '0.65rem 0.5rem', borderRight: '1px solid #CBD5E1', textAlign: 'center', fontWeight: 700, textTransform: 'uppercase', color: '#0F172A', fontSize: '0.78rem' }}>
-                            {cat?.name.split('(')[0].trim() || 'GERAL'}
+                            <div>{cat?.name.split('(')[0].trim() || 'GERAL'}</div>
+                            {isReoccurring && (
+                              <div style={{ marginTop: '0.2rem', display: 'inline-block', fontSize: '0.65rem', fontWeight: 800, background: '#FEF3C7', color: '#92400E', padding: '0.1rem 0.35rem', borderRadius: '3px', border: '1px solid #FDE68A' }}>
+                                ⚠️ REINCIDENTE
+                              </div>
+                            )}
                           </td>
 
                           <td style={{ padding: '0.65rem 0.75rem', borderRight: '1px solid #CBD5E1', color: '#1E293B', lineHeight: '1.35' }}>

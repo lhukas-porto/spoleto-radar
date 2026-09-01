@@ -30,7 +30,8 @@ export default function DashboardView() {
     setActiveTab, 
     setSelectedVisitForReport,
     setIsOverdueModalOpen,
-    setSelectedStaffForProfile
+    setSelectedStaffForProfile,
+    setSelectedStoreForProfile
   } = useApp();
 
   const [hoveredSlice, setHoveredSlice] = useState(null);
@@ -497,7 +498,22 @@ export default function DashboardView() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FAFAFA'}
                   >
                     <div>
-                      <strong style={{ fontSize: '0.92rem', color: 'var(--text-main)', display: 'block' }}>
+                      <strong 
+                        onClick={(e) => {
+                          if (store) {
+                            e.stopPropagation();
+                            setSelectedStoreForProfile(store);
+                          }
+                        }}
+                        style={{ 
+                          fontSize: '0.92rem', 
+                          color: 'var(--text-main)', 
+                          display: 'block',
+                          textDecoration: 'underline',
+                          cursor: 'pointer'
+                        }}
+                        title="Ver Ficha 360° e Linha do Tempo da Unidade"
+                      >
                         {store?.name}
                       </strong>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>

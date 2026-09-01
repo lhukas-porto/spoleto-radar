@@ -27,7 +27,17 @@ import {
 } from 'lucide-react';
 
 export default function StoresView() {
-  const { stores, consultants, visits, addStore, updateStore, deleteStore, setSelectedStaffForProfile, setSelectedVisitForReport } = useApp();
+  const { 
+    stores, 
+    consultants, 
+    visits, 
+    addStore, 
+    updateStore, 
+    deleteStore, 
+    setSelectedStaffForProfile, 
+    setSelectedVisitForReport,
+    setSelectedStoreForProfile 
+  } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('Todos');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -329,7 +339,27 @@ export default function StoresView() {
                   </span>
                 </div>
 
-                <h3 style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                <h3 
+                  onClick={() => setSelectedStoreForProfile(store)}
+                  style={{ 
+                    fontSize: '1.05rem', 
+                    color: 'var(--text-main)', 
+                    marginBottom: '0.35rem',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    textDecorationColor: 'transparent',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--primary-brown)';
+                    e.currentTarget.style.textDecorationColor = 'var(--primary-brown)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--text-main)';
+                    e.currentTarget.style.textDecorationColor = 'transparent';
+                  }}
+                  title="Clique para abrir a Ficha 360° e Linha do Tempo da Loja"
+                >
                   {store.name}
                 </h3>
 
@@ -370,11 +400,20 @@ export default function StoresView() {
                   {storeVisits.length} {storeVisits.length === 1 ? 'visita' : 'visitas'}
                 </span>
 
-                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <div style={{ display: 'flex', gap: '0.35rem' }}>
+                  <button 
+                    className="btn-secondary" 
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                    onClick={() => setSelectedStoreForProfile(store)}
+                    title="Abrir Ficha 360° e Histórico de Evolução"
+                  >
+                    <Store size={12} /> Ficha 360°
+                  </button>
+
                   {lastVisit && (
                     <button 
                       className="btn-secondary" 
-                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.55rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                       onClick={() => setSelectedVisitForReport(lastVisit)}
                       title="Abrir relatório da última visita"
                     >
@@ -384,7 +423,7 @@ export default function StoresView() {
 
                   <button 
                     className="btn-primary" 
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.55rem' }}
+                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                     onClick={() => handleOpenEditStore(store)}
                     title="Editar dados da unidade Spoleto"
                   >
