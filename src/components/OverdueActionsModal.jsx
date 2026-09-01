@@ -4,7 +4,11 @@ import {
   evaluateActionPlanStatus, 
   generateOverdueEmailTemplate, 
   generateOverdueWhatsAppMessage,
-  formatBrDate 
+  getVisitCriticalSla,
+  generateDMinusOnePreventionEmail,
+  generateDZeroCriticalEscalationEmail,
+  formatBrDate,
+  formatPhoneNumber
 } from '../utils/dateHelpers';
 import { 
   X, 
@@ -28,7 +32,12 @@ import {
   Flame,
   SlidersHorizontal,
   RotateCcw,
-  CalendarRange
+  CalendarRange,
+  Zap,
+  Layers,
+  FileText,
+  ExternalLink,
+  Users
 } from 'lucide-react';
 
 export default function OverdueActionsModal() {
@@ -44,6 +53,11 @@ export default function OverdueActionsModal() {
     showToast 
   } = useApp();
 
+  // Navigation mode inside modal
+  const [activeTabMode, setActiveTabMode] = useState('regua'); // 'regua' | 'all-plans'
+  const [reguaFilter, setReguaFilter] = useState('all'); // 'all' | 'd-1' | 'd-0'
+
+  // Table Filters State
   const [filterPeriod, setFilterPeriod] = useState('all'); // 'all' | 'today' | 'week' | 'month' | 'critical' | 'risk' | 'all-active' | 'custom'
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegionalFilter, setSelectedRegionalFilter] = useState('all');
@@ -57,23 +71,58 @@ export default function OverdueActionsModal() {
   const [minOverdueDays, setMinOverdueDays] = useState('0'); // '0' | '1' | '7' | '15' | '30'
 
   // Notification Modal State
-  const [notifyingStoreId, setNotifyingStoreId] = useState(null);
+  const [notificationConfig, setNotificationConfig] = useState(null); 
+  // { type: 'prevention' | 'critical', visitItem: object }
   const [includeFranchisee, setIncludeFranchisee] = useState(true);
   const [includeConsultant, setIncludeConsultant] = useState(true);
   const [includeRegional, setIncludeRegional] = useState(true);
+  const [includeNational, setIncludeNational] = useState(true);
   const [copiedText, setCopiedText] = useState(false);
 
   if (!isOverdueModalOpen) return null;
 
-  // Extract and evaluate all action plans from all visits
-  const allActionPlanRows = [];
+  // Gerente Nacional oficial
+  const nationalManager = consultants.find(c => c.role === 'GERENTE_NACIONAL') || {
+    id: 'staff-gn-liliane',
+    name: 'LILIANE TAHAN CURY TEIXEIRA DE RESENDE',
+    email: 'liliane.cury@spoleto.com.br',
+    phone: '(61) 98134-0653',
+    role: 'GERENTE_NACIONAL'
+  };
 
+  // 1. Group visits and calculate their Critical SLA (Shortest deadline among open items)
+  const visitsWithSla = visits.map(v => {
+    const store = stores.find(s => s.id === v.storeId);
+    const consultant = consultants.find(c => c.id === v.consultantId);
+    const regionalManager = consultant?.reportsTo 
+      ? consultants.find(c => c.id === consultant.reportsTo) 
+      : consultants.find(c => c.region === consultant?.region && c.role === 'GERENTE_REGIONAL') || null;
+
+    const sla = getVisitCriticalSla(v, categories);
+    return {
+      visit: v,
+      store,
+      consultant,
+      regionalManager,
+      nationalManager,
+      sla
+    };
+  }).filter(item => item.sla && item.sla.hasOpenPlans);
+
+  // Visitas em D-1 (Alerta de Prevenção - Vencem amanhã / faltam 24h)
+  const dMinusOneVisits = visitsWithSla.filter(item => item.sla.isDMinusOne);
+
+  // Visitas em D-0 / Atraso (Alerta Crítico / Atenção Total e Absoluta - Vencem hoje ou atrasadas)
+  const dZeroAndOverdueVisits = visitsWithSla.filter(item => item.sla.isDZeroOrOverdue);
+
+  // 2. Extract and evaluate individual action plan rows for table view
+  const allActionPlanRows = [];
   visits.forEach(v => {
     const store = stores.find(s => s.id === v.storeId);
     const consultant = consultants.find(c => c.id === v.consultantId);
     const regionalManager = consultant?.reportsTo 
       ? consultants.find(c => c.id === consultant.reportsTo) 
-      : null;
+      : consultants.find(c => c.region === consultant?.region && c.role === 'GERENTE_REGIONAL') || null;
 
     (v.diagnostics || []).forEach(d => {
       const cat = categories.find(c => c.id === d.categoryId);
@@ -94,24 +143,31 @@ export default function OverdueActionsModal() {
         storeState: store?.state || '',
         franchiseeName: store?.franchisee || 'Franqueado Spoleto',
         storeEmail: store?.email || '',
+        storePhone: store?.phone || '',
         consultantId: v.consultantId,
         consultantName: consultant?.name || 'Não atribuído',
         consultantEmail: consultant?.email || '',
         consultantPhone: consultant?.phone || '',
         regionalManagerName: regionalManager?.name || 'Gerência Regional Spoleto',
         regionalManagerEmail: regionalManager?.email || '',
+        nationalManagerName: nationalManager?.name || 'LILIANE TAHAN CURY TEIXEIRA DE RESENDE',
+        nationalManagerEmail: nationalManager?.email || 'liliane.cury@spoleto.com.br',
         categoryName: cat?.name ? cat.name.split('(')[0].trim() : 'Geral',
         subproblemTitle: sub?.title || 'Diagnóstico em loja',
         action: d.actionPlan?.action || 'Definir plano de ação corretivo.',
         responsible: d.actionPlan?.responsible || 'GERENTE',
         deadline: deadline,
         status: currentStatus,
+        rawVisit: v,
+        rawStore: store,
+        rawConsultant: consultant,
+        rawRegional: regionalManager,
         ...metrics
       });
     });
   });
 
-  // Filter based on period presets or custom parameters
+  // Filter based on period presets or custom parameters for table
   const filteredPlans = allActionPlanRows.filter(plan => {
     // 1. Search Query
     const q = searchTerm.toLowerCase().trim();
@@ -138,124 +194,130 @@ export default function OverdueActionsModal() {
       if (!deadUpper.includes(selectedDeadlineType)) return false;
     }
 
-    // 4. Period Preset vs Custom
-    if (filterPeriod === 'all') {
-      // Total em Atraso (todos com isOverdue === true e não concluídos)
-      if (!plan.isOverdue || plan.isCompleted) return false;
-    } else if (filterPeriod === 'today') {
-      if (!plan.isDueToday || plan.isCompleted) return false;
-    } else if (filterPeriod === 'week') {
-      // Atrasados nesta semana (1 a 7 dias em atraso)
-      if (!plan.isOverdue || plan.daysOverdue > 7 || plan.isCompleted) return false;
-    } else if (filterPeriod === 'month') {
-      // Atrasados no mês (1 a 30 dias em atraso)
-      if (!plan.isOverdue || plan.daysOverdue > 30 || plan.isCompleted) return false;
-    } else if (filterPeriod === 'critical') {
-      // Atraso Crítico (> 30 dias)
-      if (!plan.isOverdue || plan.daysOverdue <= 30 || plan.isCompleted) return false;
-    } else if (filterPeriod === 'risk') {
-      // Em Risco / Preventivo (próximos 7 dias)
-      if (!plan.isDueThisWeek || plan.isOverdue || plan.isCompleted) return false;
-    } else if (filterPeriod === 'all-active') {
-      // Todos os não concluídos
-      if (plan.isCompleted) return false;
-    } else if (filterPeriod === 'custom') {
-      // Custom Date Range & Days Overdue
-      const targetDateStr = dateFieldBasis === 'visitDate' 
-        ? (plan.visitDate.includes('T') ? plan.visitDate.split('T')[0] : plan.visitDate)
-        : plan.dueDate.toISOString().split('T')[0];
+    // 4. Regional Manager Filter
+    if (selectedRegionalFilter !== 'all' && plan.regionalManagerName !== selectedRegionalFilter) {
+      return false;
+    }
+
+    // 5. Period Preset Filter
+    if (filterPeriod === 'today') {
+      return plan.isDueToday && !plan.isCompleted;
+    }
+    if (filterPeriod === 'week') {
+      return plan.isOverdue && plan.daysOverdue <= 7 && !plan.isCompleted;
+    }
+    if (filterPeriod === 'month') {
+      return plan.isOverdue && plan.daysOverdue <= 30 && !plan.isCompleted;
+    }
+    if (filterPeriod === 'critical') {
+      return plan.isOverdue && plan.daysOverdue > 30 && !plan.isCompleted;
+    }
+    if (filterPeriod === 'risk') {
+      return plan.isDueThisWeek && !plan.isOverdue && !plan.isCompleted;
+    }
+    if (filterPeriod === 'all-active') {
+      return !plan.isCompleted;
+    }
+
+    // 6. Custom Date Range Filter
+    if (filterPeriod === 'custom') {
+      const targetDateStr = dateFieldBasis === 'dueDate' 
+        ? plan.dueDate.toISOString().split('T')[0] 
+        : plan.visitDate.split('T')[0];
 
       if (customStartDate && targetDateStr < customStartDate) return false;
       if (customEndDate && targetDateStr > customEndDate) return false;
 
-      if (minOverdueDays !== '0') {
-        const minDays = parseInt(minOverdueDays, 10);
-        if (plan.daysOverdue < minDays) return false;
-      }
+      const minDays = parseInt(minOverdueDays, 10) || 0;
+      if (minDays > 0 && plan.daysOverdue < minDays) return false;
     }
 
     return true;
-  }).sort((a, b) => {
-    if (a.isOverdue && !b.isOverdue) return -1;
-    if (!a.isOverdue && b.isOverdue) return 1;
-    return b.daysOverdue - a.daysOverdue;
   });
 
-  // Date Quick Preset Setters
-  const setQuickDateRange = (type) => {
-    setFilterPeriod('custom');
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+  // Filter for Régua list
+  const filteredReguaVisits = visitsWithSla.filter(item => {
+    if (reguaFilter === 'd-1') return item.sla.isDMinusOne;
+    if (reguaFilter === 'd-0') return item.sla.isDZeroOrOverdue;
+    return item.sla.isDMinusOne || item.sla.isDZeroOrOverdue;
+  });
 
-    if (type === 'today') {
-      setCustomStartDate(todayStr);
-      setCustomEndDate(todayStr);
-    } else if (type === 'next7') {
-      const next7 = new Date();
-      next7.setDate(next7.getDate() + 7);
-      setCustomStartDate(todayStr);
-      setCustomEndDate(next7.toISOString().split('T')[0]);
-    } else if (type === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-      setCustomStartDate(startOfMonth);
-      setCustomEndDate(endOfMonth);
-    } else if (type === 'last30') {
-      const last30 = new Date();
-      last30.setDate(last30.getDate() - 30);
-      setCustomStartDate(last30.toISOString().split('T')[0]);
-      setCustomEndDate(todayStr);
-    } else if (type === 'clear') {
-      setCustomStartDate('');
-      setCustomEndDate('');
-      setMinOverdueDays('0');
-      setSelectedStatusFilter('all');
-      setSelectedDeadlineType('all');
-    }
-  };
+  // Notification Modal Data Calculation
+  const selectedVisitItem = notificationConfig?.visitItem;
+  const isPrevention = notificationConfig?.type === 'prevention';
 
-  // Group plans for notifications when a specific store is selected
-  const storeNotifPlans = notifyingStoreId 
-    ? allActionPlanRows.filter(p => p.storeId === notifyingStoreId && p.isOverdue) 
-    : [];
-
-  const targetStore = stores.find(s => s.id === notifyingStoreId);
-  const targetConsultant = consultants.find(c => c.id === targetStore?.consultantId);
-  const targetRegional = targetConsultant?.reportsTo ? consultants.find(c => c.id === targetConsultant.reportsTo) : null;
-
-  // Prepare email template for modal
-  const emailData = notifyingStoreId ? generateOverdueEmailTemplate({
-    storeName: targetStore?.name || 'Spoleto',
-    storeCode: targetStore?.code || 'SPO',
-    franchiseeName: targetStore?.franchisee || 'Franqueado',
-    consultantName: targetConsultant?.name,
-    regionalManagerName: targetRegional?.name,
-    overdueItems: storeNotifPlans,
-    visitDate: storeNotifPlans[0]?.visitDate || new Date().toISOString()
-  }) : { subject: '', body: '' };
+  const emailData = selectedVisitItem ? (
+    isPrevention ? generateDMinusOnePreventionEmail({
+      storeName: selectedVisitItem.store?.name || 'Spoleto',
+      storeCode: selectedVisitItem.store?.code || 'SPO',
+      franchiseeName: selectedVisitItem.store?.franchisee || 'Franqueado',
+      consultantName: selectedVisitItem.consultant?.name,
+      regionalManagerName: selectedVisitItem.regionalManager?.name,
+      nationalManagerName: nationalManager?.name,
+      minDueDateFormatted: selectedVisitItem.sla?.formattedMinDueDate,
+      openItems: selectedVisitItem.sla?.openItems || [],
+      visitDate: selectedVisitItem.visit?.date
+    }) : generateDZeroCriticalEscalationEmail({
+      storeName: selectedVisitItem.store?.name || 'Spoleto',
+      storeCode: selectedVisitItem.store?.code || 'SPO',
+      franchiseeName: selectedVisitItem.store?.franchisee || 'Franqueado',
+      consultantName: selectedVisitItem.consultant?.name,
+      regionalManagerName: selectedVisitItem.regionalManager?.name,
+      nationalManagerName: nationalManager?.name,
+      minDueDateFormatted: selectedVisitItem.sla?.formattedMinDueDate,
+      daysOverdue: selectedVisitItem.sla?.daysOverdue || 0,
+      openItems: selectedVisitItem.sla?.openItems || [],
+      visitDate: selectedVisitItem.visit?.date
+    })
+  ) : { subject: '', body: '' };
 
   const handleSendEmail = () => {
-    const recipients = [];
-    if (includeFranchisee && targetStore?.email) recipients.push(targetStore.email);
-    if (includeConsultant && targetConsultant?.email) recipients.push(targetConsultant.email);
-    if (includeRegional && targetRegional?.email) recipients.push(targetRegional.email);
+    if (!selectedVisitItem) return;
+    const toRecipients = [];
+    const ccRecipients = [];
 
-    const toStr = recipients.join(',');
-    const mailtoUrl = `mailto:${toStr}?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
+    // Franqueado como destinatário principal (TO)
+    if (includeFranchisee && selectedVisitItem.store?.email) {
+      toRecipients.push(selectedVisitItem.store.email);
+    } else if (includeConsultant && selectedVisitItem.consultant?.email) {
+      toRecipients.push(selectedVisitItem.consultant.email);
+    }
+
+    // Cadeia em cópia (CC)
+    if (includeConsultant && selectedVisitItem.consultant?.email && !toRecipients.includes(selectedVisitItem.consultant.email)) {
+      ccRecipients.push(selectedVisitItem.consultant.email);
+    }
+    if (includeRegional && selectedVisitItem.regionalManager?.email) {
+      ccRecipients.push(selectedVisitItem.regionalManager.email);
+    }
+    if (includeNational && nationalManager?.email) {
+      ccRecipients.push(nationalManager.email);
+    }
+
+    const toStr = toRecipients.join(',') || 'consultoria@spoleto.com.br';
+    const ccParam = ccRecipients.length > 0 ? `&cc=${encodeURIComponent(ccRecipients.join(','))}` : '';
+    const mailtoUrl = `mailto:${toStr}?subject=${encodeURIComponent(emailData.subject)}${ccParam}&body=${encodeURIComponent(emailData.body)}`;
+    
     window.location.href = mailtoUrl;
-    showToast('Cliente de e-mail aberto com os destinatários oficiais!');
+    showToast('🚀 E-mail aberto com Franqueado, Consultor, Gerente Regional e Gerente Nacional!');
   };
 
   const handleSendWhatsApp = () => {
-    const msg = generateOverdueWhatsAppMessage({
-      storeName: targetStore?.name || 'Spoleto',
-      storeCode: targetStore?.code || 'SPO',
-      consultantName: targetConsultant?.name,
-      overdueCount: storeNotifPlans.length,
-      overdueItems: storeNotifPlans
-    });
+    if (!selectedVisitItem) return;
+    let msg = isPrevention 
+      ? `⚠️ *SPOLETO RADAR • ALERTA PREVENTIVO DE PLANO DE AÇÃO (24H)* ⚠️\n\n`
+      : `🚨 *SPOLETO RADAR • ESCALAÇÃO CRÍTICA (ATENÇÃO TOTAL E ABSOLUTA)* 🚨\n\n`;
 
-    const cleanPhone = (targetConsultant?.phone || '').replace(/\D/g, '');
+    msg += `Olá! Comunicamos aviso de Plano de Ação para a unidade *${selectedVisitItem.store?.name}* [Código RP: ${selectedVisitItem.store?.code}].\n`;
+    msg += `• *Menor Prazo (SLA):* ${selectedVisitItem.sla?.formattedMinDueDate}\n`;
+    msg += `• *Status:* ${isPrevention ? 'Vence amanhã (Faltam 24h para o término)' : `${selectedVisitItem.sla?.daysOverdue || 0}d de atraso / Atenção Total`}\n\n`;
+    msg += `📋 *Planos de Ação Pendentes:*\n`;
+    (selectedVisitItem.sla?.openItems || []).slice(0, 3).forEach((it, idx) => {
+      msg += `${idx + 1}. *[${it.categoryName}]* ${it.subproblemTitle}\n   _Ação:_ ${it.action.slice(0, 65)}...\n   _Resp:_ ${it.responsible} | _Prazo:_ ${it.deadline}\n\n`;
+    });
+    msg += `Notificação oficial em cópia para Franqueado, Consultor (${selectedVisitItem.consultant?.name || 'Spoleto'}), Gerente Regional (${selectedVisitItem.regionalManager?.name || 'Regional'}) e Gerência Nacional (${nationalManager?.name}).`;
+
+    const cleanPhone = (selectedVisitItem.store?.phone || selectedVisitItem.consultant?.phone || '').replace(/\D/g, '');
     const url = cleanPhone 
       ? `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(msg)}`
       : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
@@ -270,23 +332,30 @@ export default function OverdueActionsModal() {
     setTimeout(() => setCopiedText(false), 3000);
   };
 
-  // Count summaries
-  const countTotalOverdue = allActionPlanRows.filter(p => p.isOverdue && !p.isCompleted).length;
-  const countToday = allActionPlanRows.filter(p => p.isDueToday && !p.isCompleted).length;
-  const countThisWeek = allActionPlanRows.filter(p => p.isOverdue && p.daysOverdue <= 7 && !p.isCompleted).length;
-  const countThisMonth = allActionPlanRows.filter(p => p.isOverdue && p.daysOverdue <= 30 && !p.isCompleted).length;
-  const countCritical = allActionPlanRows.filter(p => p.isOverdue && p.daysOverdue > 30 && !p.isCompleted).length;
-  const countAtRisk = allActionPlanRows.filter(p => p.isDueThisWeek && !p.isOverdue && !p.isCompleted).length;
-  const countAllPending = allActionPlanRows.filter(p => !p.isCompleted).length;
+  // Open notification modal from table row
+  const handleOpenFromTableRow = (plan) => {
+    const isOverdue = plan.isOverdue;
+    setNotificationConfig({
+      type: isOverdue ? 'critical' : 'prevention',
+      visitItem: {
+        visit: plan.rawVisit,
+        store: plan.rawStore,
+        consultant: plan.rawConsultant,
+        regionalManager: plan.rawRegional,
+        nationalManager,
+        sla: getVisitCriticalSla(plan.rawVisit, categories)
+      }
+    });
+  };
 
   return (
     <div className="modal-overlay" onClick={() => setIsOverdueModalOpen(false)}>
       <div 
         className="modal-card" 
-        style={{ maxWidth: '1140px', maxHeight: '92vh', overflowY: 'auto', padding: '0', borderRadius: 'var(--radius-lg)' }}
+        style={{ maxWidth: '1160px', maxHeight: '92vh', overflowY: 'auto', padding: '0', borderRadius: 'var(--radius-lg)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header da Central de Atrasos */}
+        {/* Header da Central de Atrasos & Régua de Prazos */}
         <div style={{
           background: 'linear-gradient(135deg, #7F1D1D 0%, #991B1B 50%, #5D3826 100%)',
           padding: '1.75rem 2rem',
@@ -331,497 +400,432 @@ export default function OverdueActionsModal() {
 
             <div>
               <h2 style={{ fontSize: '1.45rem', color: '#FFFFFF', margin: 0, fontWeight: 800 }}>
-                Central de Planos de Ação & Controle de Prazos
+                Central de Prazos & Régua de Notificações
               </h2>
               <p style={{ color: '#FEE2E2', fontSize: '0.85rem', margin: '0.2rem 0 0' }}>
-                Pesquisa avançada e acompanhamento minucioso de prazos com disparo de régua de cobrança para Franqueados, Consultores e Gerentes Regionais.
+                Régua automática de menor prazo por visita: Alerta Preventivo (D-1) e Escalação de Atenção Total (D-0) com cópia para toda a liderança.
               </p>
             </div>
           </div>
 
-          {/* Quick Counter Pills */}
-          <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div 
-              onClick={() => setFilterPeriod('all')}
+          {/* Abas Principais: Régua de Prazos vs Tabela Completa */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+            <button
+              type="button"
+              onClick={() => setActiveTabMode('regua')}
               style={{
-                padding: '0.45rem 0.85rem',
+                padding: '0.55rem 1.15rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'all' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'all' ? '#991B1B' : '#FFFFFF',
+                backgroundColor: activeTabMode === 'regua' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
+                color: activeTabMode === 'regua' ? '#991B1B' : '#FFFFFF',
+                border: 'none',
                 cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
+                fontWeight: 800,
+                fontSize: '0.84rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.45rem',
+                gap: '0.5rem',
+                boxShadow: activeTabMode === 'regua' ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
-              <Flame size={15} /> Total em Atraso ({countTotalOverdue})
-            </div>
+              <Zap size={16} color={activeTabMode === 'regua' ? '#991B1B' : '#FFFFFF'} />
+              Régua Automática de Disparos (D-1 & D-0)
+              <span style={{ 
+                background: activeTabMode === 'regua' ? '#FEE2E2' : 'rgba(0,0,0,0.25)', 
+                color: activeTabMode === 'regua' ? '#991B1B' : '#FFFFFF', 
+                fontSize: '0.72rem', 
+                padding: '0.1rem 0.45rem', 
+                borderRadius: 'var(--radius-full)', 
+                fontWeight: 800 
+              }}>
+                {dMinusOneVisits.length + dZeroAndOverdueVisits.length}
+              </span>
+            </button>
 
-            <div 
-              onClick={() => setFilterPeriod('today')}
+            <button
+              type="button"
+              onClick={() => setActiveTabMode('all-plans')}
               style={{
-                padding: '0.45rem 0.85rem',
+                padding: '0.55rem 1.15rem',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'today' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'today' ? '#991B1B' : '#FFFFFF',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem'
-              }}
-            >
-              <Clock size={15} /> Vencem Hoje ({countToday})
-            </div>
-
-            <div 
-              onClick={() => setFilterPeriod('week')}
-              style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'week' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'week' ? '#991B1B' : '#FFFFFF',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem'
-              }}
-            >
-              <Calendar size={15} /> Esta Semana ({countThisWeek})
-            </div>
-
-            <div 
-              onClick={() => setFilterPeriod('month')}
-              style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'month' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'month' ? '#991B1B' : '#FFFFFF',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem'
-              }}
-            >
-              <CalendarRange size={15} /> No Mês ({countThisMonth})
-            </div>
-
-            <div 
-              onClick={() => setFilterPeriod('critical')}
-              style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'critical' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'critical' ? '#7F1D1D' : '#FFFFFF',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem'
-              }}
-            >
-              <ShieldAlert size={15} /> Crítico &gt; 30d ({countCritical})
-            </div>
-
-            <div 
-              onClick={() => setFilterPeriod('risk')}
-              style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'risk' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'risk' ? '#854D0E' : '#FFFFFF',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem'
-              }}
-            >
-              <AlertTriangle size={15} /> Em Risco / 7d ({countAtRisk})
-            </div>
-
-            <div 
-              onClick={() => setFilterPeriod('all-active')}
-              style={{
-                padding: '0.45rem 0.85rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'all-active' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
-                color: filterPeriod === 'all-active' ? '#1E293B' : '#FFFFFF',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem'
-              }}
-            >
-              Todos Pendentes ({countAllPending})
-            </div>
-
-            {/* Custom Period Button / Pill */}
-            <div 
-              onClick={() => {
-                setFilterPeriod('custom');
-              }}
-              style={{
-                padding: '0.45rem 0.95rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: filterPeriod === 'custom' ? 'var(--accent-gold)' : 'rgba(217, 119, 6, 0.45)',
-                color: filterPeriod === 'custom' ? '#5D3826' : '#FFFFFF',
-                border: '1.5px solid var(--accent-gold)',
+                backgroundColor: activeTabMode === 'all-plans' ? '#FFFFFF' : 'rgba(255,255,255,0.15)',
+                color: activeTabMode === 'all-plans' ? '#991B1B' : '#FFFFFF',
+                border: 'none',
                 cursor: 'pointer',
                 fontWeight: 800,
-                fontSize: '0.8rem',
+                fontSize: '0.84rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.45rem',
-                marginLeft: 'auto'
+                gap: '0.5rem',
+                boxShadow: activeTabMode === 'all-plans' ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
+                transition: 'all 0.15s ease'
               }}
             >
-              <SlidersHorizontal size={15} /> 🎯 Personalizar Prazo / Datas
-            </div>
+              <Layers size={16} />
+              Todos os Planos de Ação ({allActionPlanRows.length})
+            </button>
           </div>
         </div>
 
-        {/* Content Body */}
-        <div style={{ padding: '1.5rem 2rem' }}>
-          
-          {/* =========================================================================
-              PAINEL DE PERSONALIZAÇÃO DE PRAZO & DATAS (EXIBIDO SOMENTE AO CLICAR EM PERSONALIZAR)
-              ========================================================================= */}
-          {filterPeriod === 'custom' && (
-            <div style={{
-              background: '#FFFBEB',
-              border: '1.5px solid var(--accent-gold)',
-              borderRadius: 'var(--radius-md)',
-              padding: '1.25rem',
-              marginBottom: '1.5rem',
-              boxShadow: '0 3px 8px rgba(217, 119, 6, 0.12)',
-              animation: 'fadeInModal 0.2s ease-out'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <SlidersHorizontal size={18} color="var(--primary-brown)" />
-                  <strong style={{ fontSize: '0.95rem', color: 'var(--primary-brown)' }}>
-                    🎯 Filtro de Prazos e Datas Personalizado Ativo
-                  </strong>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                    (Defina seu intervalo de datas e critérios de acompanhamento)
+        {/* Modal Body */}
+        <div style={{ padding: '1.75rem 2rem' }}>
+
+          {/* ======================================================== */}
+          {/* MODO 1: RÉGUA AUTOMÁTICA DE MENOR PRAZO (D-1 & D-0)       */}
+          {/* ======================================================== */}
+          {activeTabMode === 'regua' && (
+            <div>
+              {/* Cards de Resumo da Régua */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                
+                {/* Card 1: D-1 Alerta Preventivo (Faltam 24h) */}
+                <div 
+                  onClick={() => setReguaFilter(reguaFilter === 'd-1' ? 'all' : 'd-1')}
+                  style={{
+                    background: reguaFilter === 'd-1' ? '#FEF9C3' : '#FFFBEB',
+                    border: '2px solid #F59E0B',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '1.25rem',
+                    cursor: 'pointer',
+                    boxShadow: reguaFilter === 'd-1' ? '0 4px 12px rgba(245,158,11,0.25)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#B45309', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Clock size={14} /> Nível 1 • Alerta de Prevenção (D-1)
+                      </div>
+                      <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#92400E', marginTop: '0.35rem' }}>
+                        {dMinusOneVisits.length} unidade(s)
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', background: '#FDE68A', color: '#78350F', padding: '0.25rem 0.55rem', borderRadius: 'var(--radius-full)', fontWeight: 800 }}>
+                      Faltam 24h
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: '#92400E', margin: '0.5rem 0 0' }}>
+                    Menor prazo da visita expira amanhã. Disparo preventivo para alertar e evitar atraso.
+                  </p>
+                </div>
+
+                {/* Card 2: D-0 / Atraso Escalação de Atenção Total */}
+                <div 
+                  onClick={() => setReguaFilter(reguaFilter === 'd-0' ? 'all' : 'd-0')}
+                  style={{
+                    background: reguaFilter === 'd-0' ? '#FEE2E2' : '#FEF2F2',
+                    border: '2px solid #EF4444',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '1.25rem',
+                    cursor: 'pointer',
+                    boxShadow: reguaFilter === 'd-0' ? '0 4px 12px rgba(239,68,68,0.25)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#991B1B', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Flame size={14} /> Nível 2 • Atenção Total e Absoluta (D-0)
+                      </div>
+                      <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#7F1D1D', marginTop: '0.35rem' }}>
+                        {dZeroAndOverdueVisits.length} unidade(s)
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', background: '#FCA5A5', color: '#7F1D1D', padding: '0.25rem 0.55rem', borderRadius: 'var(--radius-full)', fontWeight: 800 }}>
+                      Vencido / Hoje
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: '#7F1D1D', margin: '0.5rem 0 0' }}>
+                    Prazo esgotado! Escalação imediata para Franqueado, Consultor, Gerente Regional e Gerente Nacional.
+                  </p>
+                </div>
+
+              </div>
+
+              {/* Informação da Cadeia Hierárquica */}
+              <div style={{ background: '#FAF8F5', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '0.85rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', fontWeight: 700, color: 'var(--primary-brown)' }}>
+                  <Users size={16} /> Cadeia de Destinatários Configurada:
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.75rem' }}>
+                  <span style={{ background: '#FFFFFF', border: '1px solid var(--border-subtle)', padding: '0.2rem 0.55rem', borderRadius: 'var(--radius-full)' }}>
+                    🏬 Franqueado da Loja
+                  </span>
+                  <span style={{ background: '#FFFFFF', border: '1px solid var(--border-subtle)', padding: '0.2rem 0.55rem', borderRadius: 'var(--radius-full)' }}>
+                    👨‍💼 Consultor(a) de Negócios
+                  </span>
+                  <span style={{ background: '#FFFFFF', border: '1px solid var(--border-subtle)', padding: '0.2rem 0.55rem', borderRadius: 'var(--radius-full)' }}>
+                    🏢 Gerente Regional (Rodrigo / André / Anaketlim)
+                  </span>
+                  <span style={{ background: '#FFFFFF', border: '1px solid var(--border-subtle)', padding: '0.2rem 0.55rem', borderRadius: 'var(--radius-full)', color: '#991B1B', fontWeight: 700 }}>
+                    🌐 Gerente Nacional (Liliane Cury)
                   </span>
                 </div>
-
-                {/* Quick Preset Buttons */}
-                <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setQuickDateRange('today')}
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem' }}
-                  >
-                    Hoje
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setQuickDateRange('next7')}
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem' }}
-                  >
-                    Próximos 7 Dias
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setQuickDateRange('thisMonth')}
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem' }}
-                  >
-                    Este Mês
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setQuickDateRange('last30')}
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem' }}
-                  >
-                    Últimos 30 Dias
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setQuickDateRange('clear')}
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem', color: '#991B1B' }}
-                  >
-                    <RotateCcw size={11} /> Limpar
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setFilterPeriod('all')}
-                    style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem', background: '#FFFFFF' }}
-                    title="Fechar painel personalizado e voltar aos filtros padrões"
-                  >
-                    <X size={11} /> Fechar Painel
-                  </button>
-                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
-                
-                {/* Data Inicial */}
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    📅 Data Inicial (De):
-                  </label>
-                  <input 
-                    type="date"
-                    value={customStartDate}
-                    onChange={(e) => {
-                      setCustomStartDate(e.target.value);
-                      setFilterPeriod('custom');
-                    }}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '0.45rem 0.6rem' }}
-                  />
+              {/* Lista de Visitas com SLA Crítico */}
+              {filteredReguaVisits.length === 0 ? (
+                <div style={{ padding: '3.5rem 2rem', textAlign: 'center', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-strong)' }}>
+                  <CheckCircle2 size={44} color="#166534" style={{ margin: '0 auto 0.75rem' }} />
+                  <h3 style={{ fontSize: '1.15rem', color: '#166534', margin: 0 }}>
+                    {reguaFilter === 'd-1' ? 'Nenhuma unidade com menor prazo vencendo amanhã!' : reguaFilter === 'd-0' ? 'Nenhuma unidade com prazos esgotados!' : 'Nenhuma unidade na régua de alertas no momento!'}
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                    Todas as unidades estão com seus prazos e planos de ação em dia.
+                  </p>
                 </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  {filteredReguaVisits.map((item) => {
+                    const isItemD1 = item.sla.isDMinusOne;
+                    const isItemD0 = item.sla.isDZeroOrOverdue;
 
-                {/* Data Final */}
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    📅 Data Final (Até):
-                  </label>
-                  <input 
-                    type="date"
-                    value={customEndDate}
-                    onChange={(e) => {
-                      setCustomEndDate(e.target.value);
-                      setFilterPeriod('custom');
-                    }}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '0.45rem 0.6rem' }}
-                  />
+                    return (
+                      <div 
+                        key={item.visit.id}
+                        style={{
+                          background: '#FFFFFF',
+                          border: `1.5px solid ${isItemD0 ? '#EF4444' : '#F59E0B'}`,
+                          borderRadius: 'var(--radius-md)',
+                          padding: '1.15rem 1.25rem',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.75rem'
+                        }}
+                      >
+                        {/* Linha 1: Dados da Loja + Badge de Gravidade */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <Store size={18} color="var(--primary-brown)" />
+                              <strong style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>
+                                {item.store?.name}
+                              </strong>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                (Código RP: {item.store?.code})
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                              📍 {item.store?.city} - {item.store?.state} &bull; Franqueado(a): <strong>{item.store?.franchisee || 'Franqueado Oficial'}</strong>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            {isItemD1 && (
+                              <span style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #F59E0B', fontSize: '0.75rem', fontWeight: 800, padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Clock size={13} /> 🟡 Alerta Preventivo (D-1 • Faltam 24h)
+                              </span>
+                            )}
+                            {isItemD0 && (
+                              <span style={{ background: '#FEE2E2', color: '#991B1B', border: '1px solid #EF4444', fontSize: '0.75rem', fontWeight: 800, padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Flame size={13} /> 🚨 Escalação de Atenção Total ({item.sla.daysOverdue === 0 ? 'Vence Hoje' : `${item.sla.daysOverdue}d em atraso`})
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Linha 2: Menor Prazo & Resumo de Planos */}
+                        <div style={{ background: '#FAF8F5', padding: '0.65rem 0.85rem', borderRadius: '4px', fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div>
+                            <span style={{ color: 'var(--text-muted)' }}>Menor Prazo desta Visita:</span>{' '}
+                            <strong style={{ color: isItemD0 ? '#991B1B' : '#B45309', fontSize: '0.86rem' }}>
+                              {item.sla.formattedMinDueDate}
+                            </strong>
+                            <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
+                              ({item.sla.openPlansCount} plano(s) de ação pendente(s))
+                            </span>
+                          </div>
+                          
+                          <div style={{ fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
+                            👨‍💼 Consultor(a): <strong>{item.consultant?.name || 'Não atribuído'}</strong> &bull; Regional: <strong>{item.regionalManager?.name || 'Regional'}</strong>
+                          </div>
+                        </div>
+
+                        {/* Linha 3: Botões de Ação de Disparo */}
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                            onClick={() => setSelectedVisitForReport(item.visit)}
+                            title="Ver Laudo Completo da Auditoria"
+                          >
+                            <FileText size={13} /> Ver Laudo Completo
+                          </button>
+
+                          {isItemD1 && (
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              style={{ backgroundColor: '#D97706', borderColor: '#D97706', color: '#FFFFFF', fontSize: '0.75rem', padding: '0.35rem 0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                              onClick={() => setNotificationConfig({ type: 'prevention', visitItem: item })}
+                            >
+                              <Send size={13} /> Disparar Alerta Preventivo (D-1)
+                            </button>
+                          )}
+
+                          {isItemD0 && (
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              style={{ backgroundColor: '#991B1B', borderColor: '#991B1B', color: '#FFFFFF', fontSize: '0.75rem', padding: '0.35rem 0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                              onClick={() => setNotificationConfig({ type: 'critical', visitItem: item })}
+                            >
+                              <ShieldAlert size={13} /> Disparar Escalação de Atenção Total (D-0)
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-
-                {/* Base da Data */}
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    Filtrar Intervalo por:
-                  </label>
-                  <select
-                    value={dateFieldBasis}
-                    onChange={(e) => {
-                      setDateFieldBasis(e.target.value);
-                      setFilterPeriod('custom');
-                    }}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '0.45rem 0.6rem' }}
-                  >
-                    <option value="dueDate">Data de Vencimento do Plano</option>
-                    <option value="visitDate">Data da Realização da Visita</option>
-                  </select>
-                </div>
-
-                {/* Faixa Mínima de Atraso */}
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    Atraso Mínimo:
-                  </label>
-                  <select
-                    value={minOverdueDays}
-                    onChange={(e) => {
-                      setMinOverdueDays(e.target.value);
-                      setFilterPeriod('custom');
-                    }}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '0.45rem 0.6rem' }}
-                  >
-                    <option value="0">Qualquer Atraso (0+ dias)</option>
-                    <option value="1">Vencidos há mais de 1 dia</option>
-                    <option value="7">Vencidos há mais de 7 dias</option>
-                    <option value="15">Vencidos há mais de 15 dias</option>
-                    <option value="30">Vencidos há mais de 30 dias (Crítico)</option>
-                  </select>
-                </div>
-
-                {/* Prazo Original Estabelecido */}
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    Prazo do Laudo:
-                  </label>
-                  <select
-                    value={selectedDeadlineType}
-                    onChange={(e) => setSelectedDeadlineType(e.target.value)}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '0.45rem 0.6rem' }}
-                  >
-                    <option value="all">Todos os Prazos</option>
-                    <option value="IMEDIATO">Imediato (24h/48h)</option>
-                    <option value="7 DIAS">7 Dias</option>
-                    <option value="15 DIAS">15 Dias</option>
-                    <option value="30 DIAS">30 Dias</option>
-                  </select>
-                </div>
-
-                {/* Status do Plano */}
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)', display: 'block', marginBottom: '0.25rem' }}>
-                    Status Atual:
-                  </label>
-                  <select
-                    value={selectedStatusFilter}
-                    onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                    style={{ width: '100%', fontSize: '0.82rem', padding: '0.45rem 0.6rem' }}
-                  >
-                    <option value="all">Todos os Status</option>
-                    <option value="NÃO INICIADO">Apenas NÃO INICIADO</option>
-                    <option value="EM ANDAMENTO">Apenas EM ANDAMENTO</option>
-                    <option value="CONCLUÍDO">Apenas CONCLUÍDO</option>
-                  </select>
-                </div>
-
-              </div>
+              )}
             </div>
           )}
 
-          {/* Search Bar & Result Count */}
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input 
-                type="text"
-                placeholder="Buscar por unidade, código RP, consultor, responsável ou ação..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ paddingLeft: '2.4rem', width: '100%' }}
-              />
-            </div>
+          {/* ======================================================== */}
+          {/* MODO 2: TABELA COMPLETA COM FILTROS AVANÇADOS             */}
+          {/* ======================================================== */}
+          {activeTabMode === 'all-plans' && (
+            <div>
+              {/* Search Bar & Result Count */}
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                  <input 
+                    type="text"
+                    placeholder="Buscar por unidade, código RP, consultor, responsável ou ação..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ paddingLeft: '2.4rem', width: '100%' }}
+                  />
+                </div>
 
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              Exibindo <strong>{filteredPlans.length}</strong> plano(s) de ação
-            </div>
-          </div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                  Exibindo <strong>{filteredPlans.length}</strong> plano(s) de ação
+                </div>
+              </div>
 
-          {/* Table of Overdue Action Plans */}
-          {filteredPlans.length === 0 ? (
-            <div style={{ padding: '3.5rem 2rem', textAlign: 'center', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-strong)' }}>
-              <CheckCircle2 size={44} color="#166534" style={{ margin: '0 auto 0.75rem' }} />
-              <h3 style={{ fontSize: '1.15rem', color: '#166534' }}>Nenhum plano de ação encontrado para os critérios pesquisados!</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                Tente ajustar o intervalo de datas, filtros de prazo ou termos de busca.
-              </p>
-            </div>
-          ) : (
-            <div className="spoleto-table-container" style={{ maxHeight: '440px', overflowY: 'auto' }}>
-              <table className="spoleto-table">
-                <thead>
-                  <tr>
-                    <th>Unidade & Código RP</th>
-                    <th>Tema / Apontamento</th>
-                    <th>Ação Requerida</th>
-                    <th>Responsável</th>
-                    <th>Prazo & Vencimento</th>
-                    <th>Status</th>
-                    <th>Ação de Cobrança</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPlans.map((plan, idx) => (
-                    <tr key={`${plan.visitId}-${plan.diagnosticId}`} style={{ background: idx % 2 === 0 ? '#FFFFFF' : '#FAF8F5' }}>
-                      <td>
-                        <strong style={{ color: 'var(--primary-brown)', fontSize: '0.86rem', display: 'block' }}>
-                          {plan.storeName}
-                        </strong>
-                        <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
-                          Código RP: <strong>{plan.storeCode}</strong> &bull; {plan.storeCity}/{plan.storeState}
-                        </span>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
-                          👨‍💼 {plan.consultantName}
-                        </div>
-                      </td>
+              {/* Table of Action Plans */}
+              {filteredPlans.length === 0 ? (
+                <div style={{ padding: '3.5rem 2rem', textAlign: 'center', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-strong)' }}>
+                  <CheckCircle2 size={44} color="#166534" style={{ margin: '0 auto 0.75rem' }} />
+                  <h3 style={{ fontSize: '1.15rem', color: '#166534' }}>Nenhum plano de ação encontrado!</h3>
+                </div>
+              ) : (
+                <div className="spoleto-table-container" style={{ maxHeight: '440px', overflowY: 'auto' }}>
+                  <table className="spoleto-table">
+                    <thead>
+                      <tr>
+                        <th>Unidade & Código RP</th>
+                        <th>Tema / Apontamento</th>
+                        <th>Ação Requerida</th>
+                        <th>Responsável</th>
+                        <th>Prazo & Vencimento</th>
+                        <th>Status</th>
+                        <th>Ação de Cobrança</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPlans.map((plan, idx) => (
+                        <tr key={`${plan.visitId}-${plan.diagnosticId}`} style={{ background: idx % 2 === 0 ? '#FFFFFF' : '#FAF8F5' }}>
+                          <td>
+                            <strong style={{ color: 'var(--primary-brown)', fontSize: '0.86rem', display: 'block' }}>
+                              {plan.storeName}
+                            </strong>
+                            <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                              Código RP: <strong>{plan.storeCode}</strong> &bull; {plan.storeCity}/{plan.storeState}
+                            </span>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+                              👨‍💼 {plan.consultantName}
+                            </div>
+                          </td>
 
-                      <td>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-brown)' }}>
-                          {plan.categoryName}
-                        </span>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', marginTop: '0.15rem' }}>
-                          {plan.subproblemTitle}
-                        </div>
-                      </td>
+                          <td>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-brown)' }}>
+                              {plan.categoryName}
+                            </span>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', marginTop: '0.15rem' }}>
+                              {plan.subproblemTitle}
+                            </div>
+                          </td>
 
-                      <td style={{ maxWidth: '220px', fontSize: '0.8rem' }}>
-                        {plan.action}
-                      </td>
+                          <td style={{ maxWidth: '220px', fontSize: '0.8rem' }}>
+                            {plan.action}
+                          </td>
 
-                      <td style={{ textAlign: 'center', fontSize: '0.78rem', fontWeight: 600 }}>
-                        {plan.responsible}
-                      </td>
+                          <td style={{ textAlign: 'center', fontSize: '0.78rem', fontWeight: 600 }}>
+                            {plan.responsible}
+                          </td>
 
-                      <td style={{ textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', color: plan.isOverdue ? '#991B1B' : plan.isCompleted ? '#166534' : '#854D0E' }}>
-                          Venceu/Vence: {plan.formattedDueDate}
-                        </span>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
-                          Visita: {formatBrDate(plan.visitDate)} ({plan.deadline})
-                        </div>
-                        <span className={`badge ${plan.isCompleted ? 'badge-concluido' : plan.isOverdue ? 'badge-critica' : 'badge-media'}`} style={{ fontSize: '0.68rem', marginTop: '0.2rem' }}>
-                          {plan.isCompleted ? 'Concluído' : plan.isOverdue ? `${plan.daysOverdue} dia(s) em atraso` : `Vence em ${plan.daysRemaining}d`}
-                        </span>
-                      </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', color: plan.isOverdue ? '#991B1B' : plan.isCompleted ? '#166534' : '#854D0E' }}>
+                              Venceu/Vence: {plan.formattedDueDate}
+                            </span>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
+                              Visita: {formatBrDate(plan.visitDate)} ({plan.deadline})
+                            </div>
+                            <span className={`badge ${plan.isCompleted ? 'badge-concluido' : plan.isOverdue ? 'badge-critica' : 'badge-media'}`} style={{ fontSize: '0.68rem', marginTop: '0.2rem' }}>
+                              {plan.isCompleted ? 'Concluído' : plan.isOverdue ? `${plan.daysOverdue} dia(s) em atraso` : `Vence em ${plan.daysRemaining}d`}
+                            </span>
+                          </td>
 
-                      <td style={{ textAlign: 'center' }}>
-                        <select
-                          value={plan.status}
-                          onChange={(e) => updateActionPlanStatus(plan.visitId, plan.diagnosticId, e.target.value)}
-                          style={{
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            padding: '0.25rem 0.4rem',
-                            borderRadius: '4px',
-                            backgroundColor: plan.status === 'CONCLUÍDO' ? 'var(--status-concluido-bg)' : plan.status === 'EM ANDAMENTO' ? 'var(--status-em-andamento-bg)' : 'var(--status-nao-iniciado-bg)',
-                            color: plan.status === 'CONCLUÍDO' ? 'var(--status-concluido-text)' : plan.status === 'EM ANDAMENTO' ? 'var(--status-em-andamento-text)' : 'var(--status-nao-iniciado-text)'
-                          }}
-                        >
-                          <option value="NÃO INICIADO">NÃO INICIADO</option>
-                          <option value="EM ANDAMENTO">EM ANDAMENTO</option>
-                          <option value="CONCLUÍDO">CONCLUÍDO</option>
-                        </select>
-                      </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <select
+                              value={plan.status}
+                              onChange={(e) => updateActionPlanStatus(plan.visitId, plan.diagnosticId, e.target.value)}
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '0.25rem 0.4rem',
+                                borderRadius: '4px',
+                                backgroundColor: plan.status === 'CONCLUÍDO' ? 'var(--status-concluido-bg)' : plan.status === 'EM ANDAMENTO' ? 'var(--status-em-andamento-bg)' : 'var(--status-nao-iniciado-bg)',
+                                color: plan.status === 'CONCLUÍDO' ? 'var(--status-concluido-text)' : plan.status === 'EM ANDAMENTO' ? 'var(--status-em-andamento-text)' : 'var(--status-nao-iniciado-text)'
+                              }}
+                            >
+                              <option value="NÃO INICIADO">NÃO INICIADO</option>
+                              <option value="EM ANDAMENTO">EM ANDAMENTO</option>
+                              <option value="CONCLUÍDO">CONCLUÍDO</option>
+                            </select>
+                          </td>
 
-                      <td style={{ textAlign: 'center' }}>
-                        <button
-                          className="btn-primary"
-                          style={{ fontSize: '0.72rem', padding: '0.3rem 0.6rem', gap: '0.3rem', whiteSpace: 'nowrap' }}
-                          onClick={() => setNotifyingStoreId(plan.storeId)}
-                        >
-                          <Send size={12} /> Notificar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          <td style={{ textAlign: 'center' }}>
+                            <button
+                              className="btn-primary"
+                              style={{ fontSize: '0.72rem', padding: '0.3rem 0.6rem', gap: '0.3rem', whiteSpace: 'nowrap' }}
+                              onClick={() => handleOpenFromTableRow(plan)}
+                            >
+                              <Send size={12} /> Notificar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
         </div>
 
         {/* Modal Secundário de Disparo de E-mail / WhatsApp */}
-        {notifyingStoreId && (
-          <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setNotifyingStoreId(null)}>
+        {notificationConfig && selectedVisitItem && (
+          <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setNotificationConfig(null)}>
             <div 
               className="modal-card" 
-              style={{ maxWidth: '650px', padding: '1.5rem', borderRadius: 'var(--radius-lg)' }}
+              style={{ maxWidth: '680px', padding: '1.75rem', borderRadius: 'var(--radius-lg)' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
-                <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
-                  <Mail size={18} /> Notificação de Planos Atrasados
+                <h3 style={{ fontSize: '1.15rem', color: isPrevention ? '#B45309' : '#991B1B', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, fontWeight: 800 }}>
+                  {isPrevention ? <Clock size={20} /> : <ShieldAlert size={20} />}
+                  {isPrevention ? 'Disparo de Alerta Preventivo (D-1 • Faltam 24h)' : 'Disparo de Escalação de Atenção Total (D-0 / Prazo Esgotado)'}
                 </h3>
                 <button 
-                  onClick={() => setNotifyingStoreId(null)}
+                  onClick={() => setNotificationConfig(null)}
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
                 >
                   <X size={18} />
@@ -829,16 +833,18 @@ export default function OverdueActionsModal() {
               </div>
 
               {/* Store & Overdue Summary */}
-              <div style={{ background: '#FAF8F5', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: '1.25rem' }}>
+              <div style={{ background: isPrevention ? '#FFFBEB' : '#FEF2F2', border: `1px solid ${isPrevention ? '#FCD34D' : '#FCA5A5'}`, padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.25rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <strong style={{ fontSize: '1rem', color: 'var(--primary-brown)' }}>{targetStore?.name}</strong>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      Código RP: <strong>{targetStore?.code}</strong> &bull; {targetStore?.city}/{targetStore?.state}
+                    <strong style={{ fontSize: '1.05rem', color: isPrevention ? '#92400E' : '#7F1D1D' }}>
+                      {selectedVisitItem.store?.name}
+                    </strong>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                      Código RP: <strong>{selectedVisitItem.store?.code}</strong> &bull; {selectedVisitItem.store?.city}/{selectedVisitItem.store?.state}
                     </div>
                   </div>
-                  <span className="badge badge-critica" style={{ fontSize: '0.75rem' }}>
-                    {storeNotifPlans.length} plano(s) pendente(s)
+                  <span className={`badge ${isPrevention ? 'badge-media' : 'badge-critica'}`} style={{ fontSize: '0.75rem' }}>
+                    {selectedVisitItem.sla?.openPlansCount} plano(s) pendente(s)
                   </span>
                 </div>
               </div>
@@ -846,10 +852,10 @@ export default function OverdueActionsModal() {
               {/* Destinatários Oficiais Selecionáveis */}
               <div style={{ marginBottom: '1.25rem' }}>
                 <label className="form-label" style={{ marginBottom: '0.5rem' }}>
-                  Selecione quem receberá o alerta oficial:
+                  Cadeia Hierárquica Notificada (Selecione os destinatários):
                 </label>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', padding: '0.4rem 0.6rem', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: '4px', cursor: 'pointer' }}>
                     <input 
                       type="checkbox" 
@@ -857,7 +863,7 @@ export default function OverdueActionsModal() {
                       onChange={(e) => setIncludeFranchisee(e.target.checked)} 
                     />
                     <div>
-                      <strong>Franqueado(a):</strong> {targetStore?.franchisee || 'Franqueado'} ({targetStore?.email || 'sem e-mail cadastrado'})
+                      <strong>1. Franqueado(a) da Loja:</strong> {selectedVisitItem.store?.franchisee || 'Franqueado'} ({selectedVisitItem.store?.email || 'sem e-mail'})
                     </div>
                   </label>
 
@@ -868,7 +874,7 @@ export default function OverdueActionsModal() {
                       onChange={(e) => setIncludeConsultant(e.target.checked)} 
                     />
                     <div>
-                      <strong>Consultor(a) de Negócios:</strong> {targetConsultant?.name || 'Não atribuído'} ({targetConsultant?.email || 'sem e-mail'})
+                      <strong>2. Consultor(a) de Negócios:</strong> {selectedVisitItem.consultant?.name || 'Não atribuído'} ({selectedVisitItem.consultant?.email || 'sem e-mail'})
                     </div>
                   </label>
 
@@ -879,7 +885,18 @@ export default function OverdueActionsModal() {
                       onChange={(e) => setIncludeRegional(e.target.checked)} 
                     />
                     <div>
-                      <strong>Gerente Regional:</strong> {targetRegional?.name || 'Gerência Regional'} ({targetRegional?.email || 'sem e-mail'})
+                      <strong>3. Gerente Regional:</strong> {selectedVisitItem.regionalManager?.name || 'Gerência Regional'} ({selectedVisitItem.regionalManager?.email || 'sem e-mail'})
+                    </div>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', padding: '0.4rem 0.6rem', background: '#FFFFFF', border: '1.5px solid #991B1B', borderRadius: '4px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={includeNational} 
+                      onChange={(e) => setIncludeNational(e.target.checked)} 
+                    />
+                    <div>
+                      <strong style={{ color: '#991B1B' }}>4. Gerente Nacional:</strong> {nationalManager?.name} ({nationalManager?.email})
                     </div>
                   </label>
                 </div>
@@ -888,7 +905,7 @@ export default function OverdueActionsModal() {
               {/* Preview da Mensagem */}
               <div style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                  <label className="form-label" style={{ margin: 0 }}>Prévia do E-mail:</label>
+                  <label className="form-label" style={{ margin: 0 }}>Prévia do E-mail Oficial:</label>
                   <button 
                     type="button" 
                     onClick={handleCopyEmail}
@@ -902,8 +919,8 @@ export default function OverdueActionsModal() {
                 <textarea 
                   readOnly 
                   value={`Assunto: ${emailData.subject}\n\n${emailData.body}`}
-                  rows={6}
-                  style={{ width: '100%', fontSize: '0.78rem', fontFamily: 'monospace', backgroundColor: '#FAF8F5', resize: 'vertical' }}
+                  rows={7}
+                  style={{ width: '100%', fontSize: '0.76rem', fontFamily: 'monospace', backgroundColor: '#FAF8F5', resize: 'vertical' }}
                 />
               </div>
 
@@ -912,7 +929,7 @@ export default function OverdueActionsModal() {
                 <button 
                   type="button" 
                   className="btn-secondary" 
-                  onClick={() => setNotifyingStoreId(null)}
+                  onClick={() => setNotificationConfig(null)}
                 >
                   Fechar
                 </button>
@@ -930,9 +947,14 @@ export default function OverdueActionsModal() {
                   type="button" 
                   className="btn-primary" 
                   onClick={handleSendEmail}
-                  style={{ backgroundColor: '#1E40AF', borderColor: '#1E40AF', color: '#FFFFFF', gap: '0.4rem' }}
+                  style={{ 
+                    backgroundColor: isPrevention ? '#D97706' : '#991B1B', 
+                    borderColor: isPrevention ? '#D97706' : '#991B1B', 
+                    color: '#FFFFFF', 
+                    gap: '0.4rem' 
+                  }}
                 >
-                  <Send size={15} /> Disparar E-mail
+                  <Send size={15} /> Disparar E-mail (Todos em Cópia)
                 </button>
               </div>
 

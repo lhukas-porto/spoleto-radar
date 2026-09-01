@@ -260,11 +260,11 @@ export default function DashboardView() {
             <ShieldAlert size={24} />
           </div>
           <div>
-            <div className="kpi-label">Planos em Atraso</div>
+            <div className="kpi-label">Controle de Prazos & SLA</div>
             <div className="kpi-value" style={{ color: totalOverduePlans > 0 ? '#991B1B' : 'inherit' }}>
               {totalOverduePlans}
             </div>
-            <div className="kpi-subtext">Clique para gerenciar régua de aviso</div>
+            <div className="kpi-subtext">Régua D-1 (Prevenção) & D-0 (Atenção Total)</div>
           </div>
         </div>
       </div>

@@ -189,3 +189,177 @@ export function generateOverdueWhatsAppMessage({
 
   return msg;
 }
+
+// Calculate the minimum due date (most critical deadline) among all open action plans of a visit
+export function getVisitCriticalSla(visit, categories = []) {
+  if (!visit || !visit.diagnostics || visit.diagnostics.length === 0) {
+    return null;
+  }
+
+  const openDiagnostics = visit.diagnostics.filter(d => 
+    (d.actionPlan?.status || '').toUpperCase() !== 'CONCLUÍDO'
+  );
+
+  if (openDiagnostics.length === 0) {
+    return {
+      hasOpenPlans: false,
+      totalPlans: visit.diagnostics.length,
+      completedPlans: visit.diagnostics.length,
+      openPlansCount: 0,
+      minDueDate: null,
+      daysRemaining: 0,
+      isDMinusOne: false,
+      isDZeroOrOverdue: false,
+      openItems: []
+    };
+  }
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+  const evaluatedItems = openDiagnostics.map(d => {
+    const cat = categories.find(c => c.id === d.categoryId);
+    const sub = cat?.subproblems?.find(s => s.id === d.subproblemId);
+    const deadline = d.actionPlan?.deadline || 'IMEDIATO';
+    const dueDate = calculateActionPlanDueDate(visit.date, deadline);
+    const dueDayStart = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate(), 0, 0, 0);
+    const diffTime = dueDayStart.getTime() - todayStart.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    return {
+      diagnosticId: d.id,
+      categoryName: cat?.name ? cat.name.split('(')[0].trim() : 'Geral',
+      subproblemTitle: sub?.title || d.subproblemTitle || d.problem || 'Não conformidade',
+      action: d.actionPlan?.action || d.actionPlan?.what || 'Executar plano de ação.',
+      responsible: d.actionPlan?.responsible || d.actionPlan?.who || 'GERENTE',
+      deadline,
+      status: d.actionPlan?.status || 'NÃO INICIADO',
+      dueDate,
+      formattedDueDate: formatBrDate(dueDate.toISOString().split('T')[0]),
+      diffDays
+    };
+  });
+
+  // Sort by smallest dueDate (closest/most critical deadline first)
+  evaluatedItems.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+
+  const mostCritical = evaluatedItems[0];
+  const minDueDate = mostCritical.dueDate;
+  const daysRemaining = mostCritical.diffDays;
+
+  // D-1: exatamente 1 dia restante para o prazo terminar (amanhã)
+  const isDMinusOne = daysRemaining === 1;
+  // D-0 ou atrasado: vence hoje (0 dias) ou já venceu (< 0 dias)
+  const isDZeroOrOverdue = daysRemaining <= 0;
+
+  return {
+    hasOpenPlans: true,
+    totalPlans: visit.diagnostics.length,
+    openPlansCount: openDiagnostics.length,
+    minDueDate,
+    formattedMinDueDate: formatBrDate(minDueDate.toISOString().split('T')[0]),
+    daysRemaining,
+    isDMinusOne,
+    isDZeroOrOverdue,
+    daysOverdue: daysRemaining < 0 ? Math.abs(daysRemaining) : 0,
+    openItems: evaluatedItems
+  };
+}
+
+// Generate D-1 Prevention Email Template (24h before smallest deadline)
+export function generateDMinusOnePreventionEmail({
+  storeName,
+  storeCode,
+  franchiseeName,
+  consultantName,
+  regionalManagerName,
+  nationalManagerName,
+  minDueDateFormatted,
+  openItems,
+  visitDate
+}) {
+  const subject = `⚠️ [PREVENÇÃO SPOLETO] Faltam 24h para o prazo do Plano de Ação - Unidade ${storeName} [Código RP: ${storeCode}]`;
+
+  let body = `AVISO PREVENTIVO DE VENCIMENTO DE PLANO DE AÇÃO • GRUPO TRIGO / SPOLETO\n`;
+  body += `================================================================================\n\n`;
+  body += `Prezado(a) Franqueado(a) e Equipe da Unidade ${storeName} [Código RP: ${storeCode}],\n\n`;
+  body += `Este é um comunicado de PREVENÇÃO para informar que o prazo mais curto do Plano de Ação originado da visita de Consultoria em ${formatBrDate(visitDate)} VENCE AMANHÃ (${minDueDateFormatted}).\n\n`;
+  body += `📋 RELAÇÃO DE AÇÕES OPERACIONAIS PENDENTES:\n`;
+  body += `--------------------------------------------------------------------------------\n`;
+
+  openItems.forEach((it, idx) => {
+    body += `${idx + 1}. [${it.categoryName.toUpperCase()}] ${it.subproblemTitle}\n`;
+    body += `   • Ação Requerida: ${it.action}\n`;
+    body += `   • Responsável: ${it.responsible}\n`;
+    body += `   • Prazo Definido: ${it.deadline} (Vencimento: ${it.formattedDueDate})\n`;
+    body += `   • Status Atual: ${it.status}\n\n`;
+  });
+
+  body += `--------------------------------------------------------------------------------\n`;
+  body += `💡 RECOMENDAÇÃO: Solicitamos a verificação e conclusão das pendências antes do encerramento do prazo para que a unidade mantenha 100% de conformidade operacional e evite escalação na rede.\n\n`;
+  body += `CADEIA DE ACOMPANHAMENTO SPOLETO:\n`;
+  body += `• Franqueado(a): ${franchiseeName || 'Franqueado Oficial'}\n`;
+  body += `• Consultor(a) de Negócios: ${consultantName || 'Consultor Spoleto'}\n`;
+  if (regionalManagerName) body += `• Gerente Regional: ${regionalManagerName}\n`;
+  if (nationalManagerName) body += `• Gerente Nacional: ${nationalManagerName}\n`;
+  body += `\nAtenciosamente,\n`;
+  body += `Consultoria de Negócios Spoleto • Grupo Trigo\n`;
+
+  return { subject, body };
+}
+
+// Generate D-0 Critical Escalation Email Template (On deadline day or overdue)
+export function generateDZeroCriticalEscalationEmail({
+  storeName,
+  storeCode,
+  franchiseeName,
+  consultantName,
+  regionalManagerName,
+  nationalManagerName,
+  minDueDateFormatted,
+  daysOverdue,
+  openItems,
+  visitDate
+}) {
+  const isOverdue = daysOverdue > 0;
+  const subject = isOverdue
+    ? `🚨 [ESCALAÇÃO URGENTE • ATENÇÃO TOTAL] Prazo Esgotado (${daysOverdue}d em atraso) - Unidade ${storeName} [Código RP: ${storeCode}]`
+    : `🚨 [ALERTA MÁXIMO • VENCIMENTO HOJE] Atenção Total e Absoluta no Plano de Ação - Unidade ${storeName} [Código RP: ${storeCode}]`;
+
+  let body = `🚨 NOTIFICAÇÃO DE ESCALAÇÃO OPERACIONAL • ATENÇÃO TOTAL E ABSOLUTA 🚨\n`;
+  body += `GRUPO TRIGO / SPOLETO — GESTÃO EXECUTIVA DE REDE\n`;
+  body += `================================================================================\n\n`;
+  body += `ATENÇÃO: Franqueado(a), Consultoria de Negócios, Gerência Regional e Gerência Nacional,\n\n`;
+  
+  if (isOverdue) {
+    body += `Comunicamos que o prazo operacional para resolução das não-conformidades da unidade ${storeName} [Código RP: ${storeCode}] ESTÁ ESGOTADO HÁ ${daysOverdue} DIA(S) (Data limite era: ${minDueDateFormatted}).\n\n`;
+  } else {
+    body += `Comunicamos que o prazo limite para resolução das não-conformidades da unidade ${storeName} [Código RP: ${storeCode}] EXPIRA HOJE (${minDueDateFormatted}) e ainda constam pendências em aberto.\n\n`;
+  }
+
+  body += `Esta notificação foi enviada simultaneamente para toda a cadeia de liderança executiva Spoleto para intervenção e cobrança prioritária.\n\n`;
+  body += `📋 PLANOS DE AÇÃO CRÍTICOS EM ABERTO:\n`;
+  body += `--------------------------------------------------------------------------------\n`;
+
+  openItems.forEach((it, idx) => {
+    body += `${idx + 1}. [${it.categoryName.toUpperCase()}] ${it.subproblemTitle}\n`;
+    body += `   • Ação Imediata: ${it.action}\n`;
+    body += `   • Responsável: ${it.responsible}\n`;
+    body += `   • Prazo: ${it.deadline} (Limite: ${it.formattedDueDate})\n`;
+    body += `   • Status: ${it.status} ⚠️\n\n`;
+  });
+
+  body += `--------------------------------------------------------------------------------\n`;
+  body += `⚠️ DETERMINAÇÃO OPERACIONAL:\n`;
+  body += `1. O Franqueado deve providenciar a regularização imediata das pendências.\n`;
+  body += `2. O Consultor de Negócios deve validar a correção em loja ou via evidência fotográfica.\n`;
+  body += `3. A Gerência Regional e Nacional acompanharão o plano até a baixa total no sistema Spoleto Radar.\n\n`;
+  body += `DESTINATÁRIOS NOTIFICADOS (CÓPIA CONSOLIDADA):\n`;
+  body += `• Franqueado(a): ${franchiseeName || 'Franqueado Spoleto'}\n`;
+  body += `• Consultor(a) de Negócios: ${consultantName || 'Consultor Spoleto'}\n`;
+  body += `• Gerente Regional: ${regionalManagerName || 'Gerência Regional'}\n`;
+  body += `• Gerente Nacional: ${nationalManagerName || 'LILIANE TAHAN CURY TEIXEIRA DE RESENDE'}\n`;
+  body += `\nSpoleto Radar • Monitoramento Contínuo de Padrão & Qualidade\n`;
+
+  return { subject, body };
+}
