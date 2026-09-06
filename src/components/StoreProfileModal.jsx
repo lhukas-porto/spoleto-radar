@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { formatPhoneNumber } from '../utils/dateHelpers';
+import { formatPhoneNumber, formatBrDate } from '../utils/dateHelpers';
 import { 
   Store, 
   MapPin, 
@@ -20,8 +20,7 @@ import {
   RotateCcw,
   ShieldCheck,
   Building2,
-  ExternalLink,
-  Star
+  ExternalLink
 } from 'lucide-react';
 
 export default function StoreProfileModal({ store, onClose }) {
@@ -37,6 +36,7 @@ export default function StoreProfileModal({ store, onClose }) {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' | 'actions' | 'reoccurrences'
+  const [zoomedPhoto, setZoomedPhoto] = useState(null);
 
   if (!store) return null;
 
@@ -81,68 +81,6 @@ export default function StoreProfileModal({ store, onClose }) {
 
   const resolutionRate = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 100;
   
-  // Análise de Evolução Histórica (Curva de Notas e Tendência)
-  const chronologicalVisits = [...storeVisits].sort((a, b) => new Date(a.date) - new Date(b.date));
-  
-  // Construir série histórica de notas e diagnósticos
-  const currentStoreScore = Number((store.rating_score || store.ratingScore || 8.5).toFixed ? (store.rating_score || store.ratingScore || 8.5).toFixed(1) : (store.rating_score || store.ratingScore || 8.5));
-  let scoreHistorySeries = chronologicalVisits.map((v, idx) => ({
-    visitIndex: idx + 1,
-    date: v.date,
-    score: v.generalScore ? Number(v.generalScore.toFixed(1)) : currentStoreScore,
-    problemCount: (v.diagnostics || []).length,
-    visitType: v.visitType || 'Auditoria Periódica'
-  }));
-
-  // Se houver 0 ou 1 visita registrada, gerar série de evolução baseline para visualização consistente
-  if (scoreHistorySeries.length <= 1) {
-    const mainVisitDate = scoreHistorySeries[0]?.date || new Date().toISOString().split('T')[0];
-    const mainProblemCount = scoreHistorySeries[0]?.problemCount || 0;
-    const visitDateObj = new Date(mainVisitDate + 'T12:00:00');
-    
-    const d1 = new Date(visitDateObj);
-    d1.setDate(d1.getDate() - 60);
-    const d2 = new Date(visitDateObj);
-    d2.setDate(d2.getDate() - 30);
-
-    const baseScore1 = Number(Math.max(6.0, currentStoreScore - 0.8).toFixed(1));
-    const baseScore2 = Number(Math.max(6.5, currentStoreScore - 0.3).toFixed(1));
-
-    scoreHistorySeries = [
-      {
-        visitIndex: 1,
-        date: d1.toISOString().split('T')[0],
-        score: baseScore1,
-        problemCount: Math.min(8, mainProblemCount + 3),
-        visitType: 'Auditoria Inicial / Diagnóstico'
-      },
-      {
-        visitIndex: 2,
-        date: d2.toISOString().split('T')[0],
-        score: baseScore2,
-        problemCount: Math.min(6, mainProblemCount + 1),
-        visitType: 'Acompanhamento de Metas'
-      },
-      scoreHistorySeries[0] || {
-        visitIndex: 3,
-        date: mainVisitDate,
-        score: currentStoreScore,
-        problemCount: mainProblemCount,
-        visitType: 'Avaliação Operacional Atual'
-      }
-    ];
-  }
-
-  const firstScore = scoreHistorySeries[0]?.score ?? currentStoreScore;
-  const lastScore = scoreHistorySeries[scoreHistorySeries.length - 1]?.score ?? currentStoreScore;
-  const scoreDelta = Number((lastScore - firstScore).toFixed(1));
-  const scoreDeltaPercent = firstScore > 0 ? Math.round((scoreDelta / firstScore) * 100) : 0;
-  
-  const isScoreImproving = scoreDelta >= 0.3;
-  const isScoreDeclining = scoreDelta <= -0.3;
-  const maxScoreEver = scoreHistorySeries.length > 0 ? Math.max(...scoreHistorySeries.map(s => s.score)) : currentStoreScore;
-  const avgScorePeriod = scoreHistorySeries.length > 0 ? Number((scoreHistorySeries.reduce((acc, s) => acc + s.score, 0) / scoreHistorySeries.length).toFixed(1)) : currentStoreScore;
-
   // Detector de Reincidência nesta loja
   const subproblemFrequency = {};
   allDiagnostics.forEach(d => {
@@ -216,74 +154,120 @@ export default function StoreProfileModal({ store, onClose }) {
           borderTopLeftRadius: 'var(--radius-lg)',
           borderTopRightRadius: 'var(--radius-lg)'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                <span style={{ 
-                  background: 'var(--accent-gold)', 
-                  color: '#3D2214', 
-                  fontWeight: 900, 
-                  fontSize: '0.78rem', 
-                  padding: '0.2rem 0.6rem', 
-                  borderRadius: 'var(--radius-sm)' 
-                }}>
-                  {store.code}
-                </span>
-                
-                <span style={{ 
-                  background: 'rgba(255,255,255,0.15)', 
-                  color: '#FFFFFF', 
-                  fontSize: '0.76rem', 
-                  padding: '0.2rem 0.6rem', 
-                  borderRadius: 'var(--radius-sm)',
-                  fontWeight: 600,
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flex: 1, minWidth: '280px' }}>
+              {/* Foto da Loja com Zoom Centralizado ao Clicar */}
+              <div 
+                onClick={() => setZoomedPhoto({ 
+                  url: store.photoUrl || null, 
+                  name: store.name, 
+                  code: store.code,
+                  locationType: store.locationType 
+                })}
+                style={{
+                  width: '74px',
+                  height: '74px',
+                  borderRadius: '50%',
+                  border: '3px solid var(--accent-gold)',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                  overflow: 'hidden',
+                  backgroundColor: 'var(--primary-brown-light)',
+                  color: 'var(--primary-brown)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.35rem'
-                }}>
-                  <Building2 size={12} /> {store.locationType || 'Shopping'}
-                </span>
-
-                <span style={{ 
-                  background: store.status === 'Ativa' ? '#16A34A' : '#D97706', 
-                  color: '#FFFFFF', 
-                  fontSize: '0.74rem', 
-                  padding: '0.15rem 0.5rem', 
-                  borderRadius: 'var(--radius-full)',
-                  fontWeight: 700 
-                }}>
-                  {store.status || 'Ativa'}
-                </span>
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                title="Clique para ver a foto ampliada"
+              >
+                {store.photoUrl ? (
+                  <img src={store.photoUrl} alt={store.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <Store size={36} color="var(--primary-brown)" />
+                )}
               </div>
 
-              <h1 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-                {store.name}
-              </h1>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+                  <span style={{ 
+                    background: 'var(--accent-gold)', 
+                    color: '#3D2214', 
+                    fontWeight: 900, 
+                    fontSize: '0.78rem', 
+                    padding: '0.2rem 0.6rem', 
+                    borderRadius: 'var(--radius-sm)' 
+                  }}>
+                    {store.code}
+                  </span>
+                  
+                  <span style={{ 
+                    background: 'rgba(255,255,255,0.15)', 
+                    color: '#FFFFFF', 
+                    fontSize: '0.76rem', 
+                    padding: '0.2rem 0.6rem', 
+                    borderRadius: 'var(--radius-sm)',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}>
+                    <Building2 size={12} /> {store.locationType || 'Shopping'}
+                  </span>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.4rem', fontSize: '0.85rem', color: '#E2D9D2' }}>
-                <MapPin size={14} color="var(--accent-gold)" style={{ flexShrink: 0 }} />
-                <span>{store.address || `${store.city} - ${store.state}`} &bull; CEP: {store.cep || '00000-000'}</span>
-              </div>
-            </div>
+                  {store.shoppingMallAdmin && (
+                    <span style={{ 
+                      background: 'rgba(255,255,255,0.18)', 
+                      color: '#FFFFFF', 
+                      fontSize: '0.76rem', 
+                      padding: '0.2rem 0.6rem', 
+                      borderRadius: 'var(--radius-sm)',
+                      fontWeight: 600
+                    }}>
+                      Adm: {store.shoppingMallAdmin}
+                    </span>
+                  )}
 
-            <div style={{ 
-              background: 'rgba(255, 255, 255, 0.1)', 
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)', 
-              padding: '0.85rem 1.25rem', 
-              borderRadius: 'var(--radius-md)',
-              textAlign: 'center',
-              minWidth: '120px'
-            }}>
-              <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#E2D9D2', fontWeight: 700 }}>
-                Nota Atual
-              </div>
-              <div style={{ fontSize: '1.9rem', fontWeight: 900, color: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', lineHeight: 1.1, marginTop: '0.2rem' }}>
-                <Star size={20} fill="var(--accent-gold)" />
-                {currentStoreScore}
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#A8A29E', marginTop: '0.2rem' }}>
-                Escala de 0 a 10
+                  {store.franchiseContractExpiration && (
+                    <span style={{ 
+                      background: 'rgba(217, 119, 6, 0.3)', 
+                      border: '1px solid rgba(245, 158, 11, 0.5)',
+                      color: '#FDE68A', 
+                      fontSize: '0.76rem', 
+                      padding: '0.2rem 0.6rem', 
+                      borderRadius: 'var(--radius-sm)',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }} title="Vencimento do Contrato de Franquias">
+                      <Calendar size={12} /> Venc. Franquia: {formatBrDate(store.franchiseContractExpiration)}
+                    </span>
+                  )}
+
+                  <span style={{ 
+                    background: store.status === 'Ativa' ? '#16A34A' : '#D97706', 
+                    color: '#FFFFFF', 
+                    fontSize: '0.74rem', 
+                    padding: '0.15rem 0.5rem', 
+                    borderRadius: 'var(--radius-full)',
+                    fontWeight: 700 
+                  }}>
+                    {store.status || 'Ativa'}
+                  </span>
+                </div>
+
+                <h1 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
+                  {store.name}
+                </h1>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.4rem', fontSize: '0.85rem', color: '#E2D9D2' }}>
+                  <MapPin size={14} color="var(--accent-gold)" style={{ flexShrink: 0 }} />
+                  <span>{store.address || `${store.city} - ${store.state}`} &bull; CEP: {store.cep || '00000-000'}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -392,153 +376,6 @@ export default function StoreProfileModal({ store, onClose }) {
               <div style={{ fontSize: '0.72rem', color: reoccurringProblems.length > 0 ? '#92400E' : '#64748B', marginTop: '0.1rem' }}>
                 {reoccurringProblems.length > 0 ? 'Requer atenção do franqueado' : 'Sem vícios crônicos'}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 📈 NOVO: Card Executivo de Gráfico de Evolução Histórica de Notas (SVG) */}
-        <div style={{ padding: '0 2rem 1.25rem 2rem' }}>
-          <div style={{ 
-            background: 'linear-gradient(180deg, #FAF8F5 0%, #F5EBE1 100%)', 
-            border: '1.5px solid #E8DFD8', 
-            borderRadius: 'var(--radius-md)', 
-            padding: '1.25rem',
-            boxShadow: '0 4px 12px rgba(93,56,38,0.04)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <TrendingUp size={18} color="var(--primary-brown)" />
-                <div>
-                  <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: 'var(--primary-brown)' }}>
-                    Evolução Histórica da Nota de Auditoria
-                  </h4>
-                  <span style={{ fontSize: '0.72rem', color: '#64748B' }}>
-                    Trajetória das últimas avaliações operacionais do restaurante
-                  </span>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-                <div style={{ 
-                  background: isScoreImproving ? '#ECFDF5' : isScoreDeclining ? '#FEF2F2' : '#EFF6FF', 
-                  border: isScoreImproving ? '1.5px solid #10B981' : isScoreDeclining ? '1.5px solid #EF4444' : '1.5px solid #3B82F6', 
-                  color: isScoreImproving ? '#065F46' : isScoreDeclining ? '#991B1B' : '#1E40AF',
-                  padding: '0.35rem 0.85rem',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.84rem',
-                  fontWeight: 800,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}>
-                  {isScoreImproving ? '🚀 Em Ascensão (+ ' + scoreDelta + ' pts)' : isScoreDeclining ? '⚠️ Em Queda (' + scoreDelta + ' pts)' : '⚖️ Estável (' + scoreDelta + ' pts)'}
-                </div>
-
-                <div style={{ fontSize: '0.84rem', color: '#475569', fontWeight: 800 }}>
-                  Pico: <strong style={{ color: 'var(--accent-gold)', fontSize: '0.95rem' }}>{maxScoreEver}</strong> &bull; Média: <strong style={{ color: 'var(--primary-brown)', fontSize: '0.95rem' }}>{avgScorePeriod}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ width: '100%', height: '160px', position: 'relative' }}>
-              <svg 
-                viewBox="0 0 600 135" 
-                style={{ width: '100%', height: '100%', overflow: 'visible' }}
-              >
-                <defs>
-                  <linearGradient id="scoreAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#C49A45" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#5D3826" stopOpacity="0.02" />
-                  </linearGradient>
-                </defs>
-
-                <line x1="40" y1="20" x2="570" y2="20" stroke="#E2D9D2" strokeWidth="1.5" strokeDasharray="4,4" />
-                <text x="30" y="24" textAnchor="end" fontSize="11" fill="#64748B" fontWeight="800">10.0</text>
-
-                <line x1="40" y1="60" x2="570" y2="60" stroke="#E2D9D2" strokeWidth="1.5" strokeDasharray="4,4" />
-                <text x="30" y="64" textAnchor="end" fontSize="11" fill="#64748B" fontWeight="800">8.0</text>
-
-                <line x1="40" y1="100" x2="570" y2="100" stroke="#E2D9D2" strokeWidth="1.5" strokeDasharray="4,4" />
-                <text x="30" y="104" textAnchor="end" fontSize="11" fill="#64748B" fontWeight="800">6.0</text>
-
-                {(() => {
-                  if (!scoreHistorySeries || scoreHistorySeries.length === 0) return null;
-
-                  const paddingX = 80;
-                  const availableWidth = 480;
-                  const stepX = scoreHistorySeries.length > 1 ? (availableWidth / (scoreHistorySeries.length - 1)) : availableWidth / 2;
-
-                  const points = scoreHistorySeries.map((item, idx) => {
-                    const x = paddingX + (idx * stepX);
-                    const clampedScore = Math.min(10, Math.max(5, item.score || 8.5));
-                    const y = 20 + ((10 - clampedScore) / 5) * 80;
-                    return { ...item, x, y };
-                  });
-
-                  if (points.length === 0) return null;
-
-                  const lastPoint = points[points.length - 1];
-                  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-                  const areaPath = `${linePath} L ${lastPoint.x} 115 L ${points[0].x} 115 Z`;
-
-                  return (
-                    <g>
-                      <path d={areaPath} fill="url(#scoreAreaGrad)" />
-                      <path 
-                        d={linePath} 
-                        fill="none" 
-                        stroke="var(--primary-brown)" 
-                        strokeWidth="4" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                      />
-                      {points.map((p, i) => {
-                        const isLast = i === points.length - 1;
-                        return (
-                          <g key={i} transform={`translate(${p.x}, ${p.y})`}>
-                            <circle 
-                              r={isLast ? "8" : "6"} 
-                              fill={isLast ? "var(--accent-gold)" : "#FFFFFF"} 
-                              stroke="var(--primary-brown)" 
-                              strokeWidth="3" 
-                            />
-                            <rect 
-                              x="-18" 
-                              y="-26" 
-                              width="36" 
-                              height="18" 
-                              rx="4" 
-                              fill="var(--primary-brown)" 
-                              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
-                            />
-                            <text 
-                              x="0" 
-                              y="-13" 
-                              textAnchor="middle" 
-                              fontSize="11" 
-                              fontWeight="900" 
-                              fill="#FFFFFF"
-                            >
-                              {p.score}
-                            </text>
-                            <text 
-                              x="0" 
-                              y="115" 
-                              transform={`translate(0, ${115 - p.y})`}
-                              textAnchor="middle" 
-                              fontSize="11" 
-                              fontWeight="800" 
-                              fill="#475569"
-                            >
-                              {new Date(p.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-                            </text>
-                          </g>
-                        );
-                      })}
-                    </g>
-                  );
-                })()}
-              </svg>
             </div>
           </div>
         </div>
@@ -682,7 +519,6 @@ export default function StoreProfileModal({ store, onClose }) {
 
                             <div style={{ fontSize: '0.8rem', color: '#64748B', marginTop: '0.2rem' }}>
                               Consultor(a): <strong style={{ color: '#334155' }}>{cons?.name || 'Não atribuído'}</strong>
-                              {v.time && ` • Horário: ${v.time}${v.endTime ? ` às ${v.endTime}` : ''}`}
                             </div>
                           </div>
                         </div>
@@ -866,6 +702,66 @@ export default function StoreProfileModal({ store, onClose }) {
           </button>
         </div>
       </div>
+
+      {/* Modal para Visualização da Foto da Loja Ampliada */}
+      {zoomedPhoto && (
+        <div className="modal-overlay" onClick={() => setZoomedPhoto(null)} style={{ zIndex: 99999 }}>
+          <div 
+            className="modal-card" 
+            style={{ maxWidth: '420px', textAlign: 'center', padding: '2rem 1.5rem', borderRadius: 'var(--radius-lg)' }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ marginBottom: '1.25rem' }}>
+              <span style={{ fontSize: '0.78rem', background: 'var(--primary-brown-light)', color: 'var(--primary-brown)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', fontWeight: 800 }}>
+                Código RP: {zoomedPhoto.code || 'SPO'}
+              </span>
+              <h3 style={{ margin: '0.5rem 0 0.15rem', color: 'var(--text-main)', fontSize: '1.25rem', fontWeight: 800 }}>
+                {zoomedPhoto.name}
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                {zoomedPhoto.locationType || 'Unidade Spoleto'}
+              </p>
+            </div>
+
+            <div style={{ 
+              width: '100%', 
+              maxWidth: '380px', 
+              aspectRatio: '1 / 1', 
+              margin: '0 auto', 
+              borderRadius: '16px', 
+              overflow: 'hidden', 
+              border: '3px solid var(--accent-gold)', 
+              boxShadow: '0 12px 30px rgba(0,0,0,0.2)',
+              backgroundColor: 'var(--primary-brown-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--primary-brown)'
+            }}>
+              {zoomedPhoto.url ? (
+                <img 
+                  src={zoomedPhoto.url} 
+                  alt={zoomedPhoto.name} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                <Store size={80} color="var(--primary-brown)" />
+              )}
+            </div>
+
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setZoomedPhoto(null)}
+                style={{ fontSize: '0.84rem', padding: '0.45rem 1.5rem' }}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

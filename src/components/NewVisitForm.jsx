@@ -18,6 +18,8 @@ import {
   FileCheck2,
   Search,
   Check,
+  CheckSquare,
+  Square,
   X,
   Layers,
   AlertTriangle,
@@ -60,8 +62,6 @@ export default function NewVisitForm() {
     return consultants.find(c => (c.role || 'CONSULTOR') === 'CONSULTOR')?.id || '';
   });
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [time, setTime] = useState(new Date().toTimeString().slice(0, 5));
-  const [endTime, setEndTime] = useState('');
   const [visitType, setVisitType] = useState('Visita agendada'); // 'Visita agendada' | 'Visita surpresa'
   const [generalNotes, setGeneralNotes] = useState('');
 
@@ -102,8 +102,6 @@ export default function NewVisitForm() {
       }
       setSelectedConsultantId(editingVisit.consultantId || consultants[0]?.id || '');
       setDate(editingVisit.date || new Date().toISOString().split('T')[0]);
-      setTime(editingVisit.time || new Date().toTimeString().slice(0, 5));
-      setEndTime(editingVisit.endTime || '');
       setVisitType(editingVisit.visitType || 'Visita agendada');
       setGeneralNotes(editingVisit.generalNotes || '');
       if (editingVisit.diagnostics && editingVisit.diagnostics.length > 0) {
@@ -292,8 +290,48 @@ export default function NewVisitForm() {
     }));
   };
 
-  const setSuggestedAction = (diagId, actionText) => {
-    updateActionPlanField(diagId, 'action', actionText);
+  const toggleSuggestedAction = (diagId, actionText, allCategorySuggestions = []) => {
+    setDiagnostics(prev => prev.map(d => {
+      if (d.id !== diagId) return d;
+
+      const currentText = d.actionPlan?.action || '';
+      
+      // Extrair todas as ações sugeridas atualmente presentes no texto
+      const isPresent = allCategorySuggestions.some(sug => {
+        if (sug !== actionText) return false;
+        return currentText.includes(sug);
+      });
+
+      // Descobrir quais das sugestões já estão selecionadas
+      let selectedSuggestions = allCategorySuggestions.filter(sug => {
+        return currentText.includes(sug);
+      });
+
+      if (isPresent) {
+        // Desmarcar
+        selectedSuggestions = selectedSuggestions.filter(s => s !== actionText);
+      } else {
+        // Marcar (adicionar à lista preservando a ordem das sugestões da categoria)
+        selectedSuggestions = allCategorySuggestions.filter(s => 
+          selectedSuggestions.includes(s) || s === actionText
+        );
+      }
+
+      let newActionText = '';
+      if (selectedSuggestions.length === 1) {
+        newActionText = selectedSuggestions[0];
+      } else if (selectedSuggestions.length > 1) {
+        newActionText = selectedSuggestions.map((sug, idx) => `${idx + 1}. ${sug}`).join('\n\n');
+      }
+
+      return {
+        ...d,
+        actionPlan: {
+          ...d.actionPlan,
+          action: newActionText
+        }
+      };
+    }));
   };
 
   // Detector Inteligente de Reincidência de Não-Conformidade nesta loja
@@ -340,17 +378,10 @@ export default function NewVisitForm() {
     const hasSignatures = storeSignature || consultantSignature;
     const currentConsultant = consultants.find(c => c.id === selectedConsultantId);
 
-    // Preenche automaticamente o horário de término com a hora do momento exato da finalização
-    const now = new Date();
-    const currentTimeFormatted = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    const finalEndTime = (endTime && endTime.trim() !== '') ? endTime.trim() : currentTimeFormatted;
-
     const visitPayload = {
       storeId: selectedStoreId,
       consultantId: selectedConsultantId,
       date,
-      time,
-      endTime: finalEndTime,
       visitType,
       generalNotes,
       diagnostics: validDiagnostics,
@@ -572,47 +603,6 @@ export default function NewVisitForm() {
               <DateInput value={date} onChange={setDate} required />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Horário de Início</label>
-              <input 
-                type="time" 
-                value={time} 
-                onChange={(e) => setTime(e.target.value)} 
-              />
-            </div>
-
-            <div className="form-group">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <label className="form-label" style={{ margin: 0 }}>Horário de Fim (Término)</label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const now = new Date();
-                    const cur = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-                    setEndTime(cur);
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--primary-brown)',
-                    fontSize: '0.74rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    padding: 0
-                  }}
-                >
-                  ⏱️ Agora
-                </button>
-              </div>
-              <input 
-                type="time" 
-                value={endTime} 
-                onChange={(e) => setEndTime(e.target.value)} 
-                placeholder="--:--"
-              />
-              <span className="form-help">Preenchido automaticamente ao finalizar a visita</span>
-            </div>
 
             {/* Compact Tipo de Visita Pill Toggle */}
             <div className="form-group" style={{ maxWidth: '280px' }}>
@@ -960,39 +950,57 @@ export default function NewVisitForm() {
                       </span>
                     </div>
 
-                    {/* 3 Sugestões Rápidas de Plano de Ação */}
+                    {/* Sugestões Rápidas de Plano de Ação (Seleção Única ou Múltipla) */}
                     {suggestions.length > 0 && (
                       <div style={{ marginBottom: '1rem', background: '#FAF8F5', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <Lightbulb size={14} color="var(--accent-gold-dark)" /> 3 Planos de Ação Sugeridos (clique para aplicar):
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.45rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.35rem', flexWrap: 'wrap' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <Lightbulb size={14} color="var(--accent-gold-dark)" /> Planos de Ação Sugeridos:
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--primary-brown)', fontWeight: 600, textTransform: 'none' }}>
+                            (Marque 1 ou mais opções para combinar)
+                          </span>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                           {suggestions.map((sug, sIdx) => {
-                            const isCurrent = diag.actionPlan.action === sug;
+                            const actionContent = diag.actionPlan?.action || '';
+                            const isSelected = actionContent.includes(sug);
 
                             return (
                               <button
                                 key={sIdx}
                                 type="button"
-                                onClick={() => setSuggestedAction(diag.id, sug)}
+                                onClick={() => toggleSuggestedAction(diag.id, sug, suggestions)}
                                 style={{
                                   textAlign: 'left',
-                                  padding: '0.45rem 0.75rem',
+                                  padding: '0.55rem 0.85rem',
                                   borderRadius: 'var(--radius-sm)',
                                   fontSize: '0.82rem',
-                                  backgroundColor: isCurrent ? 'var(--primary-brown-light)' : '#FFFFFF',
-                                  color: isCurrent ? 'var(--primary-brown)' : 'var(--text-main)',
-                                  border: isCurrent ? '1px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
-                                  fontWeight: isCurrent ? 700 : 500,
+                                  backgroundColor: isSelected ? 'var(--primary-brown-light)' : '#FFFFFF',
+                                  color: isSelected ? 'var(--primary-brown)' : 'var(--text-main)',
+                                  border: isSelected ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
+                                  fontWeight: isSelected ? 700 : 500,
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'space-between',
-                                  gap: '0.5rem',
-                                  cursor: 'pointer'
+                                  gap: '0.65rem',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease'
                                 }}
                               >
-                                <span><strong>Opção {sIdx + 1}:</strong> {sug}</span>
-                                {isCurrent && <Check size={14} color="var(--primary-brown)" />}
+                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem', flex: 1 }}>
+                                  {isSelected ? (
+                                    <CheckSquare size={16} color="var(--primary-brown)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                                  ) : (
+                                    <Square size={16} color="#94A3B8" style={{ flexShrink: 0, marginTop: '2px' }} />
+                                  )}
+                                  <span><strong>Opção {sIdx + 1}:</strong> {sug}</span>
+                                </div>
+                                {isSelected && (
+                                  <span style={{ fontSize: '0.72rem', fontWeight: 800, background: 'var(--primary-brown)', color: '#FFFFFF', padding: '0.15rem 0.45rem', borderRadius: '4px', flexShrink: 0 }}>
+                                    Selecionado
+                                  </span>
+                                )}
                               </button>
                             );
                           })}
@@ -1001,15 +1009,28 @@ export default function NewVisitForm() {
                     )}
 
                     <div className="form-grid" style={{ marginBottom: '0.75rem' }}>
-                      {/* Campo Ação (Editável) */}
+                      {/* Campo Ação (Editável e Autodimensionável) */}
                       <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                        <label className="form-label">Ação a ser executada *</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                          <label className="form-label" style={{ margin: 0 }}>Ação a ser executada *</label>
+                          {diag.actionPlan?.action && (
+                            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                              {diag.actionPlan.action.split('\n').filter(l => l.trim().length > 0).length} linha(s) de ação
+                            </span>
+                          )}
+                        </div>
                         <textarea 
-                          rows="2"
+                          rows={Math.max(2, Math.min(10, (diag.actionPlan?.action || '').split('\n').length + 1))}
                           value={diag.actionPlan.action}
                           onChange={(e) => updateActionPlanField(diag.id, 'action', e.target.value)}
                           required
                           placeholder="Descreva a ação corretiva a ser implementada na loja..."
+                          style={{
+                            minHeight: '68px',
+                            resize: 'vertical',
+                            lineHeight: '1.5',
+                            transition: 'height 0.15s ease'
+                          }}
                         />
                       </div>
 

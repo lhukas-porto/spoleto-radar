@@ -15,7 +15,6 @@ import {
   FileText,
   BellRing,
   ChevronRight,
-  Trophy,
   BarChart3,
   Sparkles,
   Handshake,
@@ -24,7 +23,6 @@ import {
   Send
 } from 'lucide-react';
 import RegionalBenchmarkView from './RegionalBenchmarkView';
-import StoreRankingView from './StoreRankingView';
 
 export default function DashboardView() {
   const {
@@ -324,32 +322,9 @@ export default function DashboardView() {
         >
           <BarChart3 size={16} /> Benchmark de Regionais (Gerente Nacional & Diretoria)
         </button>
-
-        <button
-          type="button"
-          onClick={() => setDashboardSubTab('ranking')}
-          style={{
-            padding: '0.55rem 1.15rem',
-            borderRadius: 'var(--radius-md)',
-            border: dashboardSubTab === 'ranking' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
-            background: dashboardSubTab === 'ranking' ? 'var(--primary-brown)' : '#FFFFFF',
-            color: dashboardSubTab === 'ranking' ? '#FFFFFF' : 'var(--text-main)',
-            fontWeight: 800,
-            fontSize: '0.84rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.45rem',
-            boxShadow: dashboardSubTab === 'ranking' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
-            transition: 'all 0.15s ease'
-          }}
-        >
-          <Trophy size={16} color={dashboardSubTab === 'ranking' ? '#FDE68A' : '#D97706'} /> Ranking de Excelência & Top Lojas
-        </button>
       </div>
 
       {dashboardSubTab === 'benchmark' && <RegionalBenchmarkView />}
-      {dashboardSubTab === 'ranking' && <StoreRankingView />}
 
       {dashboardSubTab === 'overview' && (
         /* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */

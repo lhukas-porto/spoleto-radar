@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { formatPhoneNumber } from '../utils/dateHelpers';
+import { formatPhoneNumber, formatBrDate } from '../utils/dateHelpers';
 import { 
   BRAZILIAN_STATES, 
   getCitiesForState, 
@@ -14,7 +14,6 @@ import {
   Plus, 
   Search, 
   Filter, 
-  Star, 
   Calendar,
   X,
   FileText,
@@ -28,10 +27,15 @@ import {
   Building2,
   Handshake,
   RotateCcw,
-  Compass
+  Compass,
+  Camera,
+  Sliders,
+  Flame
 } from 'lucide-react';
 import FranchiseesView from './FranchiseesView';
 import NetworkMapView from './NetworkMapView';
+import AvatarCropModal from './AvatarCropModal';
+import DateInput from './DateInput';
 
 export default function StoresView() {
   const { 
@@ -68,6 +72,9 @@ export default function StoresView() {
     franchisee: '',
     phone: '',
     email: '',
+    photoUrl: null,
+    shoppingMallAdmin: '',
+    franchiseContractExpiration: '',
     consultantId: consultants.find(c => (c.role || 'CONSULTOR') === 'CONSULTOR')?.id || ''
   });
 
@@ -83,8 +90,37 @@ export default function StoresView() {
     franchisee: '',
     phone: '',
     email: '',
+    photoUrl: null,
+    shoppingMallAdmin: '',
+    franchiseContractExpiration: '',
     consultantId: ''
   });
+
+  // Zoom e Corte interativo de foto da loja
+  const [zoomedPhoto, setZoomedPhoto] = useState(null);
+  const [imageToCrop, setImageToCrop] = useState(null); // { src: string, target: 'new' | 'edit' }
+
+  // Handlers para o corte e posicionamento circular da foto da loja
+  const handleFileSelect = (file, target) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImageToCrop({
+        src: e.target.result,
+        target
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleConfirmCrop = (croppedUrl) => {
+    if (imageToCrop?.target === 'new') {
+      setNewStore(prev => ({ ...prev, photoUrl: croppedUrl }));
+    } else if (imageToCrop?.target === 'edit') {
+      setEditStoreForm(prev => ({ ...prev, photoUrl: croppedUrl }));
+    }
+    setImageToCrop(null);
+  };
 
   // State for IBGE Cities per state & CEP loading status
   const [newStoreCities, setNewStoreCities] = useState([]);
@@ -258,6 +294,9 @@ export default function StoresView() {
       franchisee: '',
       phone: '',
       email: '',
+      photoUrl: null,
+      shoppingMallAdmin: '',
+      franchiseContractExpiration: '',
       consultantId: consultants.find(c => (c.role || 'CONSULTOR') === 'CONSULTOR')?.id || ''
     });
     setCepSuccessNew(false);
@@ -277,6 +316,9 @@ export default function StoresView() {
       franchisee: store.franchisee || '',
       phone: store.phone ? formatPhoneNumber(store.phone) : '',
       email: store.email ? store.email.toLowerCase().trim() : '',
+      photoUrl: store.photoUrl || null,
+      shoppingMallAdmin: store.shoppingMallAdmin || '',
+      franchiseContractExpiration: store.franchiseContractExpiration || '',
       consultantId: store.consultantId || ''
     });
   };
@@ -348,20 +390,21 @@ export default function StoresView() {
           style={{
             padding: '0.55rem 1.15rem',
             borderRadius: 'var(--radius-md)',
-            border: activeStoreTab === 'map' ? '1.5px solid var(--primary-brown)' : '1px solid var(--border-subtle)',
-            background: activeStoreTab === 'map' ? 'var(--primary-brown)' : '#FFFFFF',
-            color: activeStoreTab === 'map' ? '#FFFFFF' : 'var(--text-main)',
+            border: activeStoreTab === 'map' ? '1.5px solid #DC2626' : '1px solid rgba(220, 38, 38, 0.4)',
+            background: activeStoreTab === 'map' ? '#DC2626' : '#FEF2F2',
+            color: activeStoreTab === 'map' ? '#FFFFFF' : '#991B1B',
             fontWeight: 800,
             fontSize: '0.84rem',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '0.45rem',
-            boxShadow: activeStoreTab === 'map' ? '0 2px 8px rgba(93,56,38,0.2)' : 'none',
+            boxShadow: activeStoreTab === 'map' ? '0 2px 8px rgba(220,38,38,0.3)' : 'none',
             transition: 'all 0.15s ease'
           }}
+          title="Ver Mapa de Calor de não-conformidades e distribuição geográfica das lojas"
         >
-          <Compass size={16} /> Mapa da Rede (Brasil)
+          <span>🔥 Mapa de Calor & Rede Brasil</span>
         </button>
 
         <button
@@ -565,33 +608,82 @@ export default function StoresView() {
                   </span>
                 </div>
 
-                <h3 
-                  onClick={() => setSelectedStoreForProfile(store)}
-                  style={{ 
-                    fontSize: '1.05rem', 
-                    color: 'var(--text-main)', 
-                    marginBottom: '0.35rem',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    textDecorationColor: 'transparent',
-                    transition: 'all 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = 'var(--primary-brown)';
-                    e.currentTarget.style.textDecorationColor = 'var(--primary-brown)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'var(--text-main)';
-                    e.currentTarget.style.textDecorationColor = 'transparent';
-                  }}
-                  title="Clique para abrir a Ficha 360° e Linha do Tempo da Loja"
-                >
-                  {store.name}
-                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '0.85rem' }}>
+                  {/* Foto da Loja com Zoom Centralizado ao Clicar */}
+                  <div 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setZoomedPhoto({ 
+                        url: store.photoUrl || null, 
+                        name: store.name, 
+                        code: store.code,
+                        locationType: store.locationType 
+                      });
+                    }}
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '50%',
+                      border: '2px solid var(--accent-gold)',
+                      overflow: 'hidden',
+                      backgroundColor: 'var(--primary-brown-light)',
+                      color: 'var(--primary-brown)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '1.25rem',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                      transition: 'transform 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Clique para ver a foto da loja ampliada"
+                  >
+                    {store.photoUrl ? (
+                      <img src={store.photoUrl} alt={store.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <Store size={26} color="var(--primary-brown)" />
+                    )}
+                  </div>
 
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-                  <MapPin size={14} color="var(--text-muted)" />
-                  {store.city} - {store.state}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 
+                      onClick={() => setSelectedStoreForProfile(store)}
+                      style={{ 
+                        fontSize: '1.02rem', 
+                        color: 'var(--text-main)', 
+                        margin: '0 0 0.25rem 0',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'transparent',
+                        transition: 'all 0.15s ease',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'var(--primary-brown)';
+                        e.currentTarget.style.textDecorationColor = 'var(--primary-brown)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--text-main)';
+                        e.currentTarget.style.textDecorationColor = 'transparent';
+                      }}
+                      title="Clique para abrir a Ficha 360° e Linha do Tempo da Loja"
+                    >
+                      {store.name}
+                    </h3>
+
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <MapPin size={13} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {store.city} - {store.state}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.82rem' }}>
@@ -620,6 +712,20 @@ export default function StoresView() {
                       <strong>Não atribuído</strong>
                     )}
                   </div>
+
+                  {store.shoppingMallAdmin && (
+                    <div>
+                      <span style={{ color: 'var(--text-muted)' }}>Administradora:</span>{' '}
+                      <strong style={{ color: 'var(--text-main)' }}>{store.shoppingMallAdmin}</strong>
+                    </div>
+                  )}
+
+                  {store.franchiseContractExpiration && (
+                    <div>
+                      <span style={{ color: 'var(--text-muted)' }}>Venc. Contrato Franquia:</span>{' '}
+                      <strong style={{ color: 'var(--primary-brown)' }}>{formatBrDate(store.franchiseContractExpiration)}</strong>
+                    </div>
+                  )}
 
                   {/* Contatos dos Franqueados / Sócios ou da Loja */}
                   {storeFranchisees.length > 0 ? (
@@ -720,6 +826,60 @@ export default function StoresView() {
             </div>
 
             <form onSubmit={handleSaveStore}>
+              {/* Upload de Foto da Loja */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '0.75rem', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-strong)', marginBottom: '1rem' }}>
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  border: '2px solid var(--accent-gold)',
+                  overflow: 'hidden',
+                  backgroundColor: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  {newStore.photoUrl ? (
+                    <img src={newStore.photoUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <Camera size={24} color="var(--text-muted)" />
+                  )}
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <label className="form-label" style={{ marginBottom: '0.25rem' }}>Foto da Fachada / Unidade</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      handleFileSelect(e.target.files?.[0], 'new');
+                      e.target.value = '';
+                    }}
+                    style={{ fontSize: '0.8rem' }}
+                  />
+                  {newStore.photoUrl && (
+                    <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', alignItems: 'center' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setImageToCrop({ src: newStore.photoUrl, target: 'new' })}
+                        style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: '4px', cursor: 'pointer', padding: '0.2rem 0.55rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 600 }}
+                        title="Reposicionar ou dar zoom na foto"
+                      >
+                        <Sliders size={12} /> Ajustar Posição / Zoom
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setNewStore({ ...newStore, photoUrl: null })}
+                        style={{ fontSize: '0.74rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                      >
+                        Remover Foto
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div className="form-group">
                   <label className="form-label">Código RP da Unidade *</label>
@@ -823,6 +983,26 @@ export default function StoresView() {
                 </div>
 
                 <div className="form-group">
+                  <label className="form-label">Administradora do Shopping / Empreendimento</label>
+                  <input 
+                    type="text" 
+                    value={newStore.shoppingMallAdmin || ''} 
+                    onChange={(e) => setNewStore({ ...newStore, shoppingMallAdmin: e.target.value.toUpperCase() })} 
+                    placeholder="Ex: ALLOS, ANCAR, IGUATEMI, MULTIPLAN..." 
+                    style={{ textTransform: 'uppercase' }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Vencimento do Contrato de Franquias</label>
+                  <DateInput 
+                    value={newStore.franchiseContractExpiration || ''} 
+                    onChange={(val) => setNewStore({ ...newStore, franchiseContractExpiration: val })} 
+                    placeholder="DD/MM/AAAA"
+                  />
+                </div>
+
+                <div className="form-group">
                   <label className="form-label">Nome do Franqueado Responsável</label>
                   <input 
                     type="text" 
@@ -912,6 +1092,60 @@ export default function StoresView() {
             </div>
 
             <form onSubmit={handleSaveEditStore}>
+              {/* Upload de Foto da Loja */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '0.75rem', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-strong)', marginBottom: '1rem' }}>
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  border: '2px solid var(--accent-gold)',
+                  overflow: 'hidden',
+                  backgroundColor: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  {editStoreForm.photoUrl ? (
+                    <img src={editStoreForm.photoUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <Camera size={24} color="var(--text-muted)" />
+                  )}
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <label className="form-label" style={{ marginBottom: '0.25rem' }}>Alterar Foto da Fachada / Unidade</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      handleFileSelect(e.target.files?.[0], 'edit');
+                      e.target.value = '';
+                    }}
+                    style={{ fontSize: '0.8rem' }}
+                  />
+                  {editStoreForm.photoUrl && (
+                    <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', alignItems: 'center' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setImageToCrop({ src: editStoreForm.photoUrl, target: 'edit' })}
+                        style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: '4px', cursor: 'pointer', padding: '0.2rem 0.55rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 600 }}
+                        title="Reposicionar ou dar zoom na foto"
+                      >
+                        <Sliders size={12} /> Ajustar Posição / Zoom
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setEditStoreForm({ ...editStoreForm, photoUrl: null })}
+                        style={{ fontSize: '0.74rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                      >
+                        Remover Foto
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div className="form-group">
                   <label className="form-label">Código RP da Unidade *</label>
@@ -1015,6 +1249,26 @@ export default function StoresView() {
                 </div>
 
                 <div className="form-group">
+                  <label className="form-label">Administradora do Shopping / Empreendimento</label>
+                  <input 
+                    type="text" 
+                    value={editStoreForm.shoppingMallAdmin || ''} 
+                    onChange={(e) => setEditStoreForm({ ...editStoreForm, shoppingMallAdmin: e.target.value.toUpperCase() })} 
+                    placeholder="Ex: ALLOS, ANCAR, IGUATEMI, MULTIPLAN..." 
+                    style={{ textTransform: 'uppercase' }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Vencimento do Contrato de Franquias</label>
+                  <DateInput 
+                    value={editStoreForm.franchiseContractExpiration || ''} 
+                    onChange={(val) => setEditStoreForm({ ...editStoreForm, franchiseContractExpiration: val })} 
+                    placeholder="DD/MM/AAAA"
+                  />
+                </div>
+
+                <div className="form-group">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <label className="form-label">Nome do Franqueado / Sócios</label>
                     <span 
@@ -1107,6 +1361,77 @@ export default function StoresView() {
           </div>
         </div>
       )}
+
+      {/* Modal para Visualização da Foto da Loja Ampliada */}
+      {zoomedPhoto && (
+        <div className="modal-overlay" onClick={() => setZoomedPhoto(null)} style={{ zIndex: 9999 }}>
+          <div 
+            className="modal-card" 
+            style={{ maxWidth: '420px', textAlign: 'center', padding: '2rem 1.5rem', borderRadius: 'var(--radius-lg)' }} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ marginBottom: '1.25rem' }}>
+              <span style={{ fontSize: '0.78rem', background: 'var(--primary-brown-light)', color: 'var(--primary-brown)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', fontWeight: 800 }}>
+                Código RP: {zoomedPhoto.code || 'SPO'}
+              </span>
+              <h3 style={{ margin: '0.5rem 0 0.15rem', color: 'var(--text-main)', fontSize: '1.25rem', fontWeight: 800 }}>
+                {zoomedPhoto.name}
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                {zoomedPhoto.locationType || 'Unidade Spoleto'}
+              </p>
+            </div>
+
+            <div style={{ 
+              width: '100%', 
+              maxWidth: '380px', 
+              aspectRatio: '1 / 1', 
+              margin: '0 auto', 
+              borderRadius: '16px', 
+              overflow: 'hidden', 
+              border: '3px solid var(--accent-gold)', 
+              boxShadow: '0 12px 30px rgba(0,0,0,0.2)',
+              backgroundColor: 'var(--primary-brown-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--primary-brown)'
+            }}>
+              {zoomedPhoto.url ? (
+                <img 
+                  src={zoomedPhoto.url} 
+                  alt={zoomedPhoto.name} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                <Store size={80} color="var(--primary-brown)" />
+              )}
+            </div>
+
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setZoomedPhoto(null)}
+                style={{ fontSize: '0.84rem', padding: '0.45rem 1.5rem' }}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Interativo de Corte e Posicionamento Circular da Foto da Loja */}
+      {imageToCrop && (
+        <AvatarCropModal
+          imageSrc={imageToCrop.src}
+          title="Ajustar Foto da Unidade Spoleto"
+          subtitle="Arraste a foto da loja para enquadrar a fachada e use a barra de zoom para aproximar."
+          onConfirm={handleConfirmCrop}
+          onCancel={() => setImageToCrop(null)}
+        />
+      )}
+
     </div>
   );
 }

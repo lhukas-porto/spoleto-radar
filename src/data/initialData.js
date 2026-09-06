@@ -677,7 +677,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Governador Flávio Ribeiro Coutinho, 115 - Manaíra (MAG SHOPPING)",
     "consultantId": "cons-1",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "58037-000",
     "enriched": false
@@ -691,7 +690,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Ulrico Oliveira Cavalcanti, 805 - Aeroclube (MANAIRA SHOPPING)",
     "consultantId": "cons-1",
-    "ratingScore": 8.5,
     "status": "Em Reforma",
     "cep": "58036-853",
     "enriched": false
@@ -705,7 +703,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Hilton Souto Maior - Mangabeira (MANGABEIRA SHOPPING)",
     "consultantId": "cons-1",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "58055-018",
     "enriched": false
@@ -719,7 +716,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Prefeito Severino Cabral, 1050 - Vila Cabral (PARTAGE SHOPPING CAMPINA GRANDE)",
     "consultantId": "cons-1",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "58408-000",
     "enriched": false
@@ -733,7 +729,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO EPITACIO MM - João Pessoa/PB",
     "consultantId": "cons-1",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -747,7 +742,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Praça Ministro Salgado Filho, s/n - Imbiribeira (Aeroporto Internacional do Recife)",
     "consultantId": "cons-1",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "51210-902",
     "enriched": false
@@ -761,7 +755,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua César Loureiro, 70 - Casa Forte (PLAZA CASA FORTE)",
     "consultantId": "cons-1",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "52060-350",
     "enriched": false
@@ -775,7 +768,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Padre Carapuceiro, 777 - Boa Viagem (SHOPPING RECIFE)",
     "consultantId": "cons-1",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "51020-900",
     "enriched": false
@@ -789,7 +781,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida República do Líbano, 251 - Pina (SHOPPING RIOMAR RECIFE)",
     "consultantId": "cons-1",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "51110-160",
     "enriched": false
@@ -803,7 +794,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Governador Agamenon Magalhães, 153 - Santo Amaro (SHOPPING TACARUNA)",
     "consultantId": "cons-1",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "50110-900",
     "enriched": false
@@ -817,7 +807,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Doutor Pedro Firmino - Centro (PATOS SHOPPING)",
     "consultantId": "cons-1",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "58700-070",
     "enriched": false
@@ -831,7 +820,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO JUA GARDEN - Juazeiro/BA",
     "consultantId": "cons-1",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -845,7 +833,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Rodovia BR-104, km 91 - Tabuleiro do Pinto (Aeroporto Zumbi dos Palmares)",
     "consultantId": "cons-1",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "57100-000",
     "enriched": false
@@ -859,7 +846,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO JATIUCA MM - Maceió/AL",
     "consultantId": "cons-1",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -873,7 +859,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO GRUTA MM - Maceió/AL",
     "consultantId": "cons-1",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -887,7 +872,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Comendador Gustavo Paiva, 5945 - Cruz das Almas (Parque Shopping Maceió)",
     "consultantId": "cons-1",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "57038-000",
     "enriched": false
@@ -901,7 +885,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Maria Isabel dos Santos, s/n - Centro (Parque Shopping Bahia)",
     "consultantId": "cons-1",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "42702-400",
     "enriched": false
@@ -915,7 +898,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Tancredo Neves, 3133 - Caminho das Árvores (Salvador Shopping)",
     "consultantId": "cons-1",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "41820-021",
     "enriched": false
@@ -929,7 +911,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Centenário, 2992 - Chame-Chame (Shopping Barra)",
     "consultantId": "cons-1",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "40140-902",
     "enriched": false
@@ -943,7 +924,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DA BAHIA)",
     "consultantId": "cons-1",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -957,7 +937,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARALELA - Salvador/BA",
     "consultantId": "cons-1",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -971,7 +950,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO MIDWAY SHOPPING (ficou fechada) - Natal/RN",
     "consultantId": "cons-1",
-    "ratingScore": 8.9,
     "status": "Inativa",
     "cep": "01000-000",
     "enriched": false
@@ -985,7 +963,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Henrique Savi, 15-55 - Vila Nova Cidade Universitária (BAURU SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "17012-900",
     "enriched": true
@@ -999,7 +976,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Henrique Savi, 15-55 - Vila Nova Cidade Universitária (BOULEVARD BAURU SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "17012-900",
     "enriched": true
@@ -1013,7 +989,6 @@ export const INITIAL_STORES = [
     "locationType": "Eventos / Food Truck",
     "address": "SPOLETO EL DOURADO EVENTOS - São Paulo/SP",
     "consultantId": "cons-2",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1027,7 +1002,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Nove de Julho, 3333 - Anhangabaú (MAXI SHOPPING JUNDIAI)",
     "consultantId": "cons-2",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "13208-056",
     "enriched": true
@@ -1041,7 +1015,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Doutor Ermelindo Maffei, 1199 - Jardim Paraíso (PLAZA SHOPPING ITU)",
     "consultantId": "cons-2",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "13309-900",
     "enriched": true
@@ -1055,7 +1028,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Alameda Filtros Mann, 670 - Jardim Tropical (POLO SHOPPING INDAIATUBA)",
     "consultantId": "cons-2",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "13348-500",
     "enriched": true
@@ -1069,7 +1041,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua José Alves, 100 - Centro (BOULEVARD MOGI GUAÇU)",
     "consultantId": "cons-2",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "13840-000",
     "enriched": true
@@ -1083,7 +1054,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Deputado Benedito Matarazzo, 9403 - Jardim Oswaldo Cruz (CENTER VALE SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "12215-900",
     "enriched": true
@@ -1097,7 +1067,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida São João, 2200 - Jardim das Colinas (SHOPPING COLINAS)",
     "consultantId": "cons-2",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "12242-000",
     "enriched": true
@@ -1111,7 +1080,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Passeio dos Flamboyants, 200 - Parque Faber Castell (IGUATEMI SAO CARLOS)",
     "consultantId": "cons-2",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "13565-900",
     "enriched": true
@@ -1125,7 +1093,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Olímpio Catão, 500 - Centro (JACAREI SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "12327-000",
     "enriched": true
@@ -1139,7 +1106,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Alberto Benassi, 2270 - Jardim dos Manacás (JARAGUA ARARAQUARA)",
     "consultantId": "cons-2",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "14801-912",
     "enriched": true
@@ -1153,7 +1119,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Nove de Julho, 3333 - Anhangabaú (JUNDIAI SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "13208-056",
     "enriched": true
@@ -1167,7 +1132,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIO CLARO - Rio Claro/SP",
     "consultantId": "cons-2",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1181,7 +1145,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida das Nações Unidas, 22540 - Jurubatuba (SHOPPING SP MARKET)",
     "consultantId": "cons-2",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "04691-000",
     "enriched": true
@@ -1195,7 +1158,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Charles Schnneider, 1700 - Vila Costa (TAUBATE SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "12030-000",
     "enriched": true
@@ -1209,7 +1171,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Andrômeda, 227 - Jardim Satélite (VALE SUL SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "12230-000",
     "enriched": true
@@ -1223,7 +1184,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VALINHOS - Valinhos/SP",
     "consultantId": "cons-2",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1237,7 +1197,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SOROCABA MM - Sorocaba/SP",
     "consultantId": "cons-2",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1251,7 +1210,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Rodovia Hélio Smidt, s/n - Cumbica (Aeroporto Internacional de Guarulhos)",
     "consultantId": "cons-2",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "07190-100",
     "enriched": false
@@ -1265,7 +1223,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Professora Izoraida Marques Peres, 401 - Parque Campolim (SHOPPING IGUATEMI ESPLANADA)",
     "consultantId": "cons-2",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "18048-110",
     "enriched": true
@@ -1279,7 +1236,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Itavuvu, 3373 - Jardim Santa Cecília (SHOPPING CIDADE SOROCABA)",
     "consultantId": "cons-2",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "18078-005",
     "enriched": true
@@ -1293,7 +1249,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Dom Pedro I, 7181 - Jardim Baronesa (VIA VALE GARDEN SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "12091-000",
     "enriched": true
@@ -1307,7 +1262,6 @@ export const INITIAL_STORES = [
     "locationType": "Outlet",
     "address": "Rodovia Castello Branco, km 60 - Dona Catarina (OUTLET CATARINA FASHION)",
     "consultantId": "cons-2",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "18130-970",
     "enriched": true
@@ -1321,7 +1275,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Independência, 5800 - Vinhedo (Vinhedo Open Mall)",
     "consultantId": "cons-2",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "13280-000",
     "enriched": false
@@ -1335,7 +1288,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Estrada do Caminho Velho, 5308 - Jardim Nova Cidade (SHOPPING BONSUCESSO)",
     "consultantId": "cons-2",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "07252-312",
     "enriched": true
@@ -1349,7 +1301,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Juscelino Kubitschek de Oliveira, km 107 - Pouso Alegre (Serra Sul Shopping)",
     "consultantId": "cons-2",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "37550-000",
     "enriched": false
@@ -1363,7 +1314,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PARTAGE POÇOS DE CALDAS - Poços de Caldas/MG",
     "consultantId": "cons-2",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1377,7 +1327,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Raimundo Pereira de Magalhães, 11001 - Jardim Pirituba (CANTAREIRA NORTE SHOPPING)",
     "consultantId": "cons-2",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "02998-050",
     "enriched": true
@@ -1391,7 +1340,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Francisco Franco de Godoy Bueno, 801 - Cidade Nova Mogi Guaçu (SHOPPING BURITI MOGI GUACU)",
     "consultantId": "cons-3",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "13845-373",
     "enriched": true
@@ -1405,7 +1353,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Alkindar Monteiro Junqueira, km 53 - Quinta da Baronesa (SHOPPING BRAGANCA GARDEN)",
     "consultantId": "cons-3",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "12916-900",
     "enriched": true
@@ -1419,7 +1366,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Rodovia Santos Dumont, km 66 - Parque Viracopos (Aeroporto de Viracopos)",
     "consultantId": "cons-3",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "13055-900",
     "enriched": false
@@ -1433,7 +1379,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE SHOPPING BARUERI - Barueri/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1447,7 +1392,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING TOP CENTER - São Paulo/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1461,7 +1405,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Industrial, 600 - Jardim (GRAND PLAZA SHOPPING)",
     "consultantId": "cons-3",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "09080-510",
     "enriched": true
@@ -1475,7 +1418,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PAMPLONA SHOPPING - São Paulo/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1489,7 +1431,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SMAS Trecho 1 - Guará (PARK SHOPPING SAO CAETANO)",
     "consultantId": "cons-3",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "71219-900",
     "enriched": true
@@ -1503,7 +1444,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Itacaiúna, 61 - Vila Andrade (SHOPPING JARDIM SUL)",
     "consultantId": "cons-3",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "05716-090",
     "enriched": true
@@ -1517,7 +1457,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Melo Freire, s/n - Tatuapé (SHOPPING METRO TATUAPE)",
     "consultantId": "cons-3",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "03086-000",
     "enriched": true
@@ -1531,7 +1470,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Doutor Antonio Maria Laet, 566 - Parada Inglesa (SHOPPING METRO TUCURUVI)",
     "consultantId": "cons-3",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "02305-000",
     "enriched": true
@@ -1545,7 +1483,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida John Boyd Dunlop, 3900 - Jardim Ipaussurama (PARQUE DAS BANDEIRAS)",
     "consultantId": "cons-3",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "13059-587",
     "enriched": true
@@ -1559,7 +1496,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Olimpíadas, 360 - Vila Olímpia (SHOPPING VILA OLIMPIA)",
     "consultantId": "cons-3",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "04551-000",
     "enriched": true
@@ -1573,7 +1509,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida das Nações Unidas, 4777 - Alto de Pinheiros (SHOPPING VILLA LOBOS MM)",
     "consultantId": "cons-3",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "05477-000",
     "enriched": true
@@ -1587,7 +1522,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Raimundo Pereira de Magalhães, 1465 - Jardim Iris (TIETE PLAZA SHOPPING)",
     "consultantId": "cons-3",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "02910-000",
     "enriched": true
@@ -1601,7 +1535,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ANHANGUERA CAJAMAR - Cajamar/SP",
     "consultantId": "cons-3",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1615,7 +1548,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARKCITY SUMARÉ - Sumaré/SP",
     "consultantId": "cons-3",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1629,7 +1561,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Dom Pedro I, km 131,5 - Jardim Nilópolis (SHOPPING GALLERIA CAMPINAS)",
     "consultantId": "cons-3",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "13091-901",
     "enriched": true
@@ -1643,7 +1574,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Doutor Chucri Zaidan, 902 - Vila Cordeiro (SHOPPING MARKET PLACE)",
     "consultantId": "cons-3",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "04707-000",
     "enriched": true
@@ -1657,7 +1587,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PARQUE DA CIDADE - São Paulo/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1671,7 +1600,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Alameda Rio Negro, 111 - Alphaville (SHOPPING IGUATEMI ALPHAVILLE)",
     "consultantId": "cons-3",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "06455-000",
     "enriched": true
@@ -1685,7 +1613,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Roque Petroni Júnior, 1089 - Jardim das Acácias (MORUMBI TOWN)",
     "consultantId": "cons-3",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "04707-900",
     "enriched": true
@@ -1699,7 +1626,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Higienópolis, 618 - Higienópolis (SHOPPING HIGIENOPOLIS)",
     "consultantId": "cons-3",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01238-010",
     "enriched": true
@@ -1713,7 +1639,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Jacy Teixeira de Camargo, 940 - Jardim do Lago (CAMPINAS SHOPPING)",
     "consultantId": "cons-3",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "13050-009",
     "enriched": true
@@ -1727,7 +1652,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING LIGHT - São Paulo/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1741,7 +1665,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING JK IGUATEMI - São Paulo/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1755,7 +1678,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Melo Freire, s/n - Tatuapé (SHOPPING BOULEVARD TATUAPE)",
     "consultantId": "cons-3",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "03086-000",
     "enriched": true
@@ -1769,7 +1691,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Roque Petroni Júnior, 1089 - Jardim das Acácias (SHOPPING MORUMBI)",
     "consultantId": "cons-3",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "04707-900",
     "enriched": true
@@ -1783,7 +1704,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO HORTOLÂNDIA - Hortolândia/SP",
     "consultantId": "cons-3",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1797,7 +1717,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO ROSARIO MM - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1811,7 +1730,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Saturnino Braga, 369 - Centro (RESENDE SHOPPING)",
     "consultantId": "cons-4",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "27511-300",
     "enriched": true
@@ -1825,7 +1743,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING METROPOLITANO - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1839,7 +1756,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia dos Metalúrgicos, 1189 - São Geraldo (SHOPPING PARK SUL VR)",
     "consultantId": "cons-4",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "27259-250",
     "enriched": true
@@ -1853,7 +1769,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO VOLTA REDONDA MM - Volta Redonda/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1867,7 +1782,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "SPOLETO AEROPORTO TOM JOBIM - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1881,7 +1795,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Estrada do Rodrigues Caldas, 100 - Taquara (TAQUARA PLAZA)",
     "consultantId": "cons-4",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "22730-001",
     "enriched": true
@@ -1895,7 +1808,6 @@ export const INITIAL_STORES = [
     "locationType": "Outlet",
     "address": "SPOLETO OUTLET WASHINGTON LUIZ MM - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1909,7 +1821,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA BUENOS AIRES - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1923,7 +1834,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING AMERICAS - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1937,7 +1847,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO TERMINAL RODOVIARIO NOVO RIO - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1951,7 +1860,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO GUANABARA RECREI - São Paulo/SP",
     "consultantId": "cons-4",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1965,7 +1873,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA RB1 - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -1979,7 +1886,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Vicente de Carvalho, 909 - Vila da Penha (CARIOCA SHOPPING)",
     "consultantId": "cons-4",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "21210-623",
     "enriched": true
@@ -1993,7 +1899,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GAVEA - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2007,7 +1912,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO NOVA IGUACU RUA MM - Nova Iguaçu/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2021,7 +1925,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Washington Luiz, 2895 - Parque Duque (CAXIAS SHOPPING 2 MM)",
     "consultantId": "cons-4",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "25085-009",
     "enriched": true
@@ -2035,7 +1938,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA MARIZ E BARROS - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2049,7 +1951,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVA IGUACU - Nova Iguaçu/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2063,7 +1964,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Governador Roberto Silveira, 540 - Centro (TOP SHOPPING MM)",
     "consultantId": "cons-4",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "26255-290",
     "enriched": true
@@ -2077,7 +1977,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING JACAREPAGUA - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2091,7 +1990,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VOLTA REDONDA - Volta Redonda/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2105,7 +2003,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "Estrada do Caminho Velho, 5308 - Jardim Nova Cidade (BONSUCESSO RUA MM)",
     "consultantId": "cons-4",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "07252-312",
     "enriched": true
@@ -2119,7 +2016,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO CAXIAS RUA - Duque de Caxias/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2133,7 +2029,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Maestro Paulo e Silva, 400 - Jardim Carioca (ILHA PLAZA SHOPPING)",
     "consultantId": "cons-4",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "21921-000",
     "enriched": true
@@ -2147,7 +2042,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia BR-040, km 12 - Parque Esplanada III (SHOPPING SULACAP)",
     "consultantId": "cons-4",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "72876-900",
     "enriched": true
@@ -2161,7 +2055,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Ayrton Senna, 2150 - Barra da Tijuca (CASA SHOPPING)",
     "consultantId": "cons-4",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "22775-904",
     "enriched": true
@@ -2175,7 +2068,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Brasil, 22155 - Guadalupe (JARDIM GUADALUPE 2)",
     "consultantId": "cons-4",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "21660-000",
     "enriched": true
@@ -2189,7 +2081,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida das Américas, 7607 - Barra da Tijuca (SHOPPING NOVO LEBLON)",
     "consultantId": "cons-4",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "22793-080",
     "enriched": true
@@ -2203,7 +2094,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO GUANABARA BARRA - Rio de Janeiro/RJ",
     "consultantId": "cons-4",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2217,7 +2107,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO ARCOVERDE - Arcoverde/PE",
     "consultantId": "cons-4",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2231,7 +2120,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CATARATAS JL SHOPPING - Foz do Iguaçu/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2245,7 +2133,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO ATLANTICO - Balneário Camboriú/SC",
     "consultantId": "cons-5",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2259,7 +2146,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO AURORA SHOPPING LONDRINA - Londrina/PR",
     "consultantId": "cons-5",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2273,7 +2159,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BLUMENAU - Blumenau/SC",
     "consultantId": "cons-5",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2287,7 +2172,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SMAS Trecho 1 - Guará (CONTINENTE PARK SHOPPING)",
     "consultantId": "cons-5",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "71219-900",
     "enriched": true
@@ -2301,7 +2185,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO FLORIPA SHOPPING - Florianópolis/SC",
     "consultantId": "cons-5",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2315,7 +2198,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO ITAJAÍ MM - Itajaí/SC",
     "consultantId": "cons-5",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2329,7 +2211,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO J L SHOPPING CASCAVEL - Cascavel/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2343,7 +2224,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BEIRA MAR - Florianópolis/SC",
     "consultantId": "cons-5",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2357,7 +2237,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CATUAÍ MARINGÁ - Maringá/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2371,7 +2250,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CIDADE DOS LAGOS - Guarapuava/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2385,7 +2263,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI PORTO ALEGRE - Porto Alegre/RS",
     "consultantId": "cons-5",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2399,7 +2276,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MARINGA - Maringá/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2413,7 +2289,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PATIO CHAPECO - Chapecó/SC",
     "consultantId": "cons-5",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2427,7 +2302,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO UMUARAMA - Umuarama/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2441,7 +2315,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Palestra Itália, 500 - Perdizes (BOURBON SHOPPING IPIRANGA)",
     "consultantId": "cons-5",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "05005-000",
     "enriched": true
@@ -2455,7 +2328,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CATUAÍ CASCAVEL - Cascavel/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2469,7 +2341,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SMAS Trecho 1 - Guará (PARK SHOPPING CANOAS)",
     "consultantId": "cons-5",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "71219-900",
     "enriched": true
@@ -2483,7 +2354,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PB SHOPPING PATO BRANCO - Pato Branco/PR",
     "consultantId": "cons-5",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2497,7 +2367,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING NOVO HAMBURGO - Novo Hamburgo/RS",
     "consultantId": "cons-5",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2511,7 +2380,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CAMPO MOURÃO - Campo Mourão/PR",
     "consultantId": "cons-5",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2525,7 +2393,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MUELLER - Curitiba/PR",
     "consultantId": "cons-5",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2539,7 +2406,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SMAS Trecho 1 - Guará (PARK SHOPPING BARIGUI)",
     "consultantId": "cons-5",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "71219-900",
     "enriched": true
@@ -2553,7 +2419,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ESTAÇÃO CURITIBA - Curitiba/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2567,7 +2432,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PALLADIUM CURITIBA - Curitiba/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2581,7 +2445,6 @@ export const INITIAL_STORES = [
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO JOINVILLE MM (DELIVERY) - Joinville/SC",
     "consultantId": "cons-5",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2595,7 +2458,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO VILLA ROMANA - Florianópolis/SC",
     "consultantId": "cons-5",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2609,7 +2471,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CAMPO GERAIS PONTA GROSSA - Ponta Grossa/PR",
     "consultantId": "cons-5",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2623,7 +2484,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA MARINGÁ - Maringá/PR",
     "consultantId": null,
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2637,7 +2497,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING FREI CANECA - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2651,7 +2510,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING D)",
     "consultantId": "cons-6",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -2665,7 +2523,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Carlos Kuntz Busch, 800 - Parque Egisto Ragazzo (LIMEIRA)",
     "consultantId": "cons-6",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "13484-015",
     "enriched": true
@@ -2679,7 +2536,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO AMERICANA - Americana/SP",
     "consultantId": "cons-6",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2693,7 +2549,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOAVISTA - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2707,7 +2562,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO TRIMAIS PLACES - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2721,7 +2575,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DOM PEDRO)",
     "consultantId": "cons-6",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -2735,7 +2588,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CARREFOUR MARGINAL PINHEIROS - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2749,7 +2601,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GRANJA VIANNA - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2763,7 +2614,6 @@ export const INITIAL_STORES = [
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO POSTO LAGO AZUL - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2777,7 +2627,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO EXTRA ANHANGUERA - São Paulo/SP",
     "consultantId": "cons-6",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2791,7 +2640,6 @@ export const INITIAL_STORES = [
     "locationType": "Outlet",
     "address": "SPOLETO OUTLET PREMIUM ITUPEVA - Itupeva/SP",
     "consultantId": "cons-6",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2805,7 +2653,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Afonso Pena, 4909 - Santa Fé (CAMPO GRANDE MS)",
     "consultantId": "cons-7",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "79021-000",
     "enriched": true
@@ -2819,7 +2666,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Ernesto Geisel, 2300 - Jockey Club (NORTE SUL PLAZA)",
     "consultantId": "cons-7",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "79008-010",
     "enriched": true
@@ -2833,7 +2679,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO TAGUATINGA PISTAO SUL - Brasília/DF",
     "consultantId": "cons-7",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2847,7 +2692,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO ÁGUAS LINDAS SHOPPING PICCOLO - Águas Lindas de Goiás/GO",
     "consultantId": "cons-7",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2861,7 +2705,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CEILANDIA - Brasília/DF",
     "consultantId": "cons-7",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2875,7 +2718,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOSQUE DOS IPES - Campo Grande/MS",
     "consultantId": "cons-7",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2889,7 +2731,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Afonso Pena, 4909 - Santa Fé (SHOPPING CAMPO GRANDE)",
     "consultantId": "cons-7",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "79021-000",
     "enriched": true
@@ -2903,7 +2744,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SINOP MT MM - Sinop/MT",
     "consultantId": "cons-7",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2917,7 +2757,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO VILA SÃO TOMAZ - São Paulo/SP",
     "consultantId": "cons-7",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2931,7 +2770,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PASSEIO DAS AGUAS SHOPPING - Goiânia/GO",
     "consultantId": "cons-7",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2945,7 +2783,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BUENA VISTA - Goiânia/GO",
     "consultantId": "cons-7",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2959,7 +2796,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI DF - Brasília/DF",
     "consultantId": "cons-7",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -2973,7 +2809,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SMAS Trecho 1 - Guará (PARK SHOPPING DF)",
     "consultantId": "cons-7",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "71219-900",
     "enriched": true
@@ -2987,7 +2822,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PALMAS SHOPPING - Palmas/TO",
     "consultantId": "cons-7",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3001,7 +2835,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO 307 SUL - Palmas/TO",
     "consultantId": "cons-7",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3015,7 +2848,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOUGAINVILLE - Goiânia/GO",
     "consultantId": "cons-7",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3029,7 +2861,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SCN Quadra 5 Bloco A - Asa Norte (BRASILIA SHOPPING)",
     "consultantId": "cons-7",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "70715-900",
     "enriched": true
@@ -3043,7 +2874,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Deputado Jamel Cecílio, 3300 - Jardim Goiás (FLAMBOYANT SHOPPING)",
     "consultantId": "cons-7",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "74810-907",
     "enriched": true
@@ -3057,7 +2887,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO AGUAS CLARAS MM - Brasília/DF",
     "consultantId": "cons-7",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3071,7 +2900,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "QS 1 Rua 210, Lote 40 - Águas Claras (TAGUATINGA SHOPPING)",
     "consultantId": "cons-7",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "72015-597",
     "enriched": true
@@ -3085,7 +2913,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SHCES Quadra 201 Lote 1 - Cruzeiro Novo (TERRACO SHOPPING)",
     "consultantId": "cons-7",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "70660-000",
     "enriched": true
@@ -3099,7 +2926,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SCS Quadra 7 Bloco A - Asa Sul (PATIO BRASIL SHOPPING)",
     "consultantId": "cons-7",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "70307-902",
     "enriched": true
@@ -3113,7 +2939,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DF PLAZA)",
     "consultantId": "cons-7",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -3127,7 +2952,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO NOROESTE MM - Brasília/DF",
     "consultantId": "cons-7",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3141,7 +2965,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida das Américas, 4666 - Barra da Tijuca (BARRA SHOPPING)",
     "consultantId": "cons-8",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "22640-100",
     "enriched": true
@@ -3155,7 +2978,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DOWNTOWN)",
     "consultantId": "cons-8",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -3169,7 +2991,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Maracanã, 987 - Tijuca (SHOPPING TIJUCA)",
     "consultantId": "cons-8",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "20511-000",
     "enriched": true
@@ -3183,7 +3004,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PARK JACAREPAGUA - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3197,7 +3017,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING VIA PARQUE - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3211,7 +3030,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA LARGO DO MACHADO - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3225,7 +3043,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Estrada do Portela, 222 - Madureira (MADUREIRA SHOPPING)",
     "consultantId": "cons-8",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "21310-310",
     "enriched": true
@@ -3239,7 +3056,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO COPACABANA MM - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3253,7 +3069,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Luciano das Neves, 2418 - Divino Espírito Santo (Shopping Vila Velha)",
     "consultantId": "cons-8",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "29107-900",
     "enriched": false
@@ -3267,7 +3082,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CACHOEIRO - Cachoeiro de Itapemirim/ES",
     "consultantId": "cons-8",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3281,7 +3095,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO MASTER PLACE MALL - Vitória/ES",
     "consultantId": "cons-8",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3295,7 +3108,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MESTRE ALVARO - Serra/ES",
     "consultantId": "cons-8",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3309,7 +3121,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING MONTSERRAT - Serra/ES",
     "consultantId": "cons-8",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3323,7 +3134,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia BR-262, km 5 - Campo Grande (Shopping Moxuara)",
     "consultantId": "cons-8",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "29144-000",
     "enriched": false
@@ -3337,7 +3147,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Doutor Olivio Lira, 353 - Praia da Costa (Shopping Praia da Costa)",
     "consultantId": "cons-8",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "29101-900",
     "enriched": false
@@ -3351,7 +3160,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Luciano das Neves, 2418 - Divino Espírito Santo (Shopping Vila Velha)",
     "consultantId": "cons-8",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "29107-900",
     "enriched": false
@@ -3365,7 +3173,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Américo Buaiz, 200 - Enseada do Suá (Shopping Vitória)",
     "consultantId": "cons-8",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "29050-902",
     "enriched": false
@@ -3379,7 +3186,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida das Américas, 19019 - Recreio dos Bandeirantes (RECREIO SHOPPING)",
     "consultantId": "cons-8",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "22790-702",
     "enriched": true
@@ -3393,7 +3199,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida das Américas, 4666 - Barra da Tijuca (BARRA SHOPPING 2)",
     "consultantId": "cons-8",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "22640-100",
     "enriched": true
@@ -3407,7 +3212,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Presidente Dutra, 4200 - Parque Barreto (SHOPPING GRANDE RIO)",
     "consultantId": "cons-8",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "25555-201",
     "enriched": true
@@ -3421,7 +3225,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI RIO - São Paulo/SP",
     "consultantId": "cons-8",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3435,7 +3238,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SMAS Trecho 1 - Guará (PARK SHOPPING CAMPO GRANDE)",
     "consultantId": "cons-8",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "71219-900",
     "enriched": true
@@ -3449,7 +3251,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Estrada do Mendanha, 555 - Campo Grande (WEST SHOPPING)",
     "consultantId": "cons-8",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "23050-300",
     "enriched": true
@@ -3463,7 +3264,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO ALDEIA DA SERRA MM - Barueri/SP",
     "consultantId": "cons-8",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3477,7 +3277,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Fonseca, 240 - Bangu (BANGU SHOPPING)",
     "consultantId": "cons-8",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "21820-005",
     "enriched": true
@@ -3491,7 +3290,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BARRA SQUARE - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3505,7 +3303,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA ICARAI - Niterói/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3519,7 +3316,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA TIJUCA MM - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3533,7 +3329,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "Rua Itapera, 500 - Irajá (SHOPPING VIA BRASIL PICCOLO)",
     "consultantId": "cons-8",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "21230-043",
     "enriched": true
@@ -3547,7 +3342,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA ENSEADA - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3561,7 +3355,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA CRUZ VERMELHA - Rio de Janeiro/RJ",
     "consultantId": "cons-8",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3575,7 +3368,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Praça Gago Coutinho, s/n - São Cristóvão (Aeroporto de Salvador)",
     "consultantId": "cons-9",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "41500-570",
     "enriched": false
@@ -3589,7 +3381,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BELA VISTA - São Paulo/SP",
     "consultantId": "cons-9",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3603,7 +3394,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO MARACANAÚ MM - Maracanaú/CE",
     "consultantId": "cons-9",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3617,7 +3407,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CARIRI SHOPPING - Juazeiro do Norte/CE",
     "consultantId": "cons-9",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3631,7 +3420,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO NORTH SHOPPING SOBRAL II - Sobral/CE",
     "consultantId": "cons-9",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3645,7 +3433,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD VITORIA DA CONQUISTA - Vitória da Conquista/BA",
     "consultantId": "cons-9",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3659,7 +3446,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO COMPACTO SHOPPING VIA SUL - Fortaleza/CE",
     "consultantId": "cons-9",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3673,7 +3459,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Sargento Hermínio Sampaio, 3100 - Presidente Kennedy (RioMar Kennedy)",
     "consultantId": "cons-9",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "60355-630",
     "enriched": false
@@ -3687,7 +3472,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIOMAR FORTALEZA MM - Fortaleza/CE",
     "consultantId": "cons-9",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3701,7 +3485,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BENFICA - Fortaleza/CE",
     "consultantId": "cons-9",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3715,7 +3498,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING IGUATEMI FORTALEZA - Fortaleza/CE",
     "consultantId": "cons-9",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3729,7 +3511,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DEL PASEO)",
     "consultantId": "cons-9",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -3743,7 +3524,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO TERRAZO SHOPPING - Fortaleza/CE",
     "consultantId": "cons-9",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3757,7 +3537,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PARANGABA - Fortaleza/CE",
     "consultantId": "cons-9",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3771,7 +3550,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO JEQUITIBA PLAZA SHOPPING - Itabuna/BA",
     "consultantId": "cons-9",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3785,7 +3563,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CONQUISTA SUL - Vitória da Conquista/BA",
     "consultantId": "cons-9",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3799,7 +3576,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO RODOVIARIA SALVADOR - Salvador/BA",
     "consultantId": "cons-9",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3813,7 +3589,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING FEIRA DE SANTANA - Feira de Santana/BA",
     "consultantId": "cons-9",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3827,7 +3602,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO CAMAÇARI - Camaçari/BA",
     "consultantId": null,
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3841,7 +3615,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PRAIA HOTEL ILHEUS - Ilhéus/BA",
     "consultantId": null,
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3855,7 +3628,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Iguatemi, 777 - Vila Brandina (SHOPPING IGUATEMI CAMPINAS)",
     "consultantId": "cons-10",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "13092-500",
     "enriched": true
@@ -3869,7 +3641,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PAULISTA - São Paulo/SP",
     "consultantId": "cons-10",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3883,7 +3654,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CIDADE SAO PAULO - São Paulo/SP",
     "consultantId": "cons-10",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3897,7 +3667,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Rebouças, 3970 - Pinheiros (SHOPPING ELDORADO)",
     "consultantId": "cons-10",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "05425-070",
     "enriched": true
@@ -3911,7 +3680,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING BOSQUE MAIA - Guarulhos/SP",
     "consultantId": "cons-10",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3925,7 +3693,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GUARULHOS - Guarulhos/SP",
     "consultantId": "cons-10",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3939,7 +3706,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING WEST PLAZA - São Paulo/SP",
     "consultantId": "cons-10",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3953,7 +3719,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING CENTER 3 - São Paulo/SP",
     "consultantId": "cons-10",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -3967,7 +3732,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Palestra Itália, 500 - Perdizes (BOURBON SHOPPING)",
     "consultantId": "cons-10",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "05005-000",
     "enriched": true
@@ -3981,7 +3745,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Domingos de Morais, 2564 - Vila Mariana (SHOPPING METRO SANTA CRUZ)",
     "consultantId": "cons-10",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "04037-003",
     "enriched": true
@@ -3995,7 +3758,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO COMPACTO CARREFOUR LIMAO - São Paulo/SP",
     "consultantId": "cons-10",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4009,7 +3771,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PARQUE PRADO SP PICCOLO - Belo Horizonte/MG",
     "consultantId": "cons-10",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4023,7 +3784,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Limeira, 722 - Areião (SHOPPING PIRACICABA)",
     "consultantId": "cons-10",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "13405-247",
     "enriched": true
@@ -4037,7 +3797,6 @@ export const INITIAL_STORES = [
     "locationType": "Eventos / Food Truck",
     "address": "SPOLETO EVENTOS - RIO - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4051,7 +3810,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA MEXICO - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4065,7 +3823,6 @@ export const INITIAL_STORES = [
     "locationType": "Eventos / Food Truck",
     "address": "SPOLETO FOOD TRUCK TERESOPOLIS - Teresópolis/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4079,7 +3836,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD SAO GONCALO - São Gonçalo/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4093,7 +3849,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Quinze de Novembro, 8 - Centro (PLAZA SHOPPING NITEROI)",
     "consultantId": "cons-11",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "24020-086",
     "enriched": true
@@ -4107,7 +3862,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA LEBLON - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4121,7 +3875,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA PETROPOLIS - Petrópolis/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4135,7 +3888,6 @@ export const INITIAL_STORES = [
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO POSTO MARICA - Maricá/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4149,7 +3901,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida São Gonçalo, 100 - Boa Vista (SAO GONCALO SHOPPING)",
     "consultantId": "cons-11",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "24445-300",
     "enriched": true
@@ -4163,7 +3914,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Visconde do Rio Branco, 360 - Centro (SHOPPING BAY MARKET)",
     "consultantId": "cons-11",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "24020-004",
     "enriched": true
@@ -4177,7 +3927,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Afrânio de Melo Franco, 290 - Leblon (SHOPPING LEBLON)",
     "consultantId": "cons-11",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "22430-041",
     "enriched": true
@@ -4191,7 +3940,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Pastor Martin Luther King Jr., 126 - Del Castilho (SHOPPING NOVA AMERICA)",
     "consultantId": "cons-11",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "20520-050",
     "enriched": true
@@ -4205,7 +3953,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Pastor Martin Luther King Jr., 126 - Del Castilho (SHOPPING NOVA AMERICA II MM)",
     "consultantId": "cons-11",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "20520-050",
     "enriched": true
@@ -4219,7 +3966,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING PÁTIO ALCÂNTARA - São Gonçalo/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4233,7 +3979,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Lauro Müller, 116 - Botafogo (SHOPPING RIO SUL)",
     "consultantId": "cons-11",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "22290-160",
     "enriched": true
@@ -4247,7 +3992,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO FRIBURGO SHOPPING - Nova Friburgo/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4261,7 +4005,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Dom Hélder Câmara, 5474 - Cachambi (NORTE SHOPPING)",
     "consultantId": "cons-11",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "20770-000",
     "enriched": true
@@ -4275,7 +4018,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO TERESOPOLIS SHOPPING - Teresópolis/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4289,7 +4031,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Doutor Silvio Bastos Tavares, 330 - Parque Leopoldina (BOULEVARD CAMPOS)",
     "consultantId": "cons-11",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "28055-245",
     "enriched": true
@@ -4303,7 +4044,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA MACAE CAVALEIROS - Macaé/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4317,7 +4057,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Henrique Terra, 1700 - Palmeiras (SHOPPING PARK LAGOS)",
     "consultantId": "cons-11",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "28909-570",
     "enriched": true
@@ -4331,7 +4070,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Aluisio da Silva Gomes, 800 - Granja dos Cavaleiros (SHOPPING PLAZA MACAE)",
     "consultantId": "cons-11",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "27930-560",
     "enriched": true
@@ -4345,7 +4083,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIO DAS OSTRAS - Rio das Ostras/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4359,7 +4096,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PENINSULA MALL - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4373,7 +4109,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BOSSA NOVA MALL - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4387,7 +4122,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Praia de Botafogo, 400 - Botafogo (BOTAFOGO PRAIA SHOPPING)",
     "consultantId": "cons-11",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "22250-040",
     "enriched": true
@@ -4401,7 +4135,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA COPACABANA II - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4415,7 +4148,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO COMPACTO ITAIPU MULTICENTER - São Paulo/SP",
     "consultantId": "cons-11",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4429,7 +4161,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO BOTAFOGO RUA MM - Rio de Janeiro/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4443,7 +4174,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DO MEIER)",
     "consultantId": "cons-11",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -4457,7 +4187,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO ARRAIAL DO CABO PICCOLO - Cabo Frio / Arraial/RJ",
     "consultantId": "cons-11",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4471,7 +4200,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO INDEPENDENCIA SHOPPING - Juiz de Fora/MG",
     "consultantId": "cons-11",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4485,7 +4213,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Djalma Batista, 482 - Parque 10 de Novembro (Amazonas Shopping)",
     "consultantId": "cons-12",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "69050-010",
     "enriched": false
@@ -4499,7 +4226,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO BOA VISTA RUA - Boa Vista/RR",
     "consultantId": "cons-12",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4513,7 +4239,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Visconde de Souza Franco, 776 - Reduto (Boulevard Shopping Belém)",
     "consultantId": "cons-12",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "66053-000",
     "enriched": false
@@ -4527,7 +4252,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CASTANHEIRAS SHOPPING - Belém/PA",
     "consultantId": "cons-12",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4541,7 +4265,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO MACAPA SHOPPING - Macapá/AP",
     "consultantId": "cons-12",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4555,7 +4278,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PARK SUMAUMA - Manaus/AM",
     "consultantId": "cons-12",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4569,7 +4291,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Augusto Montenegro, 4300 - Parque Verde (Parque Shopping Belém)",
     "consultantId": "cons-12",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "66635-110",
     "enriched": false
@@ -4583,7 +4304,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA NAZARE MM - Belém/PA",
     "consultantId": "cons-12",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4597,7 +4317,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING GRAO PARA - Belém/PA",
     "consultantId": "cons-12",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4611,7 +4330,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Travessa Padre Eutíquio, 1078 - Batista Campos (Shopping Pátio Belém)",
     "consultantId": "cons-12",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "66025-005",
     "enriched": false
@@ -4625,7 +4343,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Mário Ypiranga, 1300 - Adrianópolis (Manauara Shopping)",
     "consultantId": "cons-12",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "69057-002",
     "enriched": false
@@ -4639,7 +4356,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PONTA NEGRA - Manaus/AM",
     "consultantId": "cons-12",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4653,7 +4369,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ANANINDEUA - Ananindeua/PA",
     "consultantId": "cons-12",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4667,7 +4382,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DA ILHA)",
     "consultantId": "cons-12",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -4681,7 +4395,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SÃO LUIS SHOPPING - São Luís/MA",
     "consultantId": "cons-12",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4695,7 +4408,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO VIA NORTE - Manaus/AM",
     "consultantId": "cons-12",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4709,7 +4421,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO MANAUS PLAZA - Manaus/AM",
     "consultantId": "cons-12",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4723,7 +4434,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING RIO POTY - Teresina/PI",
     "consultantId": "cons-12",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4737,7 +4447,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO TERESINA SHOPPING - Teresina/PI",
     "consultantId": "cons-12",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4751,7 +4460,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO PORTO VELHO SHOPPING - Porto Velho/RO",
     "consultantId": "cons-12",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4765,7 +4473,6 @@ export const INITIAL_STORES = [
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO PORTO VELHO DK - Porto Velho/RO",
     "consultantId": "cons-12",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4779,7 +4486,6 @@ export const INITIAL_STORES = [
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO DK PORTO VELHO - Porto Velho/RO",
     "consultantId": "cons-12",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4793,7 +4499,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Dom Hélder Câmara, 5474 - Cachambi (PATIO NORTE SHOPPING)",
     "consultantId": null,
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "20770-000",
     "enriched": true
@@ -4807,7 +4512,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO RIO BRANCO - Rio Branco/AC",
     "consultantId": "cons-15",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4821,7 +4525,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO JABAQUARA PICCOLO MM - São Paulo/SP",
     "consultantId": "cons-13",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -4835,7 +4538,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Kennedy, 700 - Jardim do Mar (GOLDEN SQUARE SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "09751-000",
     "enriched": true
@@ -4849,7 +4551,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Giovanni Battista Pirelli, 155 - Novo Homero Thon (ATRIUM SHOPPING SANTO ANDRE)",
     "consultantId": "cons-13",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "09111-340",
     "enriched": false
@@ -4863,7 +4564,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Pereira Barreto, 42 - Vila Gilda (SHOPPING ABC)",
     "consultantId": "cons-13",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "09040-310",
     "enriched": true
@@ -4877,7 +4577,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Miguel Estefno - Enseada (GUARUJÁ)",
     "consultantId": "cons-13",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "11440-530",
     "enriched": false
@@ -4891,7 +4590,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Rotary, 624 - Ferrazópolis (SAO BERNARDO PLAZA SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "09781-220",
     "enriched": true
@@ -4905,7 +4603,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Frei Gaspar, 365 - Centro (BRISAMAR SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "11310-060",
     "enriched": true
@@ -4919,7 +4616,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Doutor Francisco Mesquita, 1000 - Jardim Ibitirama (CENTRAL PLAZA SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "03153-002",
     "enriched": true
@@ -4933,7 +4629,6 @@ export const INITIAL_STORES = [
     "locationType": "Outlet",
     "address": "Estrada do Ribeiro - Ribeiro (OUTLET PREMIUM GRANDE SP)",
     "consultantId": "cons-13",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "08590-500",
     "enriched": false
@@ -4947,7 +4642,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Antônia Rosa Fioravanti - Jardim Rosina (MAUA PLAZA SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "09390-120",
     "enriched": false
@@ -4961,7 +4655,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Voluntário Fernando Pinheiro Franco, 515 - Centro (PATTEO URUPEMA)",
     "consultantId": "cons-13",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "08710-500",
     "enriched": false
@@ -4975,7 +4668,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Ayrton Senna da Silva, 1511 - Xixová (LITORAL PLAZA SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "11700-005",
     "enriched": true
@@ -4989,7 +4681,6 @@ export const INITIAL_STORES = [
     "locationType": "Posto de Rodovia",
     "address": "Área Rural - Área Rural de Roseira (POSTO ARCO IRIS)",
     "consultantId": "cons-13",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "12589-899",
     "enriched": false
@@ -5003,7 +4694,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida José Pinheiro Borges, s/n - Itaquera (SHOPPING METRO ITAQUERA)",
     "consultantId": "cons-13",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "08220-380",
     "enriched": true
@@ -5017,7 +4707,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Alexandre Martins, 80 - Aparecida (PRAIAMAR SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "11035-900",
     "enriched": true
@@ -5031,7 +4720,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SANTANA PARQUE SHOPPING MM - São Paulo/SP",
     "consultantId": "cons-13",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5045,7 +4733,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "Avenida João Pessoa - Centro (SANTOS RUA)",
     "consultantId": "cons-13",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "11013-001",
     "enriched": false
@@ -5059,7 +4746,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Regente Feijó, 1739 - Tatuapé (SHOPPING ANALIA FRANCO)",
     "consultantId": "cons-13",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "03337-000",
     "enriched": true
@@ -5073,7 +4759,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Aricanduva, 5555 - Vila Matilde (SHOPPING ARICANDUVA)",
     "consultantId": "cons-13",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "03527-900",
     "enriched": true
@@ -5087,7 +4772,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Theobaldo Verri - Vila Jacobelli (SHOPPING BURITI GUARA)",
     "consultantId": "cons-13",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "12505-211",
     "enriched": false
@@ -5101,7 +4785,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Travessa Casalbuono, 120 - Vila Guilherme (SHOPPING CENTER NORTE)",
     "consultantId": "cons-13",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "02089-900",
     "enriched": true
@@ -5115,7 +4798,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING LED BARRA FUNDA - São Paulo/SP",
     "consultantId": "cons-13",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5129,7 +4811,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Itú, 200 - Baeta Neves (SHOPPING METROPOLE)",
     "consultantId": "cons-13",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "09751-040",
     "enriched": false
@@ -5143,7 +4824,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Capitão Pacheco e Chaves, 313 - Mooca (MOOCA PLAZA SHOPPING)",
     "consultantId": "cons-13",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "03106-010",
     "enriched": true
@@ -5157,7 +4837,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Ana Costa, 549 - Gonzaga (SHOPPING PARQUE BALNEARIO)",
     "consultantId": "cons-13",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "11055-300",
     "enriched": true
@@ -5171,7 +4850,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Alcides Ramos Nogueira, 650 - Nossa Senhora do Perpétuo Socorro (SHOPPING PATIO PINDA)",
     "consultantId": "cons-13",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "12421-681",
     "enriched": false
@@ -5185,7 +4863,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO SHOPPING ALEGRIA - São Paulo/SP",
     "consultantId": "cons-13",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5199,7 +4876,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO HIPER ANDORINHA - São Paulo/SP",
     "consultantId": "cons-13",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5213,7 +4889,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Aricanduva, 5555 - Vila Matilde (CARREFOUR ARICANDUVA)",
     "consultantId": "cons-13",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "03527-900",
     "enriched": true
@@ -5227,7 +4902,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Rio Amazonas, 4001 - Parque Francal (FRANCA)",
     "consultantId": "cons-14",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "14403-900",
     "enriched": true
@@ -5241,7 +4915,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Luiz Eduardo Toledo Prado, 900 - Vila do Golf (IGUATEMI RIBEIRAO PRETO)",
     "consultantId": "cons-14",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "14027-250",
     "enriched": true
@@ -5255,7 +4928,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Praça Dezoito de Junho, 1001 - Jardim Armênia (MOGI SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "08780-560",
     "enriched": false
@@ -5269,7 +4941,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Presidente Kennedy, 1500 - Ribeirânia (NOVO SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "14096-902",
     "enriched": true
@@ -5283,7 +4954,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Monte Alegre, km 22 - Jardim Rebelato (OPEN SQUARE)",
     "consultantId": "cons-14",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "06710-610",
     "enriched": false
@@ -5297,7 +4967,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Tenente Avelar Pires de Azevedo, 81 - Centro (OSASCO PLAZA SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "06016-060",
     "enriched": false
@@ -5311,7 +4980,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida dos Autonomistas - Vila Yara (CONTINENTAL SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "06020-012",
     "enriched": false
@@ -5325,7 +4993,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Doutor João Ribeiro, 304 - Penha (PENHA SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "03632-000",
     "enriched": true
@@ -5339,7 +5006,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Coronel Fernando Ferreira Leite, 1540 - Jardim Califórnia (RIBEIRAO SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "14026-900",
     "enriched": true
@@ -5353,7 +5019,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Alameda dos Golfinhos Vermelhos, 1086 - Pontal de Santa Marina (SERRAMAR PARQUE SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "11672-390",
     "enriched": false
@@ -5367,7 +5032,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Professor Francisco Morato - Butantã (SHOPPING BUTANTA)",
     "consultantId": "cons-14",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "05512-900",
     "enriched": false
@@ -5381,7 +5045,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cruzeiro do Sul, 1100 - Canindé (SHOPPING DeD)",
     "consultantId": "cons-14",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01109-010",
     "enriched": true
@@ -5395,7 +5058,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Ibirapuera, 3103 - Indianópolis (SHOPPING IBIRAPUERA)",
     "consultantId": "cons-14",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "04523-900",
     "enriched": true
@@ -5409,7 +5071,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Presidente Juscelino Kubitschek de Oliveira, 5000 - Iguatemi (SHOPPING IGUATEMI RIO PRETO)",
     "consultantId": "cons-14",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "15093-340",
     "enriched": true
@@ -5423,7 +5084,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Interlagos, 2255 - Jardim Interlagos (SHOPPING INTERLAGOS MM)",
     "consultantId": "cons-14",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "04696-000",
     "enriched": true
@@ -5437,7 +5097,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Praça Leonor Kaupa, 100 - Jardim da Saúde (SHOPPING PLAZA SUL)",
     "consultantId": "cons-14",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "04153-000",
     "enriched": true
@@ -5451,7 +5110,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Manoel da Nóbrega, 712 - Centro (SHOPPING PRACA DA MOCA)",
     "consultantId": "cons-14",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "09910-720",
     "enriched": true
@@ -5465,7 +5123,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua São José, 933 - Centro (SHOPPING SANTA URSULA)",
     "consultantId": "cons-14",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "14010-180",
     "enriched": true
@@ -5479,7 +5136,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Sete de Setembro, 555 - Parque Suzano (SHOPPING SUZANO)",
     "consultantId": "cons-14",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "08674-005",
     "enriched": true
@@ -5493,7 +5149,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida dos Autonomistas, 1400 - Vila Yara (SHOPPING UNIAO OSASCO)",
     "consultantId": "cons-14",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "06018-018",
     "enriched": true
@@ -5507,7 +5162,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida dos Autonomistas, 1765 - Vila Yara (SUPER SHOPPING OSASCO)",
     "consultantId": "cons-14",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "06018-015",
     "enriched": true
@@ -5521,7 +5175,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Régis Bittencourt, 2643 - Jardim Helena (SHOPPING TABOAO)",
     "consultantId": "cons-14",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "06763-040",
     "enriched": true
@@ -5535,7 +5188,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Piracema, 669 - Tamboré (SHOPPING TAMBORE)",
     "consultantId": "cons-14",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "06460-000",
     "enriched": true
@@ -5549,7 +5201,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Doutor Esteves da Silva, 120 - Centro (UBATUBA MALL)",
     "consultantId": "cons-14",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "11680-000",
     "enriched": true
@@ -5563,7 +5214,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Carlos Pereira da Silva, 6001 - Guanabara (SHOPPING PRAÇA NOVA ARAÇATUBA)",
     "consultantId": "cons-14",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "16016-500",
     "enriched": true
@@ -5577,7 +5227,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CENTRAL PARK MM - São Paulo/SP",
     "consultantId": "cons-14",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5591,7 +5240,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Raposo Tavares, km 14,5 - Jardim Boa Vista (RAPOSO SHOPPING)",
     "consultantId": "cons-14",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "05577-200",
     "enriched": true
@@ -5605,7 +5253,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Guanabara, 2919 - Vila Mineira (OESTE PLAZA ANDRADINA)",
     "consultantId": "cons-14",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "16901-005",
     "enriched": true
@@ -5619,7 +5266,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Largo Pátio do Colégio, 13 - Sé (LARGO 13)",
     "consultantId": "cons-14",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01016-040",
     "enriched": false
@@ -5633,7 +5279,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "CSB 2 Lotes 1 a 4 - Taguatinga Sul (ALAMEDA SHOPPING)",
     "consultantId": "cons-15",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "72015-901",
     "enriched": true
@@ -5647,7 +5292,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "Rua Aloísio Pereira do Vale - Cidade Nova (BARREIRAS RUA)",
     "consultantId": "cons-15",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "47804-145",
     "enriched": false
@@ -5661,7 +5305,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua 44, 399 - Setor Central (ARAGUAIA SHOPPING)",
     "consultantId": "cons-15",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "74063-010",
     "enriched": true
@@ -5675,7 +5318,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Historiador Rubens de Mendonça, 3300 - Jardim Aclimação (PANTANAL SHOPPING MT)",
     "consultantId": "cons-15",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "78050-970",
     "enriched": true
@@ -5689,7 +5331,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Miguel Sutil, 9300 - Santa Rosa (ESTACAO CUIABA)",
     "consultantId": "cons-15",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "78043-000",
     "enriched": true
@@ -5703,7 +5344,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Independência, Quadra Área Lote 01 - Setor Serra Dourada (APARECIDA SHOPPING)",
     "consultantId": "cons-15",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "74980-020",
     "enriched": true
@@ -5717,7 +5357,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Anhanguera, 10790 - Setor Aeroviário (SHOPPING CERRADO)",
     "consultantId": "cons-15",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "74425-090",
     "enriched": true
@@ -5731,7 +5370,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Quadra SHIS QI 5 Bloco F Gilberto Salomão - Setor de Habitações Individuais Sul (GILBERTO SALOMAO)",
     "consultantId": "cons-15",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "71615-560",
     "enriched": false
@@ -5745,7 +5383,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SCES Trecho 2 Lote 32 - Asa Sul (SHOPPING PIER 21)",
     "consultantId": "cons-15",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "70200-002",
     "enriched": true
@@ -5759,7 +5396,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Avenida Governador João Ponce de Arruda, s/n - Jardim Aeroporto (Aeroporto Marechal Rondon)",
     "consultantId": "cons-15",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "78110-900",
     "enriched": false
@@ -5773,7 +5409,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA SUDOESTE MM - Brasília/DF",
     "consultantId": "cons-15",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5787,7 +5422,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PICCOLO SAMAMBAIA MM - Brasília/DF",
     "consultantId": "cons-15",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5801,7 +5435,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Estrada da Floresta, 2320 - Floresta (VIA VERDE SHOPPING)",
     "consultantId": "cons-15",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "69912-440",
     "enriched": true
@@ -5815,7 +5448,6 @@ export const INITIAL_STORES = [
     "locationType": "Posto de Rodovia",
     "address": "SPOLETO COMPACTO POSTO 314 NORTE - Brasília/DF",
     "consultantId": "cons-15",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5829,7 +5461,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO ÁGUAS CLARAS SHOPPING - São Paulo/SP",
     "consultantId": "cons-15",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5843,7 +5474,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Mutirão - Setor Marista (ORION)",
     "consultantId": "cons-15",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "74150-340",
     "enriched": false
@@ -5857,7 +5487,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO CNB SHOPPING - Brasília/DF",
     "consultantId": "cons-15",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5871,7 +5500,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida T-10, 1300 - Setor Bueno (GOIANIA SHOPPING)",
     "consultantId": "cons-15",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "74230-030",
     "enriched": true
@@ -5885,7 +5513,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO GUARÁ MM - Brasília/DF",
     "consultantId": "cons-15",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5899,7 +5526,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia BR-040, km 12 - Parque Esplanada III (SHOPPING SUL)",
     "consultantId": "cons-15",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "72876-900",
     "enriched": true
@@ -5913,7 +5539,6 @@ export const INITIAL_STORES = [
     "locationType": "Dark Kitchen / Delivery",
     "address": "SPOLETO DARK KITCHEN ALTANA MM - São Paulo/SP",
     "consultantId": "cons-15",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5927,7 +5552,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO QUE GAMA MM - Brasília/DF",
     "consultantId": "cons-15",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -5941,7 +5565,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "STN Conjunto J - Asa Norte (SHOPPING BOULEVARD BRASILIA)",
     "consultantId": "cons-15",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "70632-400",
     "enriched": true
@@ -5955,7 +5578,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Condomínio San Diego, LOTES 24/25 - Setor Habitacional Jardim Botânico (JARDIM BOTANICO DF)",
     "consultantId": "cons-15",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "71680-362",
     "enriched": false
@@ -5969,7 +5591,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Brasil, 6345 - Mariano Procópio (SHOPPING JARDIM NORTE)",
     "consultantId": "cons-11",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "36080-001",
     "enriched": true
@@ -5983,7 +5604,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Abílio Cassimiro de Araújo - Residencial Camuá (ARAXÁ)",
     "consultantId": "cons-16",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "38180-570",
     "enriched": false
@@ -5997,7 +5617,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia BR-356, 3049 - Belvedere (BH SHOPPING)",
     "consultantId": "cons-16",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "30320-900",
     "enriched": true
@@ -6011,7 +5630,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida dos Andradas, 3000 - Santa Efigênia (SHOPPING BOULEVARD BH)",
     "consultantId": "cons-16",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "30260-070",
     "enriched": true
@@ -6025,7 +5643,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Rio de Janeiro - Centro (CENTRO BH)",
     "consultantId": "cons-16",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "30160-040",
     "enriched": false
@@ -6039,7 +5656,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Olegário Maciel, 1600 - Lourdes (SHOPPING DIAMOND MALL)",
     "consultantId": "cons-16",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "30180-111",
     "enriched": true
@@ -6053,7 +5669,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO GUTIERREZ MM  --> PRADO - Belo Horizonte/MG",
     "consultantId": "cons-16",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -6067,7 +5682,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Sete de Setembro, 3500 - Centro (GV SHOPPING)",
     "consultantId": "cons-16",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "35010-252",
     "enriched": true
@@ -6081,7 +5695,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida General David Sarnoff, 5160 - Cidade Industrial (ITAU POWER SHOPPING)",
     "consultantId": "cons-16",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "32210-110",
     "enriched": true
@@ -6095,7 +5708,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rodovia Fernão Dias, km 492 - São João (METROPOLITAN SHOPPING BETIM)",
     "consultantId": "cons-16",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "32655-505",
     "enriched": true
@@ -6109,7 +5721,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cristiano Machado, 4000 - União (MINAS SHOPPING)",
     "consultantId": "cons-16",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "31160-430",
     "enriched": true
@@ -6123,7 +5734,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Moacir José Leite, 100 - Santa Clara (PATIO DIVINOPOLIS)",
     "consultantId": "cons-16",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "35500-011",
     "enriched": true
@@ -6137,7 +5747,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Praça Rio Branco, 100 - Centro (RODOVIARIA BH)",
     "consultantId": "cons-16",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "30110-028",
     "enriched": true
@@ -6151,7 +5760,6 @@ export const INITIAL_STORES = [
     "locationType": "Rua",
     "address": "SPOLETO RUA SAVASSI MM - Belo Horizonte/MG",
     "consultantId": "cons-16",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -6165,7 +5773,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Otávio Campelo Ribeiro, 2801 - Eldorado (SHOPPING SETE LAGOAS)",
     "consultantId": "cons-16",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "35702-353",
     "enriched": true
@@ -6179,7 +5786,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Pamplona - Jardim Paulista (SHOPPING CIDADE)",
     "consultantId": "cons-16",
-    "ratingScore": 9.3,
     "status": "Ativa",
     "cep": "01405-000",
     "enriched": false
@@ -6193,7 +5799,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Severino Ballesteros Rodrigues, 850 - Cabral (SHOPPING CONTAGEM)",
     "consultantId": "cons-16",
-    "ratingScore": 9.4,
     "status": "Ativa",
     "cep": "32115-000",
     "enriched": true
@@ -6207,7 +5812,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Presidente Carlos Luz, 3001 - Caiçara (SHOPPING DEL REY)",
     "consultantId": "cons-16",
-    "ratingScore": 9.5,
     "status": "Ativa",
     "cep": "31250-010",
     "enriched": true
@@ -6221,7 +5825,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Cristiano Machado, 11833 - Vila Clóris (SHOPPING ESTACAO BH)",
     "consultantId": "cons-16",
-    "ratingScore": 9.6,
     "status": "Ativa",
     "cep": "31710-580",
     "enriched": true
@@ -6235,7 +5838,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Pedro Linhares Gomes, 3900 - Industrial (SHOPPING IPATINGA)",
     "consultantId": "cons-16",
-    "ratingScore": 9.7,
     "status": "Ativa",
     "cep": "35160-281",
     "enriched": true
@@ -6249,7 +5851,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Donato Quintino, 90 - Caniçares (SHOPPING MONTES CLAROS)",
     "consultantId": "cons-16",
-    "ratingScore": 9.8,
     "status": "Ativa",
     "cep": "39400-547",
     "enriched": true
@@ -6263,7 +5864,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Humberto Pizzo, 999 - Jardim Canaã (SHOPPING VIA CAFÉ GARDEM)",
     "consultantId": "cons-16",
-    "ratingScore": 9.9,
     "status": "Ativa",
     "cep": "37026-440",
     "enriched": true
@@ -6277,7 +5877,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida Afonso Vaz de Melo, 640 - Barreiro (VIA SHOPPING BARREIRO)",
     "consultantId": "cons-16",
-    "ratingScore": 8.4,
     "status": "Ativa",
     "cep": "30640-070",
     "enriched": true
@@ -6291,7 +5890,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BETIM MM - Betim/MG",
     "consultantId": "cons-16",
-    "ratingScore": 8.5,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -6305,7 +5903,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Avenida do Contorno, 6061 - São Pedro (PATIO SAVASSI)",
     "consultantId": "cons-16",
-    "ratingScore": 8.6,
     "status": "Ativa",
     "cep": "30112-010",
     "enriched": true
@@ -6319,7 +5916,6 @@ export const INITIAL_STORES = [
     "locationType": "Outlet",
     "address": "Avenida Babita Camargos, 1295 - Cidade Industrial (OUTLET SÓ MARCAS MM)",
     "consultantId": "cons-16",
-    "ratingScore": 8.7,
     "status": "Ativa",
     "cep": "32210-110",
     "enriched": true
@@ -6333,7 +5929,6 @@ export const INITIAL_STORES = [
     "locationType": "Piccolo / Compacto",
     "address": "SPOLETO PATIO MATOSINHO PICCOLO - São João del-Rei/MG",
     "consultantId": "cons-16",
-    "ratingScore": 8.8,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -6347,7 +5942,6 @@ export const INITIAL_STORES = [
     "locationType": "Aeroporto",
     "address": "Rodovia LMG-800, km 7,9 - Confins (AEROPORTO CONFINS)",
     "consultantId": "cons-16",
-    "ratingScore": 8.9,
     "status": "Ativa",
     "cep": "33500-000",
     "enriched": true
@@ -6361,7 +5955,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "SPOLETO BOULEVARD COLINA - Belo Horizonte/MG",
     "consultantId": "cons-16",
-    "ratingScore": 9,
     "status": "Ativa",
     "cep": "01000-000",
     "enriched": false
@@ -6375,7 +5968,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua José Ivair Ferreira Mattos - Lagoa Santa (LAGOA SANTA)",
     "consultantId": "cons-16",
-    "ratingScore": 9.1,
     "status": "Ativa",
     "cep": "35065-142",
     "enriched": false
@@ -6389,7 +5981,6 @@ export const INITIAL_STORES = [
     "locationType": "Shopping",
     "address": "Rua Gil Júlio de Souza - Jardim América (LAVRAS)",
     "consultantId": "cons-16",
-    "ratingScore": 9.2,
     "status": "Ativa",
     "cep": "37202-776",
     "enriched": false
@@ -7586,9 +7177,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-1",
     "consultantId": "cons-1",
     "date": "2026-08-15",
-    "time": "14:30",
     "visitType": "Auditoria de Rotina",
-    "generalScore": 8.8,
     "status": "Finalizada",
     "generalNotes": "Loja operando em bom ritmo de almoço. Apresentou gargalo pontual no balcão e tempo de espera no iFood.",
     "diagnostics": [
@@ -7625,9 +7214,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-5",
     "consultantId": "cons-1",
     "date": "2026-08-18",
-    "time": "19:45",
     "visitType": "Auditoria Crítica",
-    "generalScore": 7.2,
     "status": "Finalizada",
     "generalNotes": "Tópicos recorrentes no delivery iFood e controle de validade dos ingredientes.",
     "diagnostics": [
@@ -7677,9 +7264,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-2",
     "consultantId": "cons-1",
     "date": "2026-08-20",
-    "time": "11:30",
     "visitType": "Auditoria de Rotina",
-    "generalScore": 9.2,
     "status": "Finalizada",
     "generalNotes": "Excelente padrão visual e de higienização. Pequeno ajuste no ponto da massa.",
     "diagnostics": [
@@ -7703,9 +7288,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-8",
     "consultantId": "cons-1",
     "date": "2026-08-22",
-    "time": "15:00",
     "visitType": "Auditoria de Rotina",
-    "generalScore": 9.5,
     "status": "Finalizada",
     "generalNotes": "Loja modelo em Minas Gerais. Equipe afinada e metas de CMV batidas.",
     "diagnostics": []
@@ -7715,9 +7298,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-6",
     "consultantId": "cons-1",
     "date": "2026-08-24",
-    "time": "13:15",
     "visitType": "Auditoria de Rotina",
-    "generalScore": 8.5,
     "status": "Finalizada",
     "generalNotes": "Operação fluindo bem, porém iFood sofreu com tempo de despacho no pico.",
     "diagnostics": [
@@ -7741,9 +7322,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-3",
     "consultantId": "cons-1",
     "date": "2026-08-26",
-    "time": "18:30",
     "visitType": "Auditoria de Acompanhamento",
-    "generalScore": 8.1,
     "status": "Finalizada",
     "generalNotes": "Acompanhamento do plano de ação anterior. Balcão melhorou, cooktop em manutenção.",
     "diagnostics": [
@@ -7763,3 +7342,4 @@ export const INITIAL_VISITS = [
     ]
   }
 ];
+

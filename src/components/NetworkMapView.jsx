@@ -3,7 +3,6 @@ import { useApp } from '../context/AppContext';
 import { 
   MapPin, 
   Store, 
-  Star, 
   TrendingUp, 
   Filter, 
   Search, 
@@ -49,8 +48,8 @@ export default function NetworkMapView() {
     setSelectedVisitForReport
   } = useApp();
 
-  // Modo de Visualização do Mapa: 'general' (Geral de Notas) ou 'heatmap' (Calor por Tópicos)
-  const [mapMode, setMapMode] = useState('general'); // 'general' | 'heatmap'
+  // Modo de Visualização do Mapa: 'heatmap' (Calor de Gargalos) ou 'general' (Distribuição Territorial)
+  const [mapMode, setMapMode] = useState('heatmap'); // 'heatmap' | 'general'
 
   // Filtros Globais
   const [selectedUF, setSelectedUF] = useState('SP');
@@ -90,8 +89,6 @@ export default function NetworkMapView() {
     
     BRAZILIAN_STATES.forEach(st => {
       const stateStores = stores.filter(s => s.state === st.uf);
-      const totalScore = stateStores.reduce((acc, s) => acc + (s.rating_score || s.ratingScore || 8.5), 0);
-      const avgScore = stateStores.length > 0 ? (totalScore / stateStores.length) : 0;
       
       // Coletar todos os diagnósticos das lojas deste estado
       const stateDiagnostics = [];
@@ -120,7 +117,6 @@ export default function NetworkMapView() {
         name: st.name,
         stores: stateStores,
         count: stateStores.length,
-        avgScore: avgScore > 0 ? Number(avgScore.toFixed(1)) : 0,
         region: REGION_BY_UF[st.uf] || 'Outro',
         allDiagnostics: stateDiagnostics,
         topicDiagnostics: filteredDiags,
@@ -209,34 +205,34 @@ export default function NetworkMapView() {
       };
     }
 
-    // MODO 1: GERAL DE NOTAS
+    // MODO 1: DISTRIBUIÇÃO DA REDE (Densidade de Lojas por Estado)
     if (mapMode === 'general') {
-      if (data.avgScore >= 8.5) {
-        return {
-          fill: '#DCFCE7',
-          stroke: '#16A34A',
-          strokeWidth: 1.5,
-          textColor: '#14532D',
-          badgeBg: '#15803D',
-          badgeBorder: '#FFFFFF'
-        };
-      }
-      if (data.avgScore >= 7.5) {
+      if (data.count >= 30) {
         return {
           fill: '#FEF3C7',
           stroke: '#D97706',
-          strokeWidth: 1.5,
+          strokeWidth: 2,
           textColor: '#78350F',
-          badgeBg: '#D97706',
+          badgeBg: 'var(--primary-brown)',
+          badgeBorder: 'var(--accent-gold)'
+        };
+      }
+      if (data.count >= 10) {
+        return {
+          fill: '#FAF8F5',
+          stroke: 'var(--primary-brown)',
+          strokeWidth: 1.5,
+          textColor: 'var(--primary-brown)',
+          badgeBg: 'var(--primary-brown)',
           badgeBorder: '#FFFFFF'
         };
       }
       return {
-        fill: '#FEE2E2',
-        stroke: '#DC2626',
-        strokeWidth: 1.5,
-        textColor: '#7F1D1D',
-        badgeBg: '#DC2626',
+        fill: '#FFFFFF',
+        stroke: '#CBD5E1',
+        strokeWidth: 1.2,
+        textColor: '#334155',
+        badgeBg: '#64748B',
         badgeBorder: '#FFFFFF'
       };
     }
@@ -337,7 +333,7 @@ export default function NetworkMapView() {
                 boxShadow: mapMode === 'heatmap' ? '0 2px 6px rgba(220,38,38,0.3)' : 'none'
               }}
             >
-              <Flame size={16} /> 🔥 Mapa de Calor por Tópicos
+              🔥 Mapa de Calor por Tópicos
             </button>
           </div>
         </div>
@@ -447,7 +443,7 @@ export default function NetworkMapView() {
         {/* Legenda de Nível de Maturidade ou Severidade */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)', flexWrap: 'wrap', fontSize: '0.92rem' }}>
           <span style={{ fontWeight: 800, color: 'var(--text-main)' }}>
-            {mapMode === 'heatmap' ? '🔥 Intensidade de Não-Conformidades:' : '⭐ Média da Nota de Auditoria:'}
+            {mapMode === 'heatmap' ? '🔥 Intensidade de Não-Conformidades:' : '📍 Concentração da Rede:'}
           </span>
           
           {mapMode === 'heatmap' ? (
@@ -470,18 +466,18 @@ export default function NetworkMapView() {
           ) : (
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#DCFCE7', border: '2px solid #16A34A', display: 'inline-block' }} />
-                <span style={{ fontWeight: 700, color: '#14532D' }}>Excelente (&ge; 8.5)</span>
+                <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#FEF2F2', border: '2px solid #DC2626', display: 'inline-block' }} />
+                <span style={{ fontWeight: 700, color: '#991B1B' }}>Alta Densidade (&ge; 30 lojas)</span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                 <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#FEF3C7', border: '2px solid #D97706', display: 'inline-block' }} />
-                <span style={{ fontWeight: 700, color: '#78350F' }}>Atenção (7.5 - 8.4)</span>
+                <span style={{ fontWeight: 700, color: '#78350F' }}>Média Densidade (10 a 29)</span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#FEE2E2', border: '2px solid #DC2626', display: 'inline-block' }} />
-                <span style={{ fontWeight: 700, color: '#7F1D1D' }}>Crítico (&lt; 7.5)</span>
+                <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#DCFCE7', border: '2px solid #16A34A', display: 'inline-block' }} />
+                <span style={{ fontWeight: 700, color: '#14532D' }}>Presença Inicial (&lt; 10 lojas)</span>
               </div>
             </>
           )}
@@ -742,13 +738,13 @@ export default function NetworkMapView() {
               currentSelectedStateData.count > 0 && (
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', justifyContent: 'flex-end' }}>
-                    <Star size={18} fill="var(--accent-gold)" color="var(--accent-gold)" />
+                    <Store size={18} color="var(--primary-brown)" />
                     <span style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                      {currentSelectedStateData.avgScore}
+                      {currentSelectedStateData.count}
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: currentSelectedStateData.avgScore >= 8.5 ? '#15803D' : currentSelectedStateData.avgScore >= 7.5 ? '#D97706' : '#DC2626' }}>
-                    {currentSelectedStateData.avgScore >= 8.5 ? 'Excelente' : currentSelectedStateData.avgScore >= 7.5 ? 'Atenção' : 'Crítico'}
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: currentSelectedStateData.count >= 30 ? '#991B1B' : currentSelectedStateData.count >= 10 ? '#D97706' : '#15803D' }}>
+                    {currentSelectedStateData.count >= 30 ? 'Alta Densidade' : currentSelectedStateData.count >= 10 ? 'Média Densidade' : 'Presença Inicial'}
                   </span>
                 </div>
               )
@@ -913,14 +909,6 @@ export default function NetworkMapView() {
                           <h4 style={{ margin: '0.2rem 0 0 0', fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-main)' }}>
                             {store.name}
                           </h4>
-                        </div>
-
-                        {/* Nota da Loja */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: '#FAF8F5', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                          <Star size={13} fill="var(--accent-gold)" color="var(--accent-gold)" />
-                          <span style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                            {store.rating_score || store.ratingScore || 8.5}
-                          </span>
                         </div>
                       </div>
 

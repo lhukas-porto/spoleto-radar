@@ -314,7 +314,6 @@ async function syncSupabase() {
       address: s.address,
       location_type: s.locationType || s.location_type || 'Shopping',
       consultant_id: s.consultantId || s.consultant_id,
-      rating_score: s.ratingScore || s.rating_score || 8.5,
       status: s.status || 'Ativa'
     }));
 

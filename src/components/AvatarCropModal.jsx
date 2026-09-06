@@ -13,7 +13,13 @@ import {
 /**
  * AvatarCropModal: Modal interativo para posicionar, arrastar e dar zoom na foto dentro de um círculo oficial Spoleto
  */
-export default function AvatarCropModal({ imageSrc, onConfirm, onCancel }) {
+export default function AvatarCropModal({ 
+  imageSrc, 
+  onConfirm, 
+  onCancel,
+  title = "Ajustar Foto do Membro",
+  subtitle = "Arraste a foto com o mouse para posicionar e use a barra de zoom para aproximar."
+}) {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -171,7 +177,7 @@ export default function AvatarCropModal({ imageSrc, onConfirm, onCancel }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <Camera size={20} color="var(--primary-brown)" />
             <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--primary-brown)', fontWeight: 800 }}>
-              Ajustar Foto do Membro
+              {title}
             </h3>
           </div>
           <button className="modal-close" onClick={onCancel} title="Fechar">
@@ -180,7 +186,7 @@ export default function AvatarCropModal({ imageSrc, onConfirm, onCancel }) {
         </div>
 
         <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginBottom: '1.25rem', marginTop: 0 }}>
-          Arraste a foto com o mouse para posicionar o rosto e use a barra de zoom para aproximar.
+          {subtitle}
         </p>
 
         {/* Viewport de Corte com Máscara Circular */}

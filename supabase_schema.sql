@@ -65,7 +65,9 @@ CREATE TABLE IF NOT EXISTS public.stores (
   phone TEXT,
   email TEXT,
   consultant_id TEXT REFERENCES public.consultants(id) ON DELETE SET NULL,
-  rating_score NUMERIC DEFAULT 8.5,
+  photo_url TEXT,
+  shopping_mall_admin TEXT,
+  franchise_contract_expiration TEXT,
   status TEXT DEFAULT 'Ativa' NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -85,13 +87,22 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='stores' AND column_name='consultant_id') THEN
     ALTER TABLE public.stores ADD COLUMN consultant_id TEXT REFERENCES public.consultants(id) ON DELETE SET NULL;
   END IF;
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='stores' AND column_name='rating_score') THEN
-    ALTER TABLE public.stores ADD COLUMN rating_score NUMERIC DEFAULT 8.5;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='stores' AND column_name='photo_url') THEN
+    ALTER TABLE public.stores ADD COLUMN photo_url TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='stores' AND column_name='shopping_mall_admin') THEN
+    ALTER TABLE public.stores ADD COLUMN shopping_mall_admin TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='stores' AND column_name='franchise_contract_expiration') THEN
+    ALTER TABLE public.stores ADD COLUMN franchise_contract_expiration TEXT;
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='stores' AND column_name='status') THEN
     ALTER TABLE public.stores ADD COLUMN status TEXT DEFAULT 'Ativa';
   END IF;
 END $$;
+
+-- Remoção de pontuação do banco de dados
+ALTER TABLE public.stores DROP COLUMN IF EXISTS rating_score;
 
 -- =========================================================================
 -- 4. TABELA DE TAXONOMIA (TEMAS & SUBTÓPICOS OPERACIONAIS)
@@ -114,8 +125,6 @@ CREATE TABLE IF NOT EXISTS public.visits (
   store_id TEXT NOT NULL REFERENCES public.stores(id) ON DELETE CASCADE,
   consultant_id TEXT NOT NULL REFERENCES public.consultants(id) ON DELETE CASCADE,
   date DATE NOT NULL,
-  time TEXT,
-  end_time TEXT,
   visit_type TEXT DEFAULT 'Visita agendada',
   general_notes TEXT,
   diagnostics JSONB DEFAULT '[]'::jsonb,
@@ -126,8 +135,11 @@ CREATE TABLE IF NOT EXISTS public.visits (
 -- Migração segura de colunas caso a tabela já exista
 DO $$ 
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='visits' AND column_name='end_time') THEN
-    ALTER TABLE public.visits ADD COLUMN end_time TEXT;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='visits' AND column_name='time') THEN
+    ALTER TABLE public.visits DROP COLUMN time;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='visits' AND column_name='end_time') THEN
+    ALTER TABLE public.visits DROP COLUMN end_time;
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='visits' AND column_name='signatures') THEN
     ALTER TABLE public.visits ADD COLUMN signatures JSONB DEFAULT NULL;

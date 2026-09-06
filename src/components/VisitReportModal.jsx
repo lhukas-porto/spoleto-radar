@@ -35,50 +35,6 @@ import {
   Info
 } from 'lucide-react';
 
-function getVisitTimeFormatted(startTime, endTime) {
-  const start = startTime || '14:00';
-  const end = endTime || start;
-
-  try {
-    const [startH, startM] = start.split(':').map(Number);
-    const [endH, endM] = end.split(':').map(Number);
-
-    if (isNaN(startH) || isNaN(startM) || isNaN(endH) || isNaN(endM)) {
-      return { start, end, duration: null };
-    }
-
-    const startMinutes = startH * 60 + startM;
-    const endMinutes = endH * 60 + endM;
-
-    let diffMinutes = endMinutes - startMinutes;
-    if (diffMinutes < 0) {
-      diffMinutes += 24 * 60;
-    }
-
-    const hours = Math.floor(diffMinutes / 60);
-    const mins = diffMinutes % 60;
-
-    let durationStr = '';
-    if (hours > 0 && mins > 0) {
-      durationStr = `${hours}h ${mins}min`;
-    } else if (hours > 0) {
-      durationStr = `${hours}h`;
-    } else if (mins > 0) {
-      durationStr = `${mins}min`;
-    } else {
-      durationStr = '< 1min';
-    }
-
-    return {
-      start,
-      end,
-      duration: durationStr
-    };
-  } catch (e) {
-    return { start, end, duration: null };
-  }
-}
-
 export default function VisitReportModal() {
   const { 
     selectedVisitForReport, 
@@ -116,7 +72,6 @@ export default function VisitReportModal() {
 
   const store = stores.find(s => s.id === visit.storeId) || { name: 'Unidade Spoleto', code: 'SPO', city: '', state: 'BR' };
   const consultant = consultants.find(c => c.id === visit.consultantId) || { name: 'Consultor de Negócios', region: 'Nacional' };
-  const timeFormatted = getVisitTimeFormatted(visit.time, visit.endTime);
 
   const checkIsReoccurringInStore = (subproblemId, categoryId) => {
     if (!visit.storeId || !visits) return false;
@@ -870,26 +825,6 @@ export default function VisitReportModal() {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
                   <span>📅 Data: <strong>{new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}</strong></span>
-                  <span style={{ color: '#CBD5E1' }}>&bull;</span>
-                  <span>Início da Visita: <strong>{timeFormatted.start}</strong></span>
-                  <span style={{ color: '#CBD5E1' }}>&bull;</span>
-                  <span>Término da Visita: <strong>{timeFormatted.end}</strong></span>
-                  {timeFormatted.duration && (
-                    <span style={{ 
-                      background: '#FEF3C7', 
-                      color: '#92400E', 
-                      padding: '0.12rem 0.5rem', 
-                      borderRadius: '4px', 
-                      fontSize: '0.74rem', 
-                      fontWeight: 700,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      border: '1px solid #FDE68A'
-                    }}>
-                      ⌛ {timeFormatted.duration} de auditoria
-                    </span>
-                  )}
                 </div>
 
                 <div>

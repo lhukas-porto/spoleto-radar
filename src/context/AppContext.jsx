@@ -219,7 +219,10 @@ export function AppProvider({ children }) {
                 locationType: cloud.location_type || cloud.locationType || local.locationType || 'Shopping',
                 phone: cloud.phone ? formatPhoneNumber(cloud.phone) : local.phone,
                 email: (cloud.email || local.email || '').toLowerCase().trim(),
-                consultantId: cloud.consultant_id || cloud.consultantId || local.consultantId || null
+                consultantId: cloud.consultant_id || cloud.consultantId || local.consultantId || null,
+                photoUrl: cloud.photo_url || cloud.photoUrl || local.photoUrl || null,
+                shoppingMallAdmin: cloud.shopping_mall_admin || cloud.shoppingMallAdmin || local.shoppingMallAdmin || '',
+                franchiseContractExpiration: cloud.franchise_contract_expiration || cloud.franchiseContractExpiration || local.franchiseContractExpiration || ''
               };
             });
             cloudStores.forEach(s => {
@@ -237,7 +240,9 @@ export function AppProvider({ children }) {
                   phone: formatPhoneNumber(s.phone),
                   email: (s.email || '').toLowerCase().trim(),
                   consultantId: s.consultant_id || s.consultantId || null,
-                  ratingScore: s.rating_score || s.ratingScore || 8.5,
+                  photoUrl: s.photo_url || s.photoUrl || null,
+                  shoppingMallAdmin: s.shopping_mall_admin || s.shoppingMallAdmin || '',
+                  franchiseContractExpiration: s.franchise_contract_expiration || s.franchiseContractExpiration || '',
                   status: s.status || 'Ativa'
                 });
               }
@@ -292,8 +297,6 @@ export function AppProvider({ children }) {
             storeId: v.store_id || v.storeId,
             consultantId: v.consultant_id || v.consultantId,
             date: v.date,
-            time: v.time,
-            endTime: v.end_time || v.endTime || '',
             visitType: v.visit_type || v.visitType,
             generalNotes: v.general_notes || v.generalNotes,
             diagnostics: v.diagnostics || [],
@@ -363,8 +366,6 @@ export function AppProvider({ children }) {
           store_id: newVisit.storeId,
           consultant_id: newVisit.consultantId,
           date: newVisit.date,
-          time: newVisit.time,
-          end_time: newVisit.endTime || null,
           visit_type: newVisit.visitType,
           general_notes: newVisit.generalNotes,
           diagnostics: newVisit.diagnostics,
@@ -475,8 +476,6 @@ export function AppProvider({ children }) {
           store_id: updatedObj.storeId,
           consultant_id: updatedObj.consultantId,
           date: updatedObj.date,
-          time: updatedObj.time,
-          end_time: updatedObj.endTime || null,
           visit_type: updatedObj.visitType,
           signatures: updatedObj.signatures || null,
           general_notes: updatedObj.generalNotes,
@@ -778,7 +777,9 @@ export function AppProvider({ children }) {
       email: (storeData.email || '').toLowerCase().trim(),
       address: storeData.address || `${storeData.name} - ${storeData.city}/${storeData.state}`,
       consultantId: storeData.consultantId || null,
-      ratingScore: 8.5,
+      photoUrl: storeData.photoUrl || null,
+      shoppingMallAdmin: storeData.shoppingMallAdmin ? storeData.shoppingMallAdmin.toUpperCase().trim() : '',
+      franchiseContractExpiration: storeData.franchiseContractExpiration || '',
       status: 'Ativa'
     };
 
@@ -809,7 +810,9 @@ export function AppProvider({ children }) {
           phone: newStore.phone,
           email: newStore.email,
           consultant_id: newStore.consultantId,
-          rating_score: newStore.ratingScore,
+          photo_url: newStore.photoUrl,
+          shopping_mall_admin: newStore.shoppingMallAdmin,
+          franchise_contract_expiration: newStore.franchiseContractExpiration,
           status: newStore.status
         }]);
       } catch (e) {
@@ -842,7 +845,10 @@ export function AppProvider({ children }) {
           phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : s.phone,
           email: updatedData.email !== undefined ? updatedData.email.trim() : s.email,
           address: updatedData.address !== undefined ? updatedData.address.trim() : s.address,
-          consultantId: newConsultantId
+          consultantId: newConsultantId,
+          photoUrl: updatedData.photoUrl !== undefined ? updatedData.photoUrl : s.photoUrl,
+          shoppingMallAdmin: updatedData.shoppingMallAdmin !== undefined ? (updatedData.shoppingMallAdmin ? updatedData.shoppingMallAdmin.toUpperCase().trim() : '') : (s.shoppingMallAdmin || ''),
+          franchiseContractExpiration: updatedData.franchiseContractExpiration !== undefined ? updatedData.franchiseContractExpiration : (s.franchiseContractExpiration || '')
         };
         return updatedObj;
       });
@@ -876,7 +882,10 @@ export function AppProvider({ children }) {
           location_type: updatedObj.locationType,
           phone: updatedObj.phone,
           email: updatedObj.email,
-          consultant_id: updatedObj.consultantId
+          consultant_id: updatedObj.consultantId,
+          photo_url: updatedObj.photoUrl,
+          shopping_mall_admin: updatedObj.shoppingMallAdmin,
+          franchise_contract_expiration: updatedObj.franchiseContractExpiration
         }).eq('id', storeId);
       } catch (e) {
         console.error('Supabase store update error:', e);
