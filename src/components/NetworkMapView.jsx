@@ -282,7 +282,7 @@ export default function NetworkMapView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <Compass size={24} color="var(--primary-brown)" />
               <h2 style={{ fontSize: '1.3rem', fontWeight: 900, margin: 0, color: 'var(--text-main)' }}>
-                Cartografia Territorial Spoleto (Brasil)
+                Mapa Spoleto (Brasil)
               </h2>
             </div>
             <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.86rem', color: 'var(--text-muted)' }}>

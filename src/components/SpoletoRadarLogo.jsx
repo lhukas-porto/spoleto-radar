@@ -1,96 +1,92 @@
 import React from 'react';
+import { SPOLETO_LOGO_WHITE, SPOLETO_LOGO_DARK } from './spoletoLogoAssets';
 
 /**
  * SpoletoRadarLogo Component
- * Logotipo Vetorial Oficial baseado na Identidade Visual do Spoleto:
- * - Tipografia geométrica "S P O L E T" em caixa alta com espaçamento largo
- * - O icônico "O" final com o recheio gema dourada (#F5A623) e a haste horizontal
- * - A assinatura integrada "RADAR" com indicador de consultoria operacional
+ * Utiliza diretamente a arte original e oficial do Spoleto enviada pelo franqueador:
+ * - Mantém a proporção exata e milimétrica de todas as letras (S P O L E T O)
+ * - O espaçamento idêntico (13px original) entre todas as letras, inclusive entre o T e a Frigideira (O)
+ * - Versão branca para a navbar escura e versão escura para relatórios/fundos claros
+ * - Badge executivo "RADAR" harmonizado na lateral
  */
 export default function SpoletoRadarLogo({ 
-  variant = 'navbar', // 'navbar' (fundo escuro) | 'light' (fundo claro) | 'card' 
+  variant = 'navbar', // 'navbar' (fundo escuro) | 'light' | 'report' | 'card' 
   size = 'md',        // 'sm' | 'md' | 'lg'
   showSubtitle = true
 }) {
   const isDarkBg = variant === 'navbar';
-  const textColor = isDarkBg ? '#FFFFFF' : '#2E1C13';
-  const radarColor = '#F1A80A'; // Dourado Gema Oficial Spoleto
-  const yolkColor = '#F5A623';
-  const handleColor = isDarkBg ? '#FFFFFF' : '#2E1C13';
+  const logoSrc = isDarkBg ? SPOLETO_LOGO_WHITE : SPOLETO_LOGO_DARK;
+  const radarBorderColor = '#F1A80A'; // Dourado Gema Oficial Spoleto
 
-  // Dimension scaling
-  const scale = size === 'sm' ? 0.75 : size === 'lg' ? 1.35 : 1;
-  const baseHeight = 38 * scale;
+  // Escala de dimensões mantendo proporção original exata (288 x 34)
+  const scale = size === 'sm' ? 0.75 : size === 'lg' ? 1.25 : 1;
+  const logoHeight = Math.round(25 * scale);
+  const logoWidth = Math.round(logoHeight * (288 / 34)); // ~212px em md
+  const badgeHeight = Math.round(24 * scale);
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: `${10 * scale}px`, cursor: 'pointer', userSelect: 'none' }}>
-      <svg 
-        height={baseHeight} 
-        viewBox="0 0 326 48" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ display: 'block', overflow: 'visible' }}
-      >
-        {/* Letras S P O L E T */}
-        <text 
-          x="0" 
-          y="35" 
-          fill={textColor} 
-          fontFamily="'Montserrat', sans-serif" 
-          fontWeight="800" 
-          fontSize="36" 
-          letterSpacing="6.5"
+    <div 
+      style={{ 
+        display: 'inline-flex', 
+        alignItems: 'center', 
+        gap: `${10 * scale}px`, 
+        cursor: 'pointer', 
+        userSelect: 'none' 
+      }}
+    >
+      {/* Imagem Original Vetorizada em Alta Resolução Retina */}
+      <img 
+        src={logoSrc} 
+        alt="Spoleto" 
+        style={{ 
+          height: `${logoHeight}px`, 
+          width: `${logoWidth}px`, 
+          display: 'block', 
+          objectFit: 'contain' 
+        }} 
+      />
+
+      {/* Tagline / Badge "RADAR" Oficial */}
+      {showSubtitle && (
+        <div 
+          style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '6px',
+            height: `${badgeHeight}px`,
+            padding: `0 ${8 * scale}px`,
+            borderRadius: '4px',
+            backgroundColor: isDarkBg ? 'rgba(241, 168, 10, 0.18)' : '#2E1C13',
+            border: `1.5px solid ${radarBorderColor}`,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+          }}
         >
-          SPOLET
-        </text>
+          <span 
+            style={{ 
+              fontFamily: "'Montserrat', sans-serif",
+              fontWeight: 900,
+              fontSize: `${11 * scale}px`,
+              letterSpacing: '2.5px',
+              color: isDarkBg ? '#F1A80A' : '#FFFFFF',
+              lineHeight: 1
+            }}
+          >
+            RADAR
+          </span>
 
-        {/* Ícone Especial "O" do Spoleto (Círculo com Gema Dourada e Haste Horizontal / Frigideira)
-            Ajustado para encadear perfeitamente após o 'T' com o mesmo espaçamento das demais letras */}
-        <g transform="translate(198, 23)">
-          {/* Gema Amarela Dourada */}
-          <circle cx="0" cy="0" r="14.5" fill="#FAB819" />
-
-          {/* Anel Circular Grosso */}
-          <circle cx="0" cy="0" r="14.5" stroke={handleColor} strokeWidth="5.5" fill="none" />
-
-          {/* Haste Horizontal Preta/Branca que sai do interior para fora (cabo da frigideira) */}
-          <rect x="0" y="-2.75" width="23" height="5.5" rx="1" fill={handleColor} />
-        </g>
-
-        {/* Tagline / Badge "RADAR" */}
-        {showSubtitle && (
-          <g transform="translate(236, 7)">
-            {/* Fundo do Badge Radar */}
-            <rect 
-              x="0" 
-              y="0" 
-              width="82" 
-              height="33" 
-              rx="4" 
-              fill={isDarkBg ? 'rgba(241, 168, 10, 0.18)' : '#2E1C13'} 
-              stroke={radarColor} 
-              strokeWidth="1.5" 
-            />
-            {/* Texto RADAR */}
-            <text 
-              x="41" 
-              y="22" 
-              fill={isDarkBg ? '#F1A80A' : '#FFFFFF'} 
-              fontFamily="'Montserrat', sans-serif" 
-              fontWeight="900" 
-              fontSize="14" 
-              letterSpacing="3.5"
-              textAnchor="middle"
-            >
-              RADAR
-            </text>
-
-            {/* Sinal / Ponto Ativo do Radar */}
-            <circle cx="72" cy="9" r="3" fill="#10B981" />
-            <circle cx="72" cy="9" r="5" stroke="#10B981" strokeWidth="1" opacity="0.6" />
-          </g>
-        )}
-      </svg>
+          {/* Indicador Ativo do Radar */}
+          <span 
+            style={{ 
+              width: `${6 * scale}px`, 
+              height: `${6 * scale}px`, 
+              borderRadius: '50%', 
+              backgroundColor: '#10B981',
+              boxShadow: '0 0 6px #10B981',
+              display: 'inline-block'
+            }} 
+          />
+        </div>
+      )}
     </div>
   );
 }
