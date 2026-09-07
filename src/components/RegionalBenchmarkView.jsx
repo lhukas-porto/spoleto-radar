@@ -356,7 +356,7 @@ export default function RegionalBenchmarkView() {
           <TrendingUp size={18} /> Tabela Comparativa de Performance entre Regionais
         </h3>
         <p className="section-subtitle" style={{ marginBottom: '1rem' }}>
-          Métricas calculadas em tempo real com base no histórico de visitas e auditorias técnicas Spoleto.
+          Métricas calculadas em tempo real com base no histórico de visitas e diagnósticos operacionais Spoleto.
         </p>
 
         <div className="spoleto-table-container">

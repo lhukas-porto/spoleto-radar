@@ -26,16 +26,18 @@ import RegionalBenchmarkView from './RegionalBenchmarkView';
 
 export default function DashboardView() {
   const {
-    stores,
-    consultants,
+    visibleStores: stores = [],
+    visibleConsultants: consultants = [],
     categories,
-    visits,
+    visibleVisits: visits = [],
     franchisees = [],
     setActiveTab,
     setSelectedVisitForReport,
     setIsOverdueModalOpen,
     setSelectedStaffForProfile,
-    setSelectedStoreForProfile
+    setSelectedStoreForProfile,
+    simulatedRole,
+    activeUser
   } = useApp();
 
   const [hoveredSlice, setHoveredSlice] = useState(null);
@@ -331,50 +333,38 @@ export default function DashboardView() {
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
 
           {/* =========================================================================
-            GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM DRILLDOWN
+            GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM SEGUNDO GRÁFICO DE SUBTÓPICOS ABAIXO
             ========================================================================= */}
-          <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div className="card-panel" style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Gráfico 1: Tópicos Principais */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div>
                   <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <PieIcon size={20} color="var(--primary-brown)" />
-                    {drilldownCategory ? 'Detalhamento por Subtópicos' : 'Itens de Oportunidade'}
+                    Itens de Oportunidade por Tema
                   </h3>
                   <p className="section-subtitle">
-                    {drilldownCategory
-                      ? `Distribuição dos problemas específicos do tema "${activeDrilldownCat?.name.split('(')[0].trim()}".`
-                      : 'Distribuição percentual dos temas principais apontados. Clique em um tema para abrir seus subtópicos.'}
+                    Distribuição dos temas apontados nas visitas. Clique em um tema para abrir o gráfico detalhado dos subtópicos abaixo.
                   </p>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {drilldownCategory && (
-                    <button
-                      className="btn-secondary"
-                      onClick={() => setDrilldownCategory(null)}
-                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', gap: '0.3rem' }}
-                    >
-                      <ArrowLeft size={13} /> Voltar aos Tópicos
-                    </button>
-                  )}
-
                   <span style={{ fontSize: '0.78rem', background: '#FAF8F5', border: '1px solid var(--border-subtle)', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
-                    Total: {activeTotalCount} apontamentos
+                    Total: {totalBottlenecks} apontamentos
                   </span>
                 </div>
               </div>
 
-              {activeChartData.length === 0 ? (
+              {categoryBottlenecks.length === 0 ? (
                 <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  Nenhum apontamento registrado para este tema. Realize novas visitas para visualizar a distribuição.
+                  Nenhum apontamento registrado. Realize novas visitas para visualizar a distribuição.
                 </div>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem', margin: '1rem 0' }}>
-                  {/* SVG Donut / Pie Chart */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.5rem', margin: '0.5rem 0' }}>
+                  {/* SVG Donut / Pie Chart - Tópicos Principais */}
                   <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg width="200" height="200" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
-                      {/* Background circle */}
                       <circle
                         cx="80"
                         cy="80"
@@ -384,16 +374,16 @@ export default function DashboardView() {
                         strokeWidth="24"
                       />
 
-                      {/* Slices */}
                       {(() => {
-                        let accumulatedPercent = 0;
-                        return activeChartData.map((item, idx) => {
-                          const percent = activeTotalCount > 0 ? (item.count / activeTotalCount) : 0;
+                        let acc = 0;
+                        return categoryBottlenecks.map((item, idx) => {
+                          const percent = totalBottlenecks > 0 ? (item.count / totalBottlenecks) : 0;
                           const strokeDasharray = `${percent * circumference} ${circumference}`;
-                          const strokeDashoffset = -accumulatedPercent * circumference;
-                          accumulatedPercent += percent;
+                          const strokeDashoffset = -acc * circumference;
+                          acc += percent;
                           const color = item.color || chartColors[idx % chartColors.length];
                           const isHovered = hoveredSlice === item.id;
+                          const isSelected = drilldownCategory === item.id;
 
                           return (
                             <circle
@@ -403,21 +393,19 @@ export default function DashboardView() {
                               r={radius}
                               fill="transparent"
                               stroke={color}
-                              strokeWidth={isHovered ? 28 : 24}
+                              strokeWidth={isSelected ? 30 : (isHovered ? 28 : 24)}
                               strokeDasharray={strokeDasharray}
                               strokeDashoffset={strokeDashoffset}
                               style={{
                                 transition: 'all 0.25s ease',
                                 cursor: 'pointer',
-                                filter: isHovered ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.15))' : 'none'
+                                filter: (isHovered || isSelected) ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.2))' : 'none',
+                                opacity: drilldownCategory && !isSelected && !isHovered ? 0.6 : 1
                               }}
                               onMouseEnter={() => setHoveredSlice(item.id)}
                               onMouseLeave={() => setHoveredSlice(null)}
                               onClick={() => {
-                                if (!drilldownCategory) {
-                                  setDrilldownCategory(item.id);
-                                  setHoveredSlice(null);
-                                }
+                                setDrilldownCategory(prev => prev === item.id ? null : item.id);
                               }}
                             />
                           );
@@ -425,7 +413,7 @@ export default function DashboardView() {
                       })()}
                     </svg>
 
-                    {/* Center Text in Donut */}
+                    {/* Centro do Donut */}
                     <div style={{
                       position: 'absolute',
                       textAlign: 'center',
@@ -434,50 +422,47 @@ export default function DashboardView() {
                     }}>
                       <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
                         {hoveredSlice
-                          ? activeChartData.find(c => c.id === hoveredSlice)?.count
-                          : activeTotalCount}
+                          ? categoryBottlenecks.find(c => c.id === hoveredSlice)?.count
+                          : (drilldownCategory ? categoryBottlenecks.find(c => c.id === drilldownCategory)?.count : totalBottlenecks)}
                       </span>
                       <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {hoveredSlice
-                          ? activeChartData.find(c => c.id === hoveredSlice)?.name
-                          : (drilldownCategory ? 'Subtópicos' : 'Gargalos')}
+                          ? categoryBottlenecks.find(c => c.id === hoveredSlice)?.name
+                          : (drilldownCategory ? categoryBottlenecks.find(c => c.id === drilldownCategory)?.name : 'Gargalos')}
                       </span>
                     </div>
                   </div>
 
-                  {/* Legendas & Percentuais Interativas com 1-Clique */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, minWidth: '200px', maxHeight: '240px', overflowY: 'auto' }}>
-                    {activeChartData.map((item, idx) => {
-                      const percent = activeTotalCount > 0 ? Math.round((item.count / activeTotalCount) * 100) : 0;
+                  {/* Legenda dos Tópicos */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1, minWidth: '200px', maxHeight: '220px', overflowY: 'auto' }}>
+                    {categoryBottlenecks.map((item, idx) => {
+                      const percent = totalBottlenecks > 0 ? Math.round((item.count / totalBottlenecks) * 100) : 0;
                       const color = item.color || chartColors[idx % chartColors.length];
                       const isHovered = hoveredSlice === item.id;
+                      const isSelected = drilldownCategory === item.id;
 
                       return (
                         <div
                           key={item.id}
                           onMouseEnter={() => setHoveredSlice(item.id)}
                           onMouseLeave={() => setHoveredSlice(null)}
-                          onClick={() => {
-                            if (!drilldownCategory) {
-                              setDrilldownCategory(item.id);
-                              setHoveredSlice(null);
-                            }
-                          }}
+                          onClick={() => setDrilldownCategory(prev => prev === item.id ? null : item.id)}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             padding: '0.35rem 0.6rem',
                             borderRadius: 'var(--radius-sm)',
-                            backgroundColor: isHovered ? 'var(--primary-brown-light)' : 'transparent',
-                            transition: 'background-color 0.15s ease',
+                            backgroundColor: isSelected ? 'var(--primary-brown-light)' : (isHovered ? '#FAF8F5' : 'transparent'),
+                            border: isSelected ? '1px solid var(--primary-brown)' : '1px solid transparent',
+                            transition: 'all 0.15s ease',
                             cursor: 'pointer'
                           }}
-                          title={!drilldownCategory ? 'Clique para abrir o gráfico dos subtópicos' : ''}
+                          title="Clique para abrir o gráfico dos subtópicos abaixo"
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
                             <span style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: '0.82rem', fontWeight: isHovered ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <span style={{ fontSize: '0.82rem', fontWeight: (isSelected || isHovered) ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {item.name}
                             </span>
                           </div>
@@ -489,9 +474,7 @@ export default function DashboardView() {
                             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                               ({item.count})
                             </span>
-                            {!drilldownCategory && (
-                              <ChevronRight size={13} color="var(--text-muted)" />
-                            )}
+                            <ChevronRight size={13} color={isSelected ? 'var(--primary-brown)' : 'var(--text-muted)'} style={{ transform: isSelected ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s ease' }} />
                           </div>
                         </div>
                       );
@@ -501,9 +484,146 @@ export default function DashboardView() {
               )}
             </div>
 
+            {/* Gráfico 2: Subtópicos do Tema Selecionado (Criado abaixo quando um tópico é clicado) */}
+            {drilldownCategory && (
+              <div style={{
+                borderTop: '2px dashed var(--border-subtle)',
+                paddingTop: '1.25rem',
+                backgroundColor: '#FAF8F5',
+                padding: '1.25rem',
+                borderRadius: 'var(--radius-md)',
+                marginTop: '0.5rem',
+                animation: 'fadeIn 0.25s ease'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <h4 style={{ fontSize: '1rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+                      <PieIcon size={17} color="var(--primary-brown)" />
+                      Subtópicos de: {activeDrilldownCat?.name?.split('(')[0].trim()}
+                    </h4>
+                    <p style={{ fontSize: '0.76rem', color: 'var(--text-muted)', margin: '0.15rem 0 0' }}>
+                      Distribuição detalhada das não-conformidades específicas deste tema
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span style={{ fontSize: '0.75rem', background: '#FFFFFF', border: '1px solid var(--border-subtle)', padding: '0.2rem 0.55rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--text-main)' }}>
+                      Total: {totalSubBottlenecks} ocorrências
+                    </span>
+                    <button
+                      className="btn-secondary"
+                      onClick={() => setDrilldownCategory(null)}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: '#FFFFFF' }}
+                      title="Fechar gráfico de subtópicos"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+                </div>
+
+                {subproblemBottlenecks.length === 0 ? (
+                  <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    Nenhum subtópico detalhado foi registrado ainda para este tema nas visitas.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.25rem' }}>
+                    {/* Donut dos Subtópicos */}
+                    <div style={{ position: 'relative', width: '170px', height: '170px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="170" height="170" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle
+                          cx="80"
+                          cy="80"
+                          r={radius}
+                          fill="transparent"
+                          stroke="#EBE5DF"
+                          strokeWidth="22"
+                        />
+
+                        {(() => {
+                          let accSub = 0;
+                          return subproblemBottlenecks.map((sub, idx) => {
+                            const percent = totalSubBottlenecks > 0 ? (sub.count / totalSubBottlenecks) : 0;
+                            const strokeDasharray = `${percent * circumference} ${circumference}`;
+                            const strokeDashoffset = -accSub * circumference;
+                            accSub += percent;
+                            const color = sub.color || chartColors[idx % chartColors.length];
+
+                            return (
+                              <circle
+                                key={sub.id}
+                                cx="80"
+                                cy="80"
+                                r={radius}
+                                fill="transparent"
+                                stroke={color}
+                                strokeWidth={22}
+                                strokeDasharray={strokeDasharray}
+                                strokeDashoffset={strokeDashoffset}
+                                style={{
+                                  transition: 'all 0.25s ease'
+                                }}
+                              />
+                            );
+                          });
+                        })()}
+                      </svg>
+
+                      <div style={{ position: 'absolute', textAlign: 'center', pointerEvents: 'none' }}>
+                        <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
+                          {totalSubBottlenecks}
+                        </span>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                          Subtópicos
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Legenda dos Subtópicos */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '180px', maxHeight: '190px', overflowY: 'auto' }}>
+                      {subproblemBottlenecks.map((sub, idx) => {
+                        const percent = totalSubBottlenecks > 0 ? Math.round((sub.count / totalSubBottlenecks) * 100) : 0;
+                        const color = sub.color || chartColors[idx % chartColors.length];
+
+                        return (
+                          <div
+                            key={sub.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '0.3rem 0.5rem',
+                              borderRadius: 'var(--radius-sm)',
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid var(--border-subtle)'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', overflow: 'hidden' }}>
+                              <span style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: '0.78rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={sub.name}>
+                                {sub.name}
+                              </span>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
+                              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: color }}>
+                                {percent}%
+                              </span>
+                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                                ({sub.count})
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                {drilldownCategory ? 'Exibindo detalhamento específico.' : 'Dica: clique em qualquer tema para ver subtópicos.'}
+                {drilldownCategory ? 'Clique no mesmo tema ou em "Fechar" para ocultar o gráfico inferior.' : 'Dica: clique em qualquer tema para abrir o gráfico dos subtópicos abaixo.'}
               </span>
               <button
                 className="btn-secondary"

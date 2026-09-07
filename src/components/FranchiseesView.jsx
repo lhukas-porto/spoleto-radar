@@ -103,10 +103,17 @@ export default function FranchiseesView() {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
+    const formatted = {
+      ...formData,
+      name: formData.name.toUpperCase().trim(),
+      email: (formData.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(formData.phone)
+    };
+
     if (editingFranchisee) {
-      updateFranchisee(editingFranchisee.id, formData);
+      updateFranchisee(editingFranchisee.id, formatted);
     } else {
-      addFranchisee(formData);
+      addFranchisee(formatted);
     }
     setIsModalOpen(false);
   };

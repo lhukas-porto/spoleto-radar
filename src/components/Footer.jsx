@@ -1,8 +1,31 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import lfLogo from '../assets/lfcoding_logo.png';
+import { useApp } from '../context/AppContext';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { isAdminUnlocked, toggleAdminUnlock } = useApp();
+  
+  // Controle de 3 cliques consecutivos em menos de 1.2 segundos no copyright
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef(null);
+
+  const handleCopyrightClick = () => {
+    clickCountRef.current += 1;
+
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+    }
+
+    if (clickCountRef.current >= 3) {
+      clickCountRef.current = 0;
+      toggleAdminUnlock();
+    } else {
+      clickTimerRef.current = setTimeout(() => {
+        clickCountRef.current = 0;
+      }, 1200);
+    }
+  };
 
   return (
     <footer 
@@ -28,10 +51,40 @@ export default function Footer() {
       >
         {/* Lado Esquerdo: Info da Aplicação */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--primary-brown, #5D3826)', letterSpacing: '0.5px' }}>
-            SPOLETO RADAR
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--primary-brown, #5D3826)', letterSpacing: '0.5px' }}>
+              SPOLETO RADAR
+            </span>
+            {isAdminUnlocked && (
+              <span 
+                onClick={() => toggleAdminUnlock(false)}
+                title="Modo Administrador Master Ativo. Clique para ocultar."
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: 800,
+                  backgroundColor: '#DC2626',
+                  color: '#FFFFFF',
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  letterSpacing: '0.5px',
+                  boxShadow: '0 2px 5px rgba(220, 38, 38, 0.3)'
+                }}
+              >
+                ADMIN ATIVO ✕
+              </span>
+            )}
           </div>
-          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted, #64748B)' }}>
+          <div 
+            onClick={handleCopyrightClick}
+            style={{ 
+              fontSize: '0.74rem', 
+              color: 'var(--text-muted, #64748B)',
+              userSelect: 'none',
+              cursor: 'pointer'
+            }}
+            title="Spoleto Radar"
+          >
             &copy; {currentYear} Rede de Franquias Spoleto. Todos os direitos reservados.
           </div>
         </div>

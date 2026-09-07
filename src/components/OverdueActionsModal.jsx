@@ -44,14 +44,17 @@ export default function OverdueActionsModal() {
   const { 
     isOverdueModalOpen, 
     setIsOverdueModalOpen, 
-    visits, 
-    stores, 
-    consultants, 
+    visibleVisits: visits = [], 
+    visibleStores: stores = [], 
+    visibleConsultants: consultants = [], 
     categories, 
     getStoreFranchisees,
     updateActionPlanStatus, 
     setSelectedVisitForReport,
-    showToast 
+    showToast,
+    simulatedRole,
+    activeUser,
+    hasPermission
   } = useApp();
 
   // Navigation mode inside modal
@@ -156,7 +159,9 @@ export default function OverdueActionsModal() {
         categoryName: cat?.name ? cat.name.split('(')[0].trim() : 'Geral',
         subproblemTitle: sub?.title || 'Diagnóstico em loja',
         action: d.actionPlan?.action || 'Definir plano de ação corretivo.',
-        responsible: d.actionPlan?.responsible || 'GERENTE',
+        responsible: d.actionPlan?.internalArea 
+          ? `${d.actionPlan?.responsible || 'ÁREAS INTERNAS'} (${d.actionPlan.internalArea})` 
+          : (d.actionPlan?.responsible || 'GERENTE'),
         deadline: deadline,
         status: currentStatus,
         rawVisit: v,
@@ -667,7 +672,7 @@ export default function OverdueActionsModal() {
                             className="btn-secondary"
                             style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
                             onClick={() => setSelectedVisitForReport(item.visit)}
-                            title="Ver Laudo Completo da Auditoria"
+                            title="Ver Diagnóstico Completo da Visita"
                           >
                             <FileText size={13} /> Ver Laudo Completo
                           </button>
@@ -792,15 +797,19 @@ export default function OverdueActionsModal() {
                           <td style={{ textAlign: 'center' }}>
                             <select
                               value={plan.status}
+                              disabled={!hasPermission('action_plan_status')}
                               onChange={(e) => updateActionPlanStatus(plan.visitId, plan.diagnosticId, e.target.value)}
                               style={{
                                 fontSize: '0.72rem',
                                 fontWeight: 700,
                                 padding: '0.25rem 0.4rem',
                                 borderRadius: '4px',
+                                opacity: !hasPermission('action_plan_status') ? 0.7 : 1,
+                                cursor: !hasPermission('action_plan_status') ? 'not-allowed' : 'pointer',
                                 backgroundColor: plan.status === 'CONCLUÍDO' ? 'var(--status-concluido-bg)' : plan.status === 'EM ANDAMENTO' ? 'var(--status-em-andamento-bg)' : 'var(--status-nao-iniciado-bg)',
                                 color: plan.status === 'CONCLUÍDO' ? 'var(--status-concluido-text)' : plan.status === 'EM ANDAMENTO' ? 'var(--status-em-andamento-text)' : 'var(--status-nao-iniciado-text)'
                               }}
+                              title={!hasPermission('action_plan_status') ? 'Seu cargo não possui alçada para alterar status deste plano' : 'Alterar status'}
                             >
                               <option value="NÃO INICIADO">NÃO INICIADO</option>
                               <option value="EM ANDAMENTO">EM ANDAMENTO</option>

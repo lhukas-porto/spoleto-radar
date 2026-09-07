@@ -20,7 +20,13 @@ import {
   RotateCcw,
   ShieldCheck,
   Building2,
-  ExternalLink
+  ExternalLink,
+  Users,
+  UserMinus,
+  Plus,
+  Trash2,
+  Sparkles,
+  Percent
 } from 'lucide-react';
 
 export default function StoreProfileModal({ store, onClose }) {
@@ -32,13 +38,36 @@ export default function StoreProfileModal({ store, onClose }) {
     getStoreFranchisees,
     setSelectedVisitForReport, 
     setSelectedStaffForProfile,
-    updateActionPlanStatus
+    updateActionPlanStatus,
+    turnoverRecords = [],
+    addTurnoverRecord,
+    deleteTurnoverRecord
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' | 'actions' | 'reoccurrences'
+  const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' | 'actions' | 'reoccurrences' | 'turnover'
   const [zoomedPhoto, setZoomedPhoto] = useState(null);
 
+  // Form de lançamento mensal de turnover
+  const [isAddingTurnover, setIsAddingTurnover] = useState(false);
+  const [turnoverMonth, setTurnoverMonth] = useState(() => {
+    const d = new Date();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    return `${d.getFullYear()}-${m}`;
+  });
+  const [activeHeadcount, setActiveHeadcount] = useState(12);
+  const [departures, setDepartures] = useState(0);
+  const [admissions, setAdmissions] = useState(0);
+  const [turnoverNotes, setTurnoverNotes] = useState('');
+
   if (!store) return null;
+
+  // Registros de Turnover desta Loja ordenados por mês descrescente
+  const storeTurnoverRecords = turnoverRecords
+    .filter(r => r.storeId === store.id)
+    .sort((a, b) => b.monthYear.localeCompare(a.monthYear));
+
+  // Último turnover registrado
+  const latestTurnover = storeTurnoverRecords[0];
 
   const storeFranchisees = getStoreFranchisees ? getStoreFranchisees(store.id) : [];
 
@@ -218,6 +247,21 @@ export default function StoreProfileModal({ store, onClose }) {
                     <Building2 size={12} /> {store.locationType || 'Shopping'}
                   </span>
 
+                  <span style={{ 
+                    background: 'rgba(255,255,255,0.22)', 
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: '#FFFFFF', 
+                    fontSize: '0.76rem', 
+                    padding: '0.2rem 0.6rem', 
+                    borderRadius: 'var(--radius-sm)',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }} title="Escala de trabalho dos colaboradores">
+                    📅 Escala: {store.workShift || '6x1'}
+                  </span>
+
                   {store.shoppingMallAdmin && (
                     <span style={{ 
                       background: 'rgba(255,255,255,0.18)', 
@@ -336,10 +380,10 @@ export default function StoreProfileModal({ store, onClose }) {
           </div>
         </div>
 
-        <div style={{ padding: '1.5rem 2rem 1rem 2rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1rem' }}>
-            <div style={{ background: '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #E2E8F0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>Visitas Realizadas</div>
+        <div style={{ padding: '1.25rem 2rem 0.75rem 2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '0.75rem' }}>
+            <div style={{ background: '#F8FAFC', padding: '0.85rem 0.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #E2E8F0', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Visitas Realizadas</div>
               <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', marginTop: '0.2rem' }}>
                 {storeVisits.length}
               </div>
@@ -348,95 +392,175 @@ export default function StoreProfileModal({ store, onClose }) {
               </div>
             </div>
 
-            <div style={{ background: '#F0FDF4', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #BBF7D0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>Taxa de Resolução</div>
+            <div style={{ background: '#F0FDF4', padding: '0.85rem 0.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #BBF7D0', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Taxa de Resolução</div>
               <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#15803D', marginTop: '0.2rem' }}>
                 {resolutionRate}%
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#166534', marginTop: '0.1rem' }}>
-                {completedActions} de {totalActions} ações resolvidas
+              <div style={{ fontSize: '0.72rem', color: '#166534', marginTop: '0.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {completedActions} de {totalActions} resolvidas
               </div>
             </div>
 
-            <div style={{ background: overdueActions > 0 ? '#FEF2F2' : '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: overdueActions > 0 ? '1px solid #FECACA' : '1px solid #E2E8F0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: overdueActions > 0 ? '#991B1B' : '#64748B', textTransform: 'uppercase' }}>Ações em Atraso</div>
+            <div style={{ background: overdueActions > 0 ? '#FEF2F2' : '#F8FAFC', padding: '0.85rem 0.5rem', borderRadius: 'var(--radius-md)', border: overdueActions > 0 ? '1px solid #FECACA' : '1px solid #E2E8F0', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: overdueActions > 0 ? '#991B1B' : '#64748B', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Ações em Atraso</div>
               <div style={{ fontSize: '1.65rem', fontWeight: 800, color: overdueActions > 0 ? '#DC2626' : '#0F172A', marginTop: '0.2rem' }}>
                 {overdueActions}
               </div>
-              <div style={{ fontSize: '0.72rem', color: overdueActions > 0 ? '#991B1B' : '#64748B', marginTop: '0.1rem' }}>
-                {overdueActions > 0 ? 'Requer cobrança imediata' : 'Tudo em dia'}
+              <div style={{ fontSize: '0.72rem', color: overdueActions > 0 ? '#991B1B' : '#64748B', marginTop: '0.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {overdueActions > 0 ? 'Requer cobrança' : 'Tudo em dia'}
               </div>
             </div>
 
-            <div style={{ background: reoccurringProblems.length > 0 ? '#FFFBEB' : '#F8FAFC', padding: '1rem', borderRadius: 'var(--radius-md)', border: reoccurringProblems.length > 0 ? '1px solid #FDE68A' : '1px solid #E2E8F0', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: reoccurringProblems.length > 0 ? '#92400E' : '#64748B', textTransform: 'uppercase' }}>Problemas Reincidentes</div>
+            <div style={{ background: reoccurringProblems.length > 0 ? '#FFFBEB' : '#F8FAFC', padding: '0.85rem 0.5rem', borderRadius: 'var(--radius-md)', border: reoccurringProblems.length > 0 ? '1px solid #FDE68A' : '1px solid #E2E8F0', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: reoccurringProblems.length > 0 ? '#92400E' : '#64748B', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Reincidentes</div>
               <div style={{ fontSize: '1.65rem', fontWeight: 800, color: reoccurringProblems.length > 0 ? '#D97706' : '#0F172A', marginTop: '0.2rem' }}>
                 {reoccurringProblems.length}
               </div>
-              <div style={{ fontSize: '0.72rem', color: reoccurringProblems.length > 0 ? '#92400E' : '#64748B', marginTop: '0.1rem' }}>
-                {reoccurringProblems.length > 0 ? 'Requer atenção do franqueado' : 'Sem vícios crônicos'}
+              <div style={{ fontSize: '0.72rem', color: reoccurringProblems.length > 0 ? '#92400E' : '#64748B', marginTop: '0.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {reoccurringProblems.length > 0 ? 'Atenção necessária' : 'Sem vícios crônicos'}
+              </div>
+            </div>
+
+            {/* KPI Dinâmico de Turnover */}
+            <div style={{ 
+              background: latestTurnover 
+                ? (latestTurnover.turnoverRate > 12 ? '#FEF2F2' : latestTurnover.turnoverRate > 5 ? '#FFFBEB' : '#F0FDF4') 
+                : '#F8FAFC', 
+              padding: '0.85rem 0.5rem', 
+              borderRadius: 'var(--radius-md)', 
+              border: latestTurnover 
+                ? (latestTurnover.turnoverRate > 12 ? '1px solid #FECACA' : latestTurnover.turnoverRate > 5 ? '1px solid #FDE68A' : '1px solid #BBF7D0') 
+                : '1px solid #E2E8F0', 
+              textAlign: 'center',
+              cursor: 'pointer'
+            }}
+            onClick={() => setActiveTab('turnover')}
+            title="Clique para ver o quadro completo de colaboradores"
+            >
+              <div style={{ 
+                fontSize: '0.72rem', 
+                fontWeight: 700, 
+                color: latestTurnover 
+                  ? (latestTurnover.turnoverRate > 12 ? '#991B1B' : latestTurnover.turnoverRate > 5 ? '#92400E' : '#166534') 
+                  : '#64748B', 
+                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.3rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                <Users size={12} /> Turnover
+              </div>
+              <div style={{ 
+                fontSize: '1.65rem', 
+                fontWeight: 800, 
+                color: latestTurnover 
+                  ? (latestTurnover.turnoverRate > 12 ? '#DC2626' : latestTurnover.turnoverRate > 5 ? '#D97706' : '#15803D') 
+                  : '#0F172A', 
+                marginTop: '0.2rem' 
+              }}>
+                {latestTurnover ? `${latestTurnover.turnoverRate}%` : '--'}
+              </div>
+              <div style={{ 
+                fontSize: '0.72rem', 
+                color: latestTurnover 
+                  ? (latestTurnover.turnoverRate > 12 ? '#991B1B' : latestTurnover.turnoverRate > 5 ? '#92400E' : '#166534') 
+                  : '#64748B', 
+                marginTop: '0.1rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {latestTurnover ? `${latestTurnover.departures} saídas / ${latestTurnover.activeHeadcount} ativos` : 'Sem lançamento'}
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ padding: '0 2rem', borderBottom: '1px solid #E2E8F0' }}>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ padding: '0 2rem', borderBottom: '1px solid #E2E8F0', overflowX: 'auto' }}>
+          <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', whiteSpace: 'nowrap' }}>
             <button
               onClick={() => setActiveTab('timeline')}
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.75rem 0.25rem',
                 border: 'none',
                 background: 'none',
-                fontSize: '0.88rem',
+                fontSize: '0.85rem',
                 fontWeight: activeTab === 'timeline' ? 800 : 600,
                 color: activeTab === 'timeline' ? 'var(--primary-brown)' : '#64748B',
                 borderBottom: activeTab === 'timeline' ? '3px solid var(--primary-brown)' : '3px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem'
+                gap: '0.4rem',
+                whiteSpace: 'nowrap'
               }}
             >
-              <Calendar size={16} /> Linha do Tempo de Visitas ({storeVisits.length})
+              <Calendar size={15} /> Visitas ({storeVisits.length})
             </button>
 
             <button
               onClick={() => setActiveTab('reoccurrences')}
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.75rem 0.25rem',
                 border: 'none',
                 background: 'none',
-                fontSize: '0.88rem',
+                fontSize: '0.85rem',
                 fontWeight: activeTab === 'reoccurrences' ? 800 : 600,
                 color: activeTab === 'reoccurrences' ? 'var(--primary-brown)' : '#64748B',
                 borderBottom: activeTab === 'reoccurrences' ? '3px solid var(--primary-brown)' : '3px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem'
+                gap: '0.4rem',
+                whiteSpace: 'nowrap'
               }}
             >
-              <RotateCcw size={16} /> Problemas Reincidentes ({reoccurringProblems.length})
+              <RotateCcw size={15} /> Reincidências ({reoccurringProblems.length})
             </button>
 
             <button
               onClick={() => setActiveTab('actions')}
               style={{
-                padding: '0.75rem 0.5rem',
+                padding: '0.75rem 0.25rem',
                 border: 'none',
                 background: 'none',
-                fontSize: '0.88rem',
+                fontSize: '0.85rem',
                 fontWeight: activeTab === 'actions' ? 800 : 600,
                 color: activeTab === 'actions' ? 'var(--primary-brown)' : '#64748B',
                 borderBottom: activeTab === 'actions' ? '3px solid var(--primary-brown)' : '3px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem'
+                gap: '0.4rem',
+                whiteSpace: 'nowrap'
               }}
             >
-              <FileText size={16} /> Planos de Ação da Loja ({totalActions})
+              <FileText size={15} /> Planos de Ação ({totalActions})
+            </button>
+
+            <button
+              onClick={() => setActiveTab('turnover')}
+              style={{
+                padding: '0.75rem 0.25rem',
+                border: 'none',
+                background: 'none',
+                fontSize: '0.85rem',
+                fontWeight: activeTab === 'turnover' ? 800 : 600,
+                color: activeTab === 'turnover' ? 'var(--primary-brown)' : '#64748B',
+                borderBottom: activeTab === 'turnover' ? '3px solid var(--primary-brown)' : '3px solid transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <Users size={15} /> Equipe & Turnover ({storeTurnoverRecords.length})
             </button>
           </div>
         </div>
@@ -682,9 +806,363 @@ export default function StoreProfileModal({ store, onClose }) {
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem', color: '#64748B', borderTop: '1px solid #F1F5F9', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
-                          <span>Responsável: <strong style={{ color: '#0F172A' }}>{diag.actionPlan?.who || diag.actionPlan?.responsible || 'Gerente'}</strong></span>
+                          <span>Responsável: <strong style={{ color: '#0F172A' }}>
+                            {diag.actionPlan?.internalArea 
+                              ? `${diag.actionPlan?.who || diag.actionPlan?.responsible || 'ÁREAS INTERNAS'} (${diag.actionPlan.internalArea})` 
+                              : (diag.actionPlan?.who || diag.actionPlan?.responsible || 'Gerente')}
+                          </strong></span>
                           <span>Prazo: <strong style={{ color: '#0F172A' }}>{diag.actionPlan?.deadline || 'Imediato'}</strong></span>
                           <span>Visita: {new Date(diag.visitDate + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ABA 4: QUADRO DE COLABORADORES & TURNOVER MENSAL */}
+          {activeTab === 'turnover' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Users size={20} color="var(--primary-brown)" />
+                    Quadro de Pessoal & Rotatividade (Turnover)
+                  </h3>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.2rem 0 0' }}>
+                    Acompanhamento mensal da estabilidade da equipe. A rotatividade é calculada automaticamente: (Saídas / Efetivo Ativo) × 100.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsAddingTurnover(!isAddingTurnover)}
+                  className="btn-primary"
+                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.95rem', gap: '0.4rem' }}
+                >
+                  {isAddingTurnover ? <X size={15} /> : <Plus size={15} />}
+                  {isAddingTurnover ? 'Fechar Formulário' : '+ Lançar Mês'}
+                </button>
+              </div>
+
+              {/* Formulário de Lançamento Rápido */}
+              {isAddingTurnover && (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const active = Number(activeHeadcount) || 1;
+                    const dep = Number(departures) || 0;
+                    const adm = Number(admissions) || 0;
+                    const rate = Number(((dep / active) * 100).toFixed(1));
+
+                    const newRecord = {
+                      id: `turn-${Date.now()}`,
+                      storeId: store.id,
+                      monthYear: turnoverMonth,
+                      activeHeadcount: active,
+                      departures: dep,
+                      admissions: adm,
+                      turnoverRate: rate,
+                      notes: turnoverNotes.trim() || 'Lançamento de rotina do consultor.',
+                      updatedAt: new Date().toISOString().split('T')[0]
+                    };
+
+                    addTurnoverRecord(newRecord);
+                    setIsAddingTurnover(false);
+                    setTurnoverNotes('');
+                  }}
+                  style={{
+                    backgroundColor: '#FAF8F5',
+                    border: '1.5px solid var(--accent-gold)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '1.25rem',
+                    marginBottom: '1.5rem',
+                    animation: 'fadeIn 0.2s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                    <strong style={{ fontSize: '0.9rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Percent size={16} /> Lançar Quadro do Mês ({turnoverMonth})
+                    </strong>
+                    <span style={{ fontSize: '0.75rem', background: '#FFFFFF', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--border-subtle)', fontWeight: 700, color: 'var(--primary-brown)' }}>
+                      Turnover Calculado: {Number(activeHeadcount) > 0 ? ((Number(departures) / Number(activeHeadcount)) * 100).toFixed(1) : 0}%
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '0.85rem', marginBottom: '0.85rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        height: '2.1rem', 
+                        fontSize: '0.78rem', 
+                        fontWeight: 700, 
+                        color: 'var(--text-main)', 
+                        marginBottom: '0.35rem',
+                        lineHeight: '1.2'
+                      }}>
+                        Mês de Referência *
+                      </label>
+                      <input
+                        type="month"
+                        className="input-field"
+                        value={turnoverMonth}
+                        onChange={(e) => setTurnoverMonth(e.target.value)}
+                        required
+                        style={{ width: '100%', height: '38px', fontSize: '0.85rem', padding: '0.45rem 0.65rem', boxSizing: 'border-box' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        height: '2.1rem', 
+                        fontSize: '0.78rem', 
+                        fontWeight: 700, 
+                        color: 'var(--text-main)', 
+                        marginBottom: '0.35rem',
+                        lineHeight: '1.2'
+                      }}>
+                        Quadro Ativo (Colaboradores) *
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="80"
+                        className="input-field"
+                        placeholder="Ex: 12"
+                        value={activeHeadcount}
+                        onChange={(e) => setActiveHeadcount(e.target.value)}
+                        required
+                        style={{ width: '100%', height: '38px', fontSize: '0.85rem', padding: '0.45rem 0.65rem', boxSizing: 'border-box' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        height: '2.1rem', 
+                        fontSize: '0.78rem', 
+                        fontWeight: 700, 
+                        color: '#991B1B', 
+                        marginBottom: '0.35rem',
+                        lineHeight: '1.2'
+                      }}>
+                        Saídas no Mês (Desligamentos) *
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="40"
+                        className="input-field"
+                        placeholder="Ex: 1"
+                        value={departures}
+                        onChange={(e) => setDepartures(e.target.value)}
+                        required
+                        style={{ width: '100%', height: '38px', fontSize: '0.85rem', padding: '0.45rem 0.65rem', borderColor: '#FCA5A5', boxSizing: 'border-box' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        height: '2.1rem', 
+                        fontSize: '0.78rem', 
+                        fontWeight: 700, 
+                        color: '#15803D', 
+                        marginBottom: '0.35rem',
+                        lineHeight: '1.2'
+                      }}>
+                        Admissões no Mês (Entradas)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="40"
+                        className="input-field"
+                        placeholder="Ex: 1"
+                        value={admissions}
+                        onChange={(e) => setAdmissions(e.target.value)}
+                        style={{ width: '100%', height: '38px', fontSize: '0.85rem', padding: '0.45rem 0.65rem', borderColor: '#86EFAC', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.25rem' }}>
+                      Observações / Motivo das Saídas
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      placeholder="Ex: Saída voluntária do chapeiro por mudança de cidade; reposição já contratada."
+                      value={turnoverNotes}
+                      onChange={(e) => setTurnoverNotes(e.target.value)}
+                      style={{ width: '100%', fontSize: '0.85rem', padding: '0.45rem 0.65rem' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem' }}>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setIsAddingTurnover(false)}
+                      style={{ fontSize: '0.8rem', padding: '0.35rem 0.85rem' }}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary"
+                      style={{ fontSize: '0.8rem', padding: '0.35rem 1.1rem' }}
+                    >
+                      Salvar Indicador
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Régua Explicativa do Semáforo Spoleto - 1 Linha Única */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.65rem', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#166534', border: '1px solid #BBF7D0', padding: '0.35rem 0.5rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
+                  <span>Até 5%: <strong>Saudável</strong></span>
+                </span>
+                <span style={{ fontSize: '0.72rem', background: '#FFFBEB', color: '#92400E', border: '1px solid #FDE68A', padding: '0.35rem 0.5rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#D97706', flexShrink: 0 }} />
+                  <span>5.1% a 12%: <strong>Atenção</strong></span>
+                </span>
+                <span style={{ fontSize: '0.72rem', background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA', padding: '0.35rem 0.5rem', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#DC2626', flexShrink: 0 }} />
+                  <span>Acima de 12%: <strong>Crítico</strong></span>
+                </span>
+              </div>
+
+              {/* Tabela de Histórico de Turnover da Loja */}
+              {storeTurnoverRecords.length === 0 ? (
+                <div style={{ padding: '3rem 1rem', textAlign: 'center', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-subtle)' }}>
+                  <Users size={36} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem' }} />
+                  <h4 style={{ fontSize: '0.98rem', color: 'var(--text-main)', margin: '0 0 0.25rem' }}>Nenhum mês lançado ainda</h4>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '420px', margin: '0 auto 1rem' }}>
+                    Clique no botão <strong>"+ Lançar Mês"</strong> acima para registrar o primeiro quadro de pessoal e calcular o turnover oficial desta unidade.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={() => setIsAddingTurnover(true)}
+                    style={{ fontSize: '0.82rem', padding: '0.45rem 1rem' }}
+                  >
+                    + Fazer Primeiro Lançamento
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {storeTurnoverRecords.map((item) => {
+                    const isHealthy = item.turnoverRate <= 5;
+                    const isWarning = item.turnoverRate > 5 && item.turnoverRate <= 12;
+                    const isCritical = item.turnoverRate > 12;
+
+                    // Formata "2026-08" para "Agosto de 2026"
+                    const [year, month] = item.monthYear.split('-');
+                    const dateObj = new Date(Number(year), Number(month) - 1, 1);
+                    const monthName = dateObj.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+                    return (
+                      <div
+                        key={item.id}
+                        style={{
+                          backgroundColor: '#FFFFFF',
+                          border: isCritical ? '1.5px solid #FCA5A5' : isWarning ? '1px solid #FDE68A' : '1px solid var(--border-subtle)',
+                          borderRadius: 'var(--radius-md)',
+                          padding: '1rem 1.25rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          gap: '1rem',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          {/* Badge Circular de Percentual de Turnover */}
+                          <div style={{
+                            width: '58px',
+                            height: '58px',
+                            borderRadius: '50%',
+                            backgroundColor: isCritical ? '#FEE2E2' : isWarning ? '#FEF3C7' : '#DCFCE7',
+                            border: `2px solid ${isCritical ? '#EF4444' : isWarning ? '#F59E0B' : '#10B981'}`,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}>
+                            <span style={{ fontSize: '0.88rem', fontWeight: 900, color: isCritical ? '#991B1B' : isWarning ? '#92400E' : '#15803D', lineHeight: 1 }}>
+                              {item.turnoverRate}%
+                            </span>
+                            <span style={{ fontSize: '0.58rem', textTransform: 'uppercase', fontWeight: 800, color: isCritical ? '#991B1B' : isWarning ? '#92400E' : '#15803D' }}>
+                              Turnover
+                            </span>
+                          </div>
+
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+                              <strong style={{ fontSize: '0.98rem', color: 'var(--text-main)', textTransform: 'capitalize' }}>
+                                {monthName}
+                              </strong>
+                              <span style={{
+                                fontSize: '0.68rem',
+                                fontWeight: 800,
+                                padding: '0.15rem 0.5rem',
+                                borderRadius: 'var(--radius-full)',
+                                backgroundColor: isCritical ? '#FEE2E2' : isWarning ? '#FEF3C7' : '#DCFCE7',
+                                color: isCritical ? '#991B1B' : isWarning ? '#92400E' : '#15803D'
+                              }}>
+                                {isCritical ? '🔴 Crítico' : isWarning ? '🟡 Atenção' : '🟢 Saudável'}
+                              </span>
+                            </div>
+
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                              <span>👥 Efetivo Ativo: <strong>{item.activeHeadcount}</strong></span>
+                              <span>🚪 Saídas: <strong style={{ color: '#DC2626' }}>{item.departures}</strong></span>
+                              <span>✨ Entradas: <strong style={{ color: '#16A34A' }}>{item.admissions || 0}</strong></span>
+                            </div>
+
+                            {item.notes && (
+                              <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontStyle: 'italic' }}>
+                                "{item.notes}"
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(`Deseja remover o lançamento de turnover de ${monthName}?`)) {
+                                deleteTurnoverRecord(item.id);
+                              }
+                            }}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#EF4444',
+                              cursor: 'pointer',
+                              padding: '0.35rem',
+                              borderRadius: '4px',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                            title="Excluir este lançamento"
+                          >
+                            <Trash2 size={15} />
+                          </button>
                         </div>
                       </div>
                     );

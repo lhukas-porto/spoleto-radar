@@ -7,12 +7,24 @@ import {
   FileText, 
   Store, 
   Users, 
-  Settings2
+  Settings,
+  Paperclip
 } from 'lucide-react';
 import NotificationBell from './NotificationBell';
+import RoleSimulatorBar from './RoleSimulatorBar';
 
 export default function Header() {
-  const { activeTab, setActiveTab, stores, visits, consultants, categories } = useApp();
+  const { 
+    activeTab, 
+    setActiveTab, 
+    visibleStores = [], 
+    visibleVisits = [], 
+    visibleConsultants = [], 
+    canAccessSettings,
+    hasPermission,
+    isRepositoryOpen, 
+    setIsRepositoryOpen 
+  } = useApp();
 
   return (
     <header className="navbar">
@@ -22,63 +34,95 @@ export default function Header() {
           className="brand-wrapper" 
           onClick={() => setActiveTab('dashboard')} 
           style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', cursor: 'pointer' }}
-          title="Ir para o Painel Executivo"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <SpoletoRadarLogo variant="navbar" size="md" />
-          </div>
-          <div className="brand-subtitle" style={{ fontSize: '0.74rem', opacity: 0.85, paddingLeft: '2px' }}>
-            Consultoria de Negócios &bull; {stores.length} Lojas Ativas
-          </div>
+          <SpoletoRadarLogo />
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Navegação Principal */}
         <nav className="nav-tabs">
           <button 
             className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
           >
-            <LayoutDashboard size={16} /> Painel Executivo
+            <LayoutDashboard size={16} /> Dashboard
           </button>
 
-          <button 
-            className={`nav-tab ${activeTab === 'new-visit' ? 'active' : ''}`}
-            onClick={() => setActiveTab('new-visit')}
-          >
-            <ClipboardCheck size={16} /> Nova Visita
-          </button>
+          {hasPermission('new_visit') && (
+            <button 
+              className={`nav-tab ${activeTab === 'new-visit' ? 'active' : ''}`}
+              onClick={() => setActiveTab('new-visit')}
+            >
+              <ClipboardCheck size={16} /> Visita de Consultoria
+            </button>
+          )}
 
           <button 
             className={`nav-tab ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveTab('reports')}
           >
-            <FileText size={16} /> Relatórios & Visitas ({visits.length})
+            <FileText size={16} /> Relatórios & Visitas ({visibleVisits.length})
           </button>
 
           <button 
             className={`nav-tab ${activeTab === 'stores' ? 'active' : ''}`}
             onClick={() => setActiveTab('stores')}
           >
-            <Store size={16} /> Rede de Lojas ({stores.length})
+            <Store size={16} /> Rede de Lojas ({visibleStores.length})
           </button>
 
           <button 
             className={`nav-tab ${activeTab === 'consultants' ? 'active' : ''}`}
             onClick={() => setActiveTab('consultants')}
           >
-            <Users size={16} /> Equipe Spoleto ({consultants.length})
+            <Users size={16} /> Equipe Spoleto ({visibleConsultants.length})
           </button>
 
-          <button 
-            className={`nav-tab ${activeTab === 'taxonomy' ? 'active' : ''}`}
-            onClick={() => setActiveTab('taxonomy')}
-          >
-            <Settings2 size={16} /> Matriz de Tópicos
-          </button>
+          {canAccessSettings && (
+            <button 
+              className={`nav-tab ${activeTab === 'taxonomy' || activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              <Settings size={16} /> Configurações
+            </button>
+          )}
         </nav>
 
-        {/* Sininho de Atividades & Alertas em Tempo Real */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {/* Ações da Direita: Simulador de Perfil ("Ver como..."), Repositório & Notificações */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          {/* Seletor "Ver como..." */}
+          <RoleSimulatorBar />
+          {/* Ícone de Clips - Repositório de Documentos */}
+          <button
+            type="button"
+            onClick={() => setIsRepositoryOpen(true)}
+            title="Repositório"
+            style={{
+              position: 'relative',
+              background: isRepositoryOpen ? 'rgba(255, 255, 255, 0.28)' : 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#FFFFFF',
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = isRepositoryOpen ? 'rgba(255, 255, 255, 0.28)' : 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <Paperclip size={18} />
+          </button>
+
+          {/* Sininho de Notificações */}
           <NotificationBell />
         </div>
       </div>

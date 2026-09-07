@@ -35,17 +35,22 @@ import {
 
 export default function NewVisitForm() {
   const { 
-    stores, 
-    consultants, 
+    visibleStores: stores = [], 
+    visibleConsultants: consultants = [], 
     categories, 
-    visits,
+    visibleVisits: visits = [],
     addVisit, 
     updateVisit,
     editingVisit,
     cancelEditVisit,
     setActiveTab, 
     setSelectedVisitForReport, 
-    showToast 
+    showToast,
+    internalAreas = [],
+    addInternalArea,
+    simulatedRole,
+    activeUser,
+    hasPermission
   } = useApp();
 
   // Store Combobox
@@ -54,13 +59,26 @@ export default function NewVisitForm() {
   const [isStoreDropdownOpen, setIsStoreDropdownOpen] = useState(false);
   const storeDropdownRef = useRef(null);
 
+  // Dropdown de Área Interna (guarda o ID do diagnóstico com dropdown aberto)
+  const [activeInternalAreaDropdownId, setActiveInternalAreaDropdownId] = useState(null);
+  const [internalAreaSearchQuery, setInternalAreaSearchQuery] = useState({});
+
   const businessConsultants = useMemo(() => {
     return consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR');
   }, [consultants]);
 
   const [selectedConsultantId, setSelectedConsultantId] = useState(() => {
+    if (simulatedRole === 'CONSULTOR' && activeUser?.id) return activeUser.id;
     return consultants.find(c => (c.role || 'CONSULTOR') === 'CONSULTOR')?.id || '';
   });
+
+  useEffect(() => {
+    if (simulatedRole === 'CONSULTOR' && activeUser?.id) {
+      setSelectedConsultantId(activeUser.id);
+    } else if (!selectedConsultantId && businessConsultants[0]) {
+      setSelectedConsultantId(businessConsultants[0].id);
+    }
+  }, [simulatedRole, activeUser, businessConsultants]);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [visitType, setVisitType] = useState('Visita agendada'); // 'Visita agendada' | 'Visita surpresa'
   const [generalNotes, setGeneralNotes] = useState('');
@@ -1035,11 +1053,17 @@ export default function NewVisitForm() {
                       </div>
 
                       {/* Quem (Responsável Spoleto) */}
-                      <div className="form-group">
+                      <div className="form-group" style={{ gridColumn: diag.actionPlan.responsible === 'ÁREAS INTERNAS DA FRANQUEADORA' ? 'span 2' : 'auto' }}>
                         <label className="form-label">Quem (Responsável) *</label>
                         <select 
                           value={diag.actionPlan.responsible}
-                          onChange={(e) => updateActionPlanField(diag.id, 'responsible', e.target.value)}
+                          onChange={(e) => {
+                            const newResp = e.target.value;
+                            updateActionPlanField(diag.id, 'responsible', newResp);
+                            if (newResp !== 'ÁREAS INTERNAS DA FRANQUEADORA') {
+                              updateActionPlanField(diag.id, 'internalArea', '');
+                            }
+                          }}
                           style={{ fontWeight: 600 }}
                         >
                           <option value="GERENTE E EQUIPE">GERENTE E EQUIPE</option>
@@ -1049,8 +1073,170 @@ export default function NewVisitForm() {
                           <option value="EMBAIXADOR">EMBAIXADOR</option>
                           <option value="GERENTE">GERENTE</option>
                           <option value="CONSULTOR">CONSULTOR</option>
-                          <option value="ÁREAS INTERNAS DA FRANQUEADORA">ÁREAS INTERNAS DA FRANQUEADORA</option>
+                          {hasPermission('assign_internal_area') && (
+                            <option value="ÁREAS INTERNAS DA FRANQUEADORA">ÁREAS INTERNAS DA FRANQUEADORA</option>
+                          )}
                         </select>
+
+                        {/* Campo condicional nos mesmos moldes de Selecionar Loja Spoleto */}
+                        {diag.actionPlan.responsible === 'ÁREAS INTERNAS DA FRANQUEADORA' && (() => {
+                          const currentVal = diag.actionPlan.internalArea || '';
+                          const query = (internalAreaSearchQuery[diag.id] !== undefined ? internalAreaSearchQuery[diag.id] : currentVal);
+                          const isOpen = activeInternalAreaDropdownId === diag.id;
+
+                          const filteredAreas = (internalAreas || []).filter(area => {
+                            const q = (query || '').toLowerCase().trim();
+                            if (!q) return true;
+                            return (area.name || '').toLowerCase().includes(q) ||
+                                   (area.description || '').toLowerCase().includes(q);
+                          });
+
+                          return (
+                            <div style={{ marginTop: '0.65rem', position: 'relative', animation: 'fadeIn 0.2s ease' }}>
+                              <label className="form-label" style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span>🏢 Selecione a Área Interna * <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(digite para buscar ou clique)</span></span>
+                                {currentVal && (
+                                  <span style={{ color: 'var(--primary-brown)', fontWeight: 700, fontSize: '0.72rem' }}>
+                                    ✓ Selecionada
+                                  </span>
+                                )}
+                              </label>
+
+                              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <Search size={15} style={{ position: 'absolute', left: '10px', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                                <input
+                                  type="text"
+                                  className="input-field"
+                                  placeholder="Digite para buscar área interna (ex: P&D, Suprimentos, Marketing...)"
+                                  value={query}
+                                  onChange={(e) => {
+                                    const val = e.target.value.toUpperCase();
+                                    setInternalAreaSearchQuery(prev => ({ ...prev, [diag.id]: val }));
+                                    setActiveInternalAreaDropdownId(diag.id);
+                                    if (currentVal && currentVal !== val) {
+                                      updateActionPlanField(diag.id, 'internalArea', '');
+                                    }
+                                  }}
+                                  onFocus={() => setActiveInternalAreaDropdownId(diag.id)}
+                                  required={!currentVal}
+                                  style={{
+                                    width: '100%',
+                                    paddingLeft: '2.2rem',
+                                    paddingRight: currentVal ? '2.2rem' : '0.8rem',
+                                    borderColor: currentVal ? 'var(--primary-brown)' : 'var(--accent-gold)',
+                                    background: currentVal ? 'var(--primary-brown-light)' : '#FFFFFF',
+                                    fontWeight: currentVal ? 700 : 500,
+                                    fontSize: '0.82rem',
+                                    paddingTop: '0.45rem',
+                                    paddingBottom: '0.45rem'
+                                  }}
+                                />
+                                {currentVal && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      updateActionPlanField(diag.id, 'internalArea', '');
+                                      setInternalAreaSearchQuery(prev => ({ ...prev, [diag.id]: '' }));
+                                      setActiveInternalAreaDropdownId(diag.id);
+                                    }}
+                                    style={{ position: 'absolute', right: '8px', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                                    title="Trocar área interna"
+                                  >
+                                    <X size={15} />
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Dropdown List nos mesmos moldes do de Loja */}
+                              {isOpen && (
+                                <>
+                                  <div 
+                                    style={{ position: 'fixed', inset: 0, zIndex: 60 }} 
+                                    onClick={() => setActiveInternalAreaDropdownId(null)} 
+                                  />
+                                  <div style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    width: '100%',
+                                    maxHeight: '220px',
+                                    overflowY: 'auto',
+                                    background: '#FFFFFF',
+                                    border: '1px solid var(--border-strong)',
+                                    borderRadius: 'var(--radius-md)',
+                                    boxShadow: 'var(--shadow-lg)',
+                                    zIndex: 70,
+                                    marginTop: '4px'
+                                  }}>
+                                    {filteredAreas.length === 0 ? (
+                                      <div style={{ padding: '0.85rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                                        <p style={{ margin: '0 0 0.5rem' }}>Nenhuma área prévia encontrada com esse nome.</p>
+                                        {query.trim().length > 1 && (
+                                          <button
+                                            type="button"
+                                            className="btn-secondary"
+                                            style={{ fontSize: '0.74rem', padding: '0.25rem 0.65rem' }}
+                                            onClick={() => {
+                                              const newName = query.trim().toUpperCase();
+                                              addInternalArea(newName);
+                                              updateActionPlanField(diag.id, 'internalArea', newName);
+                                              setInternalAreaSearchQuery(prev => ({ ...prev, [diag.id]: newName }));
+                                              setActiveInternalAreaDropdownId(null);
+                                            }}
+                                          >
+                                            + Usar e cadastrar "{query.trim().toUpperCase()}"
+                                          </button>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      filteredAreas.map(area => {
+                                        const isSelected = area.name === currentVal;
+                                        return (
+                                          <div
+                                            key={area.id}
+                                            onClick={() => {
+                                              updateActionPlanField(diag.id, 'internalArea', area.name);
+                                              setInternalAreaSearchQuery(prev => ({ ...prev, [diag.id]: area.name }));
+                                              setActiveInternalAreaDropdownId(null);
+                                            }}
+                                            style={{
+                                              padding: '0.65rem 0.85rem',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'space-between',
+                                              cursor: 'pointer',
+                                              borderBottom: '1px solid var(--border-subtle)',
+                                              backgroundColor: isSelected ? 'var(--primary-brown-light)' : '#FFFFFF',
+                                              transition: 'background-color 0.15s ease'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                              if (!isSelected) e.currentTarget.style.backgroundColor = '#FAF8F5';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                              if (!isSelected) e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                            }}
+                                          >
+                                            <div>
+                                              <strong style={{ fontSize: '0.84rem', color: isSelected ? 'var(--primary-brown)' : 'var(--text-main)', display: 'block' }}>
+                                                🏢 {area.name}
+                                              </strong>
+                                              {area.description && (
+                                                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                                                  {area.description}
+                                                </span>
+                                              )}
+                                            </div>
+                                            {isSelected && <Check size={16} color="var(--primary-brown)" />}
+                                          </div>
+                                        );
+                                      })
+                                    )}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Prazo */}

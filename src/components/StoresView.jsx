@@ -39,22 +39,27 @@ import DateInput from './DateInput';
 
 export default function StoresView() {
   const { 
-    stores, 
-    consultants, 
+    visibleStores: stores = [], 
+    visibleConsultants: consultants = [], 
     franchisees = [],
     getStoreFranchisees,
-    visits, 
+    visibleVisits: visits = [], 
     addStore, 
     updateStore, 
     deleteStore, 
     setSelectedStaffForProfile, 
     setSelectedVisitForReport,
-    setSelectedStoreForProfile 
+    setSelectedStoreForProfile,
+    simulatedRole,
+    activeUser,
+    hasPermission,
+    workShifts = []
   } = useApp();
   const [activeStoreTab, setActiveStoreTab] = useState('stores'); // 'stores' | 'map' | 'franchisees'
   const [searchTerm, setSearchTerm] = useState('');
   const [stateFilter, setStateFilter] = useState('Todos');
   const [locationTypeFilter, setLocationTypeFilter] = useState('Todos');
+  const [workShiftFilter, setWorkShiftFilter] = useState('Todos');
   const [franchiseeFilter, setFranchiseeFilter] = useState('Todos');
   const [consultantFilter, setConsultantFilter] = useState('Todos');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +73,7 @@ export default function StoresView() {
     city: '',
     state: 'SP',
     locationType: 'Shopping',
+    workShift: '6x1',
     address: '',
     franchisee: '',
     phone: '',
@@ -86,6 +92,7 @@ export default function StoresView() {
     city: '',
     state: 'SP',
     locationType: 'Shopping',
+    workShift: '6x1',
     address: '',
     franchisee: '',
     phone: '',
@@ -247,7 +254,10 @@ export default function StoresView() {
     const matchesLocationType = locationTypeFilter === 'Todos' ||
       (store.locationType || '').toLowerCase().includes(locationTypeFilter.toLowerCase());
 
-    // 4. Filtro por Franqueado Responsável / Sócios
+    // 4. Filtro por Escala de Trabalho (5x2, 6x1, 12x36, Mista)
+    const matchesWorkShift = workShiftFilter === 'Todos' || (store.workShift || '6x1') === workShiftFilter;
+
+    // 5. Filtro por Franqueado Responsável / Sócios
     let matchesFranchisee = franchiseeFilter === 'Todos';
     if (!matchesFranchisee) {
       const storeFrans = getStoreFranchisees ? getStoreFranchisees(store.id) : [];
@@ -258,7 +268,7 @@ export default function StoresView() {
       }
     }
 
-    // 5. Filtro por Consultor de Negócios
+    // 6. Filtro por Consultor de Negócios
     let matchesConsultant = consultantFilter === 'Todos';
     if (!matchesConsultant) {
       const c = consultants.find(co => co.id === consultantFilter);
@@ -266,7 +276,7 @@ export default function StoresView() {
         (c?.assignedStores && Array.isArray(c.assignedStores) && c.assignedStores.includes(store.id));
     }
 
-    return matchesSearch && matchesState && matchesLocationType && matchesFranchisee && matchesConsultant;
+    return matchesSearch && matchesState && matchesLocationType && matchesWorkShift && matchesFranchisee && matchesConsultant;
   });
 
   const handleSaveStore = (e) => {
@@ -279,8 +289,12 @@ export default function StoresView() {
       ...newStore,
       name: newStore.name.toUpperCase().trim(),
       code: newStore.code.toUpperCase().trim(),
+      workShift: newStore.workShift || '6x1',
       franchisee: (newStore.franchisee || '').toUpperCase().trim(),
-      email: (newStore.email || '').toLowerCase().trim()
+      shoppingMallAdmin: (newStore.shoppingMallAdmin || '').toUpperCase().trim(),
+      email: (newStore.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(newStore.phone),
+      cep: formatCEP(newStore.cep)
     });
     setIsModalOpen(false);
     setNewStore({
@@ -290,6 +304,7 @@ export default function StoresView() {
       city: '',
       state: 'SP',
       locationType: 'Shopping',
+      workShift: '6x1',
       address: '',
       franchisee: '',
       phone: '',
@@ -312,6 +327,7 @@ export default function StoresView() {
       city: store.city || '',
       state: store.state || 'SP',
       locationType: store.locationType || 'Shopping',
+      workShift: store.workShift || '6x1',
       address: store.address || '',
       franchisee: store.franchisee || '',
       phone: store.phone ? formatPhoneNumber(store.phone) : '',
@@ -334,8 +350,12 @@ export default function StoresView() {
       ...editStoreForm,
       name: editStoreForm.name.toUpperCase().trim(),
       code: editStoreForm.code.toUpperCase().trim(),
+      workShift: editStoreForm.workShift || '6x1',
       email: (editStoreForm.email || '').toLowerCase().trim(),
-      franchisee: editStoreForm.franchisee ? editStoreForm.franchisee.toUpperCase().trim() : ''
+      shoppingMallAdmin: (editStoreForm.shoppingMallAdmin || '').toUpperCase().trim(),
+      franchisee: editStoreForm.franchisee ? editStoreForm.franchisee.toUpperCase().trim() : '',
+      phone: formatPhoneNumber(editStoreForm.phone),
+      cep: formatCEP(editStoreForm.cep)
     });
     setEditingStore(null);
   };
@@ -456,7 +476,7 @@ export default function StoresView() {
                   {filteredStores.length} de {stores.length} lojas
                 </span>
 
-                {(searchTerm || stateFilter !== 'Todos' || locationTypeFilter !== 'Todos' || franchiseeFilter !== 'Todos' || consultantFilter !== 'Todos') && (
+                {(searchTerm || stateFilter !== 'Todos' || locationTypeFilter !== 'Todos' || workShiftFilter !== 'Todos' || franchiseeFilter !== 'Todos' || consultantFilter !== 'Todos') && (
                   <button
                     type="button"
                     className="btn-secondary"
@@ -464,6 +484,7 @@ export default function StoresView() {
                       setSearchTerm('');
                       setStateFilter('Todos');
                       setLocationTypeFilter('Todos');
+                      setWorkShiftFilter('Todos');
                       setFranchiseeFilter('Todos');
                       setConsultantFilter('Todos');
                     }}
@@ -476,8 +497,8 @@ export default function StoresView() {
               </div>
             </div>
 
-            {/* Linha Inferior: 4 Filtros em Grid (Estado, Tipo de Ponto, Franqueado, Consultor) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)' }}>
+            {/* Linha Inferior: 5 Filtros em Grid (Estado, Tipo de Ponto, Escala, Franqueado, Consultor) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)' }}>
               {/* 1. Filtro de Estado (UF) */}
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
@@ -519,7 +540,31 @@ export default function StoresView() {
                 </select>
               </div>
 
-              {/* 3. Filtro de Franqueado Responsável / Grupo */}
+              {/* 3. Filtro de Escala de Colaboradores */}
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                  <Calendar size={13} color="var(--primary-brown)" /> Escala Equipe
+                </label>
+                <select 
+                  value={workShiftFilter} 
+                  onChange={(e) => setWorkShiftFilter(e.target.value)}
+                  style={{ fontSize: '0.84rem', height: '38px', width: '100%', margin: 0, padding: '0 0.65rem' }}
+                >
+                  <option value="Todos">Todas as Escalas ({stores.length})</option>
+                  {(workShifts.length > 0 ? workShifts : [
+                    { id: '1', name: '6x1' },
+                    { id: '2', name: '5x2' },
+                    { id: '3', name: '12x36' },
+                    { id: '4', name: 'Mista' }
+                  ]).map(ws => (
+                    <option key={ws.id || ws.name} value={ws.name}>
+                      Escala {ws.name} ({stores.filter(s => (s.workShift || '6x1') === ws.name).length})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 4. Filtro de Franqueado Responsável / Grupo */}
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
                   <Handshake size={13} color="var(--primary-brown)" /> Franqueado / Grupo
@@ -545,7 +590,7 @@ export default function StoresView() {
                 </select>
               </div>
 
-              {/* 4. Filtro de Consultor de Negócios */}
+              {/* 5. Filtro de Consultor de Negócios */}
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.35rem' }}>
                   <User size={13} color="var(--primary-brown)" /> Consultor Responsável
@@ -599,13 +644,38 @@ export default function StoresView() {
               }}
             >
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.35rem' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary-brown)', background: 'var(--primary-brown-light)', padding: '0.25rem 0.55rem', borderRadius: '4px' }}>
                     Código RP: {store.code}
                   </span>
-                  <span style={{ fontSize: '0.75rem', background: '#F3F4F6', color: '#374151', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 600 }}>
-                    {store.locationType}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    {(() => {
+                      const currentShiftName = store.workShift || '6x1';
+                      const matchedShift = (workShifts || []).find(ws => ws.name === currentShiftName);
+                      const bg = matchedShift?.badgeBg || (currentShiftName === '5x2' ? '#EFF6FF' : currentShiftName === '12x36' ? '#FEF3C7' : currentShiftName === 'Mista' ? '#F3E8FF' : '#F0FDF4');
+                      const color = matchedShift?.badgeColor || (currentShiftName === '5x2' ? '#1D4ED8' : currentShiftName === '12x36' ? '#92400E' : currentShiftName === 'Mista' ? '#6B21A8' : '#15803D');
+                      const border = matchedShift?.badgeBorder || (currentShiftName === '5x2' ? '#BFDBFE' : currentShiftName === '12x36' ? '#FDE68A' : currentShiftName === 'Mista' ? '#E9D5FF' : '#BBF7D0');
+
+                      return (
+                        <span style={{ 
+                          fontSize: '0.72rem', 
+                          background: bg,
+                          color: color,
+                          border: `1px solid ${border}`,
+                          padding: '0.15rem 0.45rem', 
+                          borderRadius: '4px', 
+                          fontWeight: 700 
+                        }}
+                        title={`Escala de Trabalho dos Colaboradores: ${currentShiftName}`}
+                        >
+                          📅 {currentShiftName}
+                        </span>
+                      );
+                    })()}
+                    <span style={{ fontSize: '0.75rem', background: '#F3F4F6', color: '#374151', padding: '0.2rem 0.5rem', borderRadius: '4px', fontWeight: 600 }}>
+                      {store.locationType}
+                    </span>
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '0.85rem' }}>
@@ -797,14 +867,16 @@ export default function StoresView() {
                     </button>
                   )}
 
-                  <button 
-                    className="btn-primary" 
-                    style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
-                    onClick={() => handleOpenEditStore(store)}
-                    title="Editar dados da unidade Spoleto"
-                  >
-                    <Edit3 size={12} /> Editar
-                  </button>
+                  {hasPermission('store_profile_edit') && (
+                    <button 
+                      className="btn-primary" 
+                      style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                      onClick={() => handleOpenEditStore(store)}
+                      title="Editar dados da unidade Spoleto"
+                    >
+                      <Edit3 size={12} /> Editar
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -979,6 +1051,25 @@ export default function StoresView() {
                     <option value="Rua">Loja de Rua</option>
                     <option value="Aeroporto">Aeroporto</option>
                     <option value="Hipermercado">Hipermercado / Galeria</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Escala de Colaboradores</label>
+                  <select 
+                    value={newStore.workShift || '6x1'} 
+                    onChange={(e) => setNewStore({ ...newStore, workShift: e.target.value })}
+                  >
+                    {(workShifts.length > 0 ? workShifts : [
+                      { id: '1', name: '6x1', label: '6x1 (Padrão Varejo / Shopping)' },
+                      { id: '2', name: '5x2', label: '5x2 (Comercial / Administrativo)' },
+                      { id: '3', name: '12x36', label: '12x36 (Jornada 12h)' },
+                      { id: '4', name: 'Mista', label: 'Mista (Operação Combinada)' }
+                    ]).map(ws => (
+                      <option key={ws.id || ws.name} value={ws.name}>
+                        {ws.label || ws.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1245,6 +1336,25 @@ export default function StoresView() {
                     <option value="Rua">Loja de Rua</option>
                     <option value="Aeroporto">Aeroporto</option>
                     <option value="Hipermercado">Hipermercado / Galeria</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Escala de Colaboradores</label>
+                  <select 
+                    value={editStoreForm.workShift || '6x1'} 
+                    onChange={(e) => setEditStoreForm({ ...editStoreForm, workShift: e.target.value })}
+                  >
+                    {(workShifts.length > 0 ? workShifts : [
+                      { id: '1', name: '6x1', label: '6x1 (Padrão Varejo / Shopping)' },
+                      { id: '2', name: '5x2', label: '5x2 (Comercial / Administrativo)' },
+                      { id: '3', name: '12x36', label: '12x36 (Jornada 12h)' },
+                      { id: '4', name: 'Mista', label: 'Mista (Operação Combinada)' }
+                    ]).map(ws => (
+                      <option key={ws.id || ws.name} value={ws.name}>
+                        {ws.label || ws.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

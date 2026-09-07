@@ -57,9 +57,9 @@ const OFFICIAL_REGIONS = [
 
 export default function ConsultantsView() {
   const { 
-    consultants, 
-    stores, 
-    visits, 
+    visibleConsultants: consultants = [], 
+    visibleStores: stores = [], 
+    visibleVisits: visits = [], 
     addConsultant, 
     updateConsultant, 
     deleteConsultant, 
@@ -70,7 +70,9 @@ export default function ConsultantsView() {
     deleteRegion,
     setSelectedStaffForProfile,
     setManagingSubordinatesLeader,
-    setActiveTab 
+    setActiveTab,
+    simulatedRole,
+    activeUser
   } = useApp();
 
   const [roleFilter, setRoleFilter] = useState('ALL'); // 'ALL' | 'DIRETORIA' | 'GERENTE_NACIONAL' | 'GERENTE_REGIONAL' | 'CONSULTOR'
@@ -278,6 +280,7 @@ export default function ConsultantsView() {
       ...editForm,
       name: editForm.name.toUpperCase().trim(),
       email: (editForm.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(editForm.phone),
       role: editForm.role || 'CONSULTOR',
       reportsTo: editForm.reportsTo || null
     });
@@ -352,6 +355,7 @@ export default function ConsultantsView() {
       ...newCons,
       name: newCons.name.toUpperCase().trim(),
       email: (newCons.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(newCons.phone),
       role: newCons.role || 'CONSULTOR',
       reportsTo: newCons.reportsTo || null
     });

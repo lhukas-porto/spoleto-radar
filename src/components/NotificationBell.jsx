@@ -19,13 +19,15 @@ import { supabase, isSupabaseConfigured } from '../services/supabase';
 
 export default function NotificationBell() {
   const { 
-    visits, 
-    stores, 
-    consultants, 
+    visibleVisits: visits = [], 
+    visibleStores: stores = [], 
+    visibleConsultants: consultants = [], 
     categories, 
     setSelectedVisitForReport, 
     setSelectedStoreForProfile,
-    setIsOverdueModalOpen 
+    setIsOverdueModalOpen,
+    simulatedRole,
+    activeUser
   } = useApp();
 
   const [isOpen, setIsOpen] = useState(false);

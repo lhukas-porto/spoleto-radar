@@ -4,10 +4,15 @@ import {
   INITIAL_CONSULTANTS, 
   INITIAL_CATEGORIES, 
   INITIAL_VISITS,
-  INITIAL_REGIONS
+  INITIAL_REGIONS,
+  INITIAL_INTERNAL_AREAS
 } from '../data/initialData';
+import { INITIAL_DOCUMENTS } from '../data/initialDocuments';
+import { DEFAULT_MODULES, DEFAULT_ROLES } from '../data/initialPermissions';
+import { INITIAL_WORK_SHIFTS } from '../data/initialWorkShifts';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { formatPhoneNumber } from '../utils/dateHelpers';
+import { formatCEP } from '../utils/brazilianLocations';
 
 const AppContext = createContext();
 
@@ -38,10 +43,32 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(st => ({
+            ...st,
+            code: (st.code || '').toUpperCase().trim(),
+            name: (st.name || '').toUpperCase().trim(),
+            franchisee: (st.franchisee || '').toUpperCase().trim(),
+            shoppingMallAdmin: (st.shoppingMallAdmin || '').toUpperCase().trim(),
+            email: (st.email || '').toLowerCase().trim(),
+            phone: formatPhoneNumber(st.phone),
+            cep: formatCEP(st.cep),
+            workShift: st.workShift || '6x1'
+          }));
+        }
       } catch (e) {}
     }
-    return INITIAL_STORES;
+    return INITIAL_STORES.map(st => ({
+      ...st,
+      code: (st.code || '').toUpperCase().trim(),
+      name: (st.name || '').toUpperCase().trim(),
+      franchisee: (st.franchisee || '').toUpperCase().trim(),
+      shoppingMallAdmin: (st.shoppingMallAdmin || '').toUpperCase().trim(),
+      email: (st.email || '').toLowerCase().trim(),
+      phone: formatPhoneNumber(st.phone),
+      cep: formatCEP(st.cep),
+      workShift: st.workShift || '6x1'
+    }));
   });
 
   const [consultants, setConsultants] = useState(() => {
@@ -85,7 +112,15 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.length >= 18) return parsed;
+        if (parsed.length >= 18) {
+          // Atualiza denominação consultiva caso ainda esteja com termo antigo
+          return parsed.map(c => {
+            if (c.id === 'cat-qa' && c.name?.includes('AUDITORIA')) {
+              return { ...c, name: 'Q.A (PADRÃO DE QUALIDADE & EXCELÊNCIA)' };
+            }
+            return c;
+          });
+        }
       } catch (e) {}
     }
     return INITIAL_CATEGORIES;
@@ -95,7 +130,15 @@ export function AppProvider({ children }) {
     const saved = localStorage.getItem('trigo_visits_v2');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.map(v => {
+            if (v.visitType === 'Auditoria de Rotina') return { ...v, visitType: 'Visita agendada' };
+            if (v.visitType === 'Auditoria Crítica') return { ...v, visitType: 'Diagnóstico Prioritário' };
+            if (v.visitType === 'Auditoria de Acompanhamento') return { ...v, visitType: 'Visita de Acompanhamento' };
+            return v;
+          });
+        }
       } catch (e) {}
     }
     return INITIAL_VISITS;
@@ -122,6 +165,414 @@ export function AppProvider({ children }) {
     }
     return [];
   });
+
+  const [documents, setDocuments] = useState(() => {
+    const saved = localStorage.getItem('spoleto_documents_v1');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return INITIAL_DOCUMENTS;
+  });
+
+  const [turnoverRecords, setTurnoverRecords] = useState(() => {
+    const saved = localStorage.getItem('spoleto_turnover_records_v1');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
+    // Dados iniciais de demonstração para unidades modelo
+    return [
+      {
+        id: 'turn-demo-1',
+        storeId: 'store-1',
+        monthYear: '2026-08',
+        activeHeadcount: 12,
+        departures: 1,
+        admissions: 1,
+        turnoverRate: 8.3,
+        notes: 'Equipe estável. Apenas 1 reposição de atendente de balcão.',
+        updatedAt: '2026-08-25'
+      },
+      {
+        id: 'turn-demo-2',
+        storeId: 'store-1',
+        monthYear: '2026-07',
+        activeHeadcount: 12,
+        departures: 0,
+        admissions: 0,
+        turnoverRate: 0,
+        notes: 'Mês perfeito sem nenhuma saída na operação.',
+        updatedAt: '2026-07-28'
+      },
+      {
+        id: 'turn-demo-3',
+        storeId: 'store-5',
+        monthYear: '2026-08',
+        activeHeadcount: 10,
+        departures: 2,
+        admissions: 1,
+        turnoverRate: 20.0,
+        notes: 'Saída de 2 cozinheiros gerando gargalo no tempo de cocção.',
+        updatedAt: '2026-08-20'
+      }
+    ];
+  });
+
+  // Persiste turnover
+  useEffect(() => {
+    try {
+      localStorage.setItem('spoleto_turnover_records_v1', JSON.stringify(turnoverRecords));
+    } catch (e) {}
+  }, [turnoverRecords]);
+
+  const addTurnoverRecord = (record) => {
+    setTurnoverRecords(prev => {
+      // Remove duplicidade do mesmo mês para a mesma loja caso já exista
+      const filtered = prev.filter(r => !(r.storeId === record.storeId && r.monthYear === record.monthYear));
+      return [record, ...filtered];
+    });
+    showToast('✅ Quadro de colaboradores e turnover atualizados com sucesso!');
+  };
+
+  const deleteTurnoverRecord = (recordId) => {
+    setTurnoverRecords(prev => prev.filter(r => r.id !== recordId));
+    showToast('Registro de turnover removido.');
+  };
+
+  // Áreas Internas da Franqueadora Spoleto
+  const [internalAreas, setInternalAreas] = useState(() => {
+    const saved = localStorage.getItem('spoleto_internal_areas_v1');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return INITIAL_INTERNAL_AREAS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('spoleto_internal_areas_v1', JSON.stringify(internalAreas));
+    } catch (e) {}
+  }, [internalAreas]);
+
+  const addInternalArea = (newArea) => {
+    const areaObj = typeof newArea === 'string' 
+      ? { id: 'area-' + Date.now(), name: newArea.toUpperCase().trim(), description: 'Área da Franqueadora' }
+      : { id: 'area-' + Date.now(), ...newArea, name: (newArea.name || '').toUpperCase().trim() };
+
+    setInternalAreas(prev => [...prev, areaObj]);
+    showToast(`Área interna "${areaObj.name}" adicionada.`);
+  };
+
+  const updateInternalArea = (areaId, updatedData) => {
+    setInternalAreas(prev => prev.map(a => {
+      if (a.id !== areaId) return a;
+      return {
+        ...a,
+        ...updatedData,
+        name: (updatedData.name || a.name || '').toUpperCase().trim()
+      };
+    }));
+    showToast('Área interna atualizada com sucesso!');
+  };
+
+  const deleteInternalArea = (areaId) => {
+    setInternalAreas(prev => prev.filter(a => a.id !== areaId));
+    showToast('Área interna removida.');
+  };
+
+  // Escalas de Trabalho dos Colaboradores da Rede Spoleto
+  const [workShifts, setWorkShifts] = useState(() => {
+    const saved = localStorage.getItem('spoleto_work_shifts_v1');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return INITIAL_WORK_SHIFTS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('spoleto_work_shifts_v1', JSON.stringify(workShifts));
+    } catch (e) {}
+  }, [workShifts]);
+
+  const addWorkShift = (newShift) => {
+    const shiftObj = {
+      id: 'shift-' + Date.now(),
+      name: (newShift.name || '').trim(),
+      label: (newShift.label || newShift.name || '').trim(),
+      description: (newShift.description || 'Escala operacional de colaboradores').trim(),
+      badgeBg: newShift.badgeBg || '#F3F4F6',
+      badgeColor: newShift.badgeColor || '#374151',
+      badgeBorder: newShift.badgeBorder || '#E5E7EB'
+    };
+
+    setWorkShifts(prev => [...prev, shiftObj]);
+    showToast(`Escala "${shiftObj.name}" adicionada com sucesso!`);
+  };
+
+  const updateWorkShift = (shiftId, updatedData) => {
+    setWorkShifts(prev => prev.map(s => {
+      if (s.id !== shiftId) return s;
+      return {
+        ...s,
+        ...updatedData,
+        name: (updatedData.name || s.name || '').trim(),
+        label: (updatedData.label || updatedData.name || s.label || s.name || '').trim(),
+        description: (updatedData.description || s.description || '').trim()
+      };
+    }));
+    showToast('Escala de colaboradores atualizada com sucesso!');
+  };
+
+  const deleteWorkShift = (shiftId) => {
+    const shift = workShifts.find(s => s.id === shiftId);
+    if (!shift) return;
+
+    // Protege exclusão se houver lojas atreladas
+    const countUsing = stores.filter(st => st.workShift === shift.name).length;
+    if (countUsing > 0) {
+      showToast(`Não é possível excluir a escala "${shift.name}" pois ${countUsing} loja(s) estão utilizando ela.`, 'error');
+      return false;
+    }
+
+    setWorkShifts(prev => prev.filter(s => s.id !== shiftId));
+    showToast(`Escala "${shift.name}" removida com sucesso.`);
+    return true;
+  };
+
+  // Persiste documentos
+  useEffect(() => {
+    try {
+      localStorage.setItem('spoleto_documents_v1', JSON.stringify(documents));
+    } catch (e) {}
+  }, [documents]);
+
+  const [isRepositoryOpen, setIsRepositoryOpen] = useState(false);
+
+  const addDocument = (newDoc) => {
+    setDocuments(prev => [newDoc, ...prev]);
+  };
+
+  const deleteDocument = (docId) => {
+    setDocuments(prev => prev.filter(d => d.id !== docId));
+  };
+
+  // ==========================================
+  // PERMISSÕES & CONTROLE DE ACESSO (RBAC)
+  // ==========================================
+  const [permissionsModules, setPermissionsModules] = useState(() => {
+    const saved = localStorage.getItem('spoleto_permissions_modules_v1');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Garante que módulos novos (como settings_work_shifts) sejam incorporados automaticamente
+          const existingIds = new Set(parsed.map(m => m.id));
+          const missingModules = DEFAULT_MODULES.filter(m => !existingIds.has(m.id));
+          if (missingModules.length > 0) {
+            return [...parsed, ...missingModules];
+          }
+          return parsed;
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_MODULES;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('spoleto_permissions_modules_v1', JSON.stringify(permissionsModules));
+    } catch (e) {}
+  }, [permissionsModules]);
+
+  const updateRolePermission = (moduleId, roleId, enabled) => {
+    setPermissionsModules(prev => prev.map(mod => {
+      if (mod.id !== moduleId) return mod;
+      return {
+        ...mod,
+        permissions: {
+          ...mod.permissions,
+          [roleId]: {
+            ...(mod.permissions?.[roleId] || {}),
+            enabled: !!enabled
+          }
+        }
+      };
+    }));
+  };
+
+  const resetPermissionsToDefault = () => {
+    setPermissionsModules(DEFAULT_MODULES);
+    try {
+      localStorage.removeItem('spoleto_permissions_modules_v1');
+    } catch (e) {}
+    showToast('Permissões restauradas para o padrão oficial Spoleto.');
+  };
+
+  // Estado que indica se o modo Administrador Master foi desbloqueado (ex: 3 cliques no copyright do rodapé)
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState(() => {
+    return localStorage.getItem('spoleto_admin_unlocked_v1') === 'true';
+  });
+
+  const toggleAdminUnlock = (forceState) => {
+    setIsAdminUnlocked(prev => {
+      const next = typeof forceState === 'boolean' ? forceState : !prev;
+      try {
+        localStorage.setItem('spoleto_admin_unlocked_v1', String(next));
+      } catch (e) {}
+      if (next) {
+        showToast('🔓 Modo Administrador Master ATIVADO! Aba de permissões liberada em Configurações.');
+      } else {
+        showToast('🔒 Modo Administrador ocultado com sucesso.');
+      }
+      return next;
+    });
+  };
+
+  // Função de verificação dinâmica de permissão por módulo para o perfil ativo ou cargo específico
+  const hasPermission = (moduleId, checkRole = null) => {
+    const targetRole = checkRole || simulatedRole;
+    if (targetRole === 'ADMIN') return true;
+
+    const moduleDef = (permissionsModules || []).find(m => m.id === moduleId);
+    if (!moduleDef || !moduleDef.permissions) return true;
+
+    const perm = moduleDef.permissions[targetRole];
+    if (!perm) return true;
+    return !!perm.enabled;
+  };
+
+  // ==========================================
+  // HIERARQUIA & SIMULADOR DE PERFIS ("VER COMO...")
+  // Roles: 'ADMIN' | 'DIRETORIA' | 'GERENTE_NACIONAL' | 'GERENTE_REGIONAL' | 'CONSULTOR'
+  // ==========================================
+  const [simulatedRole, setSimulatedRole] = useState(() => {
+    const saved = localStorage.getItem('spoleto_simulated_role_v1');
+    if (saved && saved !== 'ADMIN') return saved;
+    return 'DIRETORIA';
+  });
+
+  const [simulatedUserId, setSimulatedUserId] = useState(() => {
+    return localStorage.getItem('spoleto_simulated_user_id_v1') || '';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('spoleto_simulated_role_v1', simulatedRole);
+      localStorage.setItem('spoleto_simulated_user_id_v1', simulatedUserId);
+    } catch (e) {}
+  }, [simulatedRole, simulatedUserId]);
+
+  const changeSimulatedProfile = (newRole, newUserId = '') => {
+    setSimulatedRole(newRole);
+    setSimulatedUserId(newUserId);
+    
+    // Se o usuário atual não tiver permissão para configurações e estiver nela, redireciona para o dashboard
+    if (['CONSULTOR', 'GERENTE_REGIONAL'].includes(newRole) && (activeTab === 'taxonomy' || activeTab === 'settings')) {
+      setActiveTab('dashboard');
+    }
+
+    const roleNames = {
+      ADMIN: 'Administrador (Acesso Total)',
+      DIRETORIA: 'Diretoria (Nacional)',
+      GERENTE_NACIONAL: 'Gerência Nacional',
+      GERENTE_REGIONAL: 'Gerente Regional',
+      CONSULTOR: 'Consultor(a) de Negócios'
+    };
+    showToast(`👁️ Modo simulador: ${roleNames[newRole] || newRole}`);
+  };
+
+  // Usuário atualmente ativo no simulador
+  const activeUser = React.useMemo(() => {
+    if (simulatedRole === 'ADMIN') {
+      return { id: 'admin-1', name: 'ADMINISTRADOR DO SISTEMA', role: 'ADMIN', region: 'Nacional / Brasil' };
+    }
+    if (simulatedRole === 'DIRETORIA') {
+      const director = consultants.find(c => c.role === 'DIRETORIA') || consultants.find(c => c.id === 'staff-1788284716654');
+      return director || { id: 'staff-dir', name: 'RAFAEL PARDO', role: 'DIRETORIA', region: 'Nacional / Brasil' };
+    }
+    if (simulatedRole === 'GERENTE_NACIONAL') {
+      const gn = consultants.find(c => c.role === 'GERENTE_NACIONAL') || consultants.find(c => c.id === 'staff-1788278683147');
+      return gn || { id: 'staff-gn', name: 'LILIANE TAHAN CURY TEIXEIRA DE RESENDE', role: 'GERENTE_NACIONAL', region: 'Nacional / Brasil' };
+    }
+    if (simulatedRole === 'GERENTE_REGIONAL') {
+      const grs = consultants.filter(c => c.role === 'GERENTE_REGIONAL');
+      const found = grs.find(c => c.id === simulatedUserId) || grs[0];
+      return found || { id: 'staff-gr-default', name: 'GERENTE REGIONAL', role: 'GERENTE_REGIONAL', region: 'SP Capital, Campinas & Região' };
+    }
+    if (simulatedRole === 'CONSULTOR') {
+      const consList = consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR');
+      const found = consList.find(c => c.id === simulatedUserId) || consList[0];
+      return found || { id: 'cons-default', name: 'CONSULTOR SPOLETO', role: 'CONSULTOR', region: 'Brasil' };
+    }
+    return { id: 'admin-1', name: 'ADMINISTRADOR', role: 'ADMIN' };
+  }, [simulatedRole, simulatedUserId, consultants]);
+
+  // Permissão para abrir a aba Configurações (Baseada na Matriz de Permissões RBAC ou se Administrador Master estiver desbloqueado)
+  const canAccessSettings = React.useMemo(() => {
+    if (isAdminUnlocked) return true;
+    if (simulatedRole === 'ADMIN') return true;
+    return hasPermission('settings_taxonomy') || hasPermission('settings_internal_areas');
+  }, [simulatedRole, isAdminUnlocked, permissionsModules]);
+
+  // Consultores Visíveis para o Perfil Ativo
+  const visibleConsultants = React.useMemo(() => {
+    if (['ADMIN', 'DIRETORIA', 'GERENTE_NACIONAL'].includes(simulatedRole)) {
+      return consultants;
+    }
+    if (simulatedRole === 'GERENTE_REGIONAL') {
+      const grId = activeUser?.id;
+      return consultants.filter(c => {
+        if (c.id === grId) return true;
+        return c.reportsTo === grId;
+      });
+    }
+    if (simulatedRole === 'CONSULTOR') {
+      return consultants.filter(c => c.id === activeUser?.id);
+    }
+    return consultants;
+  }, [consultants, simulatedRole, activeUser]);
+
+  // Lojas Visíveis para o Perfil Ativo
+  const visibleStores = React.useMemo(() => {
+    if (['ADMIN', 'DIRETORIA', 'GERENTE_NACIONAL'].includes(simulatedRole)) {
+      return stores;
+    }
+    if (simulatedRole === 'CONSULTOR') {
+      const consId = activeUser?.id;
+      const assigned = activeUser?.assignedStores || [];
+      return stores.filter(s => s.consultantId === consId || assigned.includes(s.id));
+    }
+    if (simulatedRole === 'GERENTE_REGIONAL') {
+      const myConsultantIds = visibleConsultants.map(c => c.id);
+      return stores.filter(s => {
+        if (myConsultantIds.includes(s.consultantId)) return true;
+        return visibleConsultants.some(c => (c.assignedStores || []).includes(s.id));
+      });
+    }
+    return stores;
+  }, [stores, simulatedRole, activeUser, visibleConsultants]);
+
+  // Visitas e Relatórios Visíveis para o Perfil Ativo
+  const visibleVisits = React.useMemo(() => {
+    if (['ADMIN', 'DIRETORIA', 'GERENTE_NACIONAL'].includes(simulatedRole)) {
+      return visits;
+    }
+    const storeIds = new Set(visibleStores.map(s => s.id));
+    const consultantIds = new Set(visibleConsultants.map(c => c.id));
+    return visits.filter(v => storeIds.has(v.storeId) || consultantIds.has(v.consultantId));
+  }, [visits, simulatedRole, visibleStores, visibleConsultants]);
 
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
   const [selectedStoreForProfile, setSelectedStoreForProfile] = useState(null);
@@ -770,10 +1221,10 @@ export function AppProvider({ children }) {
       name: storeData.name.toUpperCase().trim(),
       city: storeData.city || '',
       state: storeData.state || 'SP',
-      cep: storeData.cep || '',
+      cep: formatCEP(storeData.cep),
       locationType: storeData.locationType || 'Shopping',
       franchisee: (storeData.franchisee || '').toUpperCase().trim(),
-      phone: storeData.phone || '',
+      phone: formatPhoneNumber(storeData.phone),
       email: (storeData.email || '').toLowerCase().trim(),
       address: storeData.address || `${storeData.name} - ${storeData.city}/${storeData.state}`,
       consultantId: storeData.consultantId || null,
@@ -839,11 +1290,11 @@ export function AppProvider({ children }) {
           name: updatedData.name ? updatedData.name.toUpperCase().trim() : s.name,
           city: updatedData.city !== undefined ? updatedData.city.trim() : s.city,
           state: updatedData.state || s.state,
-          cep: updatedData.cep !== undefined ? updatedData.cep : s.cep,
+          cep: updatedData.cep !== undefined ? formatCEP(updatedData.cep) : s.cep,
           locationType: updatedData.locationType || s.locationType,
           franchisee: updatedData.franchisee !== undefined ? updatedData.franchisee.toUpperCase().trim() : s.franchisee,
           phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : s.phone,
-          email: updatedData.email !== undefined ? updatedData.email.trim() : s.email,
+          email: updatedData.email !== undefined ? updatedData.email.toLowerCase().trim() : s.email,
           address: updatedData.address !== undefined ? updatedData.address.trim() : s.address,
           consultantId: newConsultantId,
           photoUrl: updatedData.photoUrl !== undefined ? updatedData.photoUrl : s.photoUrl,
@@ -1376,6 +1827,40 @@ export function AppProvider({ children }) {
       addSubproblem,
       updateSubproblem,
       deleteSubproblem,
+      documents,
+      isRepositoryOpen,
+      setIsRepositoryOpen,
+      addDocument,
+      deleteDocument,
+      turnoverRecords,
+      addTurnoverRecord,
+      deleteTurnoverRecord,
+      internalAreas,
+      addInternalArea,
+      updateInternalArea,
+      deleteInternalArea,
+      // Escalas de Colaboradores
+      workShifts,
+      addWorkShift,
+      updateWorkShift,
+      deleteWorkShift,
+      // Permissões & RBAC (Administrador Master)
+      permissionsModules,
+      updateRolePermission,
+      resetPermissionsToDefault,
+      hasPermission,
+      rolesList: DEFAULT_ROLES,
+      isAdminUnlocked,
+      toggleAdminUnlock,
+      // Hierarquia & Simulador de Perfis
+      simulatedRole,
+      simulatedUserId,
+      changeSimulatedProfile,
+      activeUser,
+      canAccessSettings,
+      visibleStores,
+      visibleConsultants,
+      visibleVisits,
       resetToDemoData,
       isCloudSyncing
     }}>

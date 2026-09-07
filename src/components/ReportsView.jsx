@@ -22,13 +22,14 @@ import {
 
 export default function ReportsView() {
   const { 
-    visits, 
-    stores, 
-    consultants, 
+    visibleVisits: visits = [], 
+    visibleStores: stores = [], 
+    visibleConsultants: consultants = [], 
     categories, 
     setSelectedVisitForReport,
     startEditVisit,
     deleteVisit,
+    hasPermission,
     setSelectedStaffForProfile 
   } = useApp();
 
@@ -361,29 +362,33 @@ export default function ReportsView() {
                               <Eye size={12} /> Ver
                             </button>
 
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              onClick={() => startEditVisit(visit)}
-                              style={{ fontSize: '0.74rem', padding: '0.3rem 0.6rem' }}
-                              title="Editar este relatório"
-                            >
-                              <Edit3 size={12} /> Editar
-                            </button>
+                            {hasPermission('edit_visit') && (
+                              <>
+                                <button
+                                  type="button"
+                                  className="btn-secondary"
+                                  onClick={() => startEditVisit(visit)}
+                                  style={{ fontSize: '0.74rem', padding: '0.3rem 0.6rem' }}
+                                  title="Editar este relatório"
+                                >
+                                  <Edit3 size={12} /> Editar
+                                </button>
 
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              onClick={() => {
-                                if (confirm(`Tem certeza que deseja excluir permanentemente o relatório da unidade "${store?.name}" realizado em ${new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}?`)) {
-                                  deleteVisit(visit.id);
-                                }
-                              }}
-                              style={{ fontSize: '0.74rem', padding: '0.3rem 0.5rem', color: '#991B1B', borderColor: '#FECACA' }}
-                              title="Excluir relatório"
-                            >
-                              <Trash2 size={12} />
-                            </button>
+                                <button
+                                  type="button"
+                                  className="btn-secondary"
+                                  onClick={() => {
+                                    if (confirm(`Tem certeza que deseja excluir permanentemente o relatório da unidade "${store?.name}" realizado em ${new Date(visit.date + 'T12:00:00').toLocaleDateString('pt-BR')}?`)) {
+                                      deleteVisit(visit.id);
+                                    }
+                                  }}
+                                  style={{ fontSize: '0.74rem', padding: '0.3rem 0.5rem', color: '#991B1B', borderColor: '#FECACA' }}
+                                  title="Excluir relatório"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>

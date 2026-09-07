@@ -6,12 +6,13 @@ import NewVisitForm from './components/NewVisitForm';
 import ReportsView from './components/ReportsView';
 import StoresView from './components/StoresView';
 import ConsultantsView from './components/ConsultantsView';
-import TaxonomyView from './components/TaxonomyView';
+import SettingsView from './components/SettingsView';
 import VisitReportModal from './components/VisitReportModal';
 import StaffProfileModal from './components/StaffProfileModal';
 import OverdueActionsModal from './components/OverdueActionsModal';
 import SubordinatesModal from './components/SubordinatesModal';
 import StoreProfileModal from './components/StoreProfileModal';
+import RepositoryModal from './components/RepositoryModal';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -27,7 +28,9 @@ export default function App() {
     setSelectedVisitForReport, 
     selectedStoreForProfile, 
     setSelectedStoreForProfile, 
-    toastMessage 
+    toastMessage,
+    isRepositoryOpen,
+    setIsRepositoryOpen
   } = context;
 
   // Check URL parameters on mount to open shared web report automatically
@@ -67,7 +70,7 @@ export default function App() {
         {activeTab === 'reports' && <ReportsView />}
         {activeTab === 'stores' && <StoresView />}
         {activeTab === 'consultants' && <ConsultantsView />}
-        {activeTab === 'taxonomy' && <TaxonomyView />}
+        {(activeTab === 'taxonomy' || activeTab === 'settings') && <SettingsView defaultSubTab={activeTab === 'taxonomy' ? 'taxonomy' : 'taxonomy'} />}
       </main>
       
       <Footer />
@@ -78,6 +81,7 @@ export default function App() {
       <StoreProfileModal store={selectedStoreForProfile} onClose={() => setSelectedStoreForProfile(null)} />
       <OverdueActionsModal />
       <SubordinatesModal />
+      <RepositoryModal isOpen={isRepositoryOpen} onClose={() => setIsRepositoryOpen(false)} />
 
       {/* Global Toast Alert */}
       {toastMessage && (

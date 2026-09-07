@@ -6474,7 +6474,7 @@ export const INITIAL_CATEGORIES = [
         "suggestedActions": [
           "Realizar o inventário todo final do mês para verificar sobras de molho e massa no estoque.",
           "Anotar todos os empréstimos e solicitar a devolução para não gerar erro de compra x consumo.",
-          "Implantar rotina diária de pesagem de descarte limpo e auditoria de colheres dosadoras."
+          "Implantar rotina diária de pesagem de descarte limpo e aferição técnica de colheres dosadoras."
         ]
       },
       {
@@ -6531,7 +6531,7 @@ export const INITIAL_CATEGORIES = [
         "title": "Desvio de CMV Real acima de 1,5% em relação ao CMV Ideal",
         "defaultSeverity": "Crítica",
         "suggestedActions": [
-          "Realizar auditoria completa de inventário e contagem cega de proteínas, queijos e massas.",
+          "Realizar conferência técnica completa de inventário e contagem cega de proteínas, queijos e massas.",
           "Fiscalizar a pesagem dos pré-preparos e calibragem de todas as conchas e dosadores de molho.",
           "Acompanhar a planilha de CMV diário junto ao Consultor de Negócios para estancar desvios."
         ]
@@ -7111,7 +7111,7 @@ export const INITIAL_CATEGORIES = [
   },
   {
     "id": "cat-qa",
-    "name": "Q.A (AUDITORIA DE QUALIDADE)",
+    "name": "Q.A (PADRÃO DE QUALIDADE & EXCELÊNCIA)",
     "icon": "ShieldCheck",
     "color": "#0284C7",
     "description": "Conformidade com o checklist oficial Checklist Oficial, boas práticas sanitárias, PVPS e laudos técnicos",
@@ -7123,7 +7123,7 @@ export const INITIAL_CATEGORIES = [
         "suggestedActions": [
           "Solucionar os itens pontuados no check-list, acessar o Checklist Oficial e anexar as evidências corrigidas.",
           "Montar plano de ação emergencial com a gerência para regularizar os apontamentos em até 7 dias.",
-          "Realizar auto-auditoria preventiva semanal utilizando o mesmo checklist do consultor de negócios."
+          "Realizar auto-avaliação preventiva semanal utilizando o mesmo checklist do consultor de negócios."
         ]
       },
       {
@@ -7170,14 +7170,28 @@ export const INITIAL_CATEGORIES = [
   }
 ];
 
-
+// Lista Oficial de Áreas Internas da Franqueadora Spoleto
+export const INITIAL_INTERNAL_AREAS = [
+  { id: "area-1", name: "P&D / DESENVOLVIMENTO DE PRODUTOS", description: "Fichas técnicas, receitas, insumos e testes culinários" },
+  { id: "area-2", name: "SUPRIMENTOS & LOGÍSTICA", description: "Homologação de fornecedores, distribuição e abastecimento" },
+  { id: "area-3", name: "MARKETING & TRADE", description: "Campanhas nacionais, material de PDV, cardápio e promoções" },
+  { id: "area-4", name: "OPERAÇÕES & PADRÕES", description: "Processos de loja, tempo de atendimento e produtividade" },
+  { id: "area-5", name: "QUALIDADE & SEGURANÇA ALIMENTAR", description: "Auditoria higiênico-sanitária, boas práticas e normas" },
+  { id: "area-6", name: "TREINAMENTO & UNIVERSIDADE SPOLETO", description: "Capacitação de equipes, embaixadores e liderança" },
+  { id: "area-7", name: "TI & SISTEMAS (PDV / INTEGRAÇÕES)", description: "Sistemas de frente de caixa, totem, conectividade e balança" },
+  { id: "area-8", name: "ENGENHARIA & ARQUITETURA", description: "Layout de loja, manutenção predial, projetos e reformas" },
+  { id: "area-9", name: "JURÍDICO & COMPLIANCE", description: "Contratos de franquia, shopping center e regulatório" },
+  { id: "area-10", name: "FINANCEIRO & CONTROLADORIA", description: "Royalties, FPP, conciliação e faturamento da rede" },
+  { id: "area-11", name: "GENTE & GESTÃO / RH", description: "Relações trabalhistas, recrutamento e clima organizacional" },
+  { id: "area-12", name: "EXPANSÃO & NOVOS NEGÓCIOS", description: "Novos pontos comerciais, repasses e inaugurações" }
+];
 export const INITIAL_VISITS = [
   {
     "id": "vis-101",
     "storeId": "store-1",
     "consultantId": "cons-1",
     "date": "2026-08-15",
-    "visitType": "Auditoria de Rotina",
+    "visitType": "Visita agendada",
     "status": "Finalizada",
     "generalNotes": "Loja operando em bom ritmo de almoço. Apresentou gargalo pontual no balcão e tempo de espera no iFood.",
     "diagnostics": [
@@ -7214,7 +7228,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-5",
     "consultantId": "cons-1",
     "date": "2026-08-18",
-    "visitType": "Auditoria Crítica",
+    "visitType": "Diagnóstico Prioritário",
     "status": "Finalizada",
     "generalNotes": "Tópicos recorrentes no delivery iFood e controle de validade dos ingredientes.",
     "diagnostics": [
@@ -7264,7 +7278,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-2",
     "consultantId": "cons-1",
     "date": "2026-08-20",
-    "visitType": "Auditoria de Rotina",
+    "visitType": "Visita agendada",
     "status": "Finalizada",
     "generalNotes": "Excelente padrão visual e de higienização. Pequeno ajuste no ponto da massa.",
     "diagnostics": [
@@ -7288,7 +7302,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-8",
     "consultantId": "cons-1",
     "date": "2026-08-22",
-    "visitType": "Auditoria de Rotina",
+    "visitType": "Visita agendada",
     "status": "Finalizada",
     "generalNotes": "Loja modelo em Minas Gerais. Equipe afinada e metas de CMV batidas.",
     "diagnostics": []
@@ -7298,7 +7312,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-6",
     "consultantId": "cons-1",
     "date": "2026-08-24",
-    "visitType": "Auditoria de Rotina",
+    "visitType": "Visita agendada",
     "status": "Finalizada",
     "generalNotes": "Operação fluindo bem, porém iFood sofreu com tempo de despacho no pico.",
     "diagnostics": [
@@ -7322,7 +7336,7 @@ export const INITIAL_VISITS = [
     "storeId": "store-3",
     "consultantId": "cons-1",
     "date": "2026-08-26",
-    "visitType": "Auditoria de Acompanhamento",
+    "visitType": "Visita de Acompanhamento",
     "status": "Finalizada",
     "generalNotes": "Acompanhamento do plano de ação anterior. Balcão melhorou, cooktop em manutenção.",
     "diagnostics": [
