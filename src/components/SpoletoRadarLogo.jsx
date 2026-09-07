@@ -26,7 +26,7 @@ export default function SpoletoRadarLogo({
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: `${10 * scale}px`, cursor: 'pointer', userSelect: 'none' }}>
       <svg 
         height={baseHeight} 
-        viewBox="0 0 360 48" 
+        viewBox="0 0 326 48" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
         style={{ display: 'block', overflow: 'visible' }}
@@ -39,26 +39,27 @@ export default function SpoletoRadarLogo({
           fontFamily="'Montserrat', sans-serif" 
           fontWeight="800" 
           fontSize="36" 
-          letterSpacing="7"
+          letterSpacing="6.5"
         >
           SPOLET
         </text>
 
-        {/* Ícone Especial "O" do Spoleto (Círculo com Gema Dourada e Haste Horizontal) */}
-        <g transform="translate(225, 23)">
+        {/* Ícone Especial "O" do Spoleto (Círculo com Gema Dourada e Haste Horizontal / Frigideira)
+            Ajustado para encadear perfeitamente após o 'T' com o mesmo espaçamento das demais letras */}
+        <g transform="translate(198, 23)">
           {/* Gema Amarela Dourada */}
           <circle cx="0" cy="0" r="14.5" fill="#FAB819" />
 
           {/* Anel Circular Grosso */}
           <circle cx="0" cy="0" r="14.5" stroke={handleColor} strokeWidth="5.5" fill="none" />
 
-          {/* Haste Horizontal Preta/Branca que sai do interior para fora */}
-          <rect x="0" y="-2.75" width="24" height="5.5" rx="1" fill={handleColor} />
+          {/* Haste Horizontal Preta/Branca que sai do interior para fora (cabo da frigideira) */}
+          <rect x="0" y="-2.75" width="23" height="5.5" rx="1" fill={handleColor} />
         </g>
 
         {/* Tagline / Badge "RADAR" */}
         {showSubtitle && (
-          <g transform="translate(270, 7)">
+          <g transform="translate(236, 7)">
             {/* Fundo do Badge Radar */}
             <rect 
               x="0" 

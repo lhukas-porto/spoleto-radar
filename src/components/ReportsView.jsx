@@ -135,7 +135,7 @@ export default function ReportsView() {
         <div>
           <h1 className="section-title">Central de Relatórios & Inteligência Operacional</h1>
           <p className="section-subtitle">
-            Consulte históricos de visitas, audite os planos de ação e acompanhe os indicadores consolidados da rede Spoleto.
+            Consulte históricos de visitas, visualize os planos de ação e acompanhe os indicadores consolidados da rede Spoleto.
           </p>
         </div>
       </div>

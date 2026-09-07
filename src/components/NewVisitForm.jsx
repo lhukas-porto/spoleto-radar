@@ -382,7 +382,7 @@ export default function NewVisitForm() {
     e.preventDefault();
 
     if (!selectedStoreId) {
-      alert('Por favor, selecione a loja Spoleto auditada.');
+      alert('Por favor, selecione a loja Spoleto.');
       return;
     }
 

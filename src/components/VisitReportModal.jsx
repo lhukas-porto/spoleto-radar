@@ -802,7 +802,7 @@ export default function VisitReportModal() {
           {/* Store & Visit Metadata Header */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', background: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #CBD5E1', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
             <div>
-              <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Unidade Spoleto Auditada</div>
+              <div style={{ color: '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Unidade Spoleto</div>
               <strong style={{ fontSize: '1.05rem', color: '#0F172A' }}>{store?.name}</strong>
               <div style={{ color: '#475569', fontSize: '0.8rem', marginTop: '0.15rem' }}>
                 Código RP: <strong>{store?.code}</strong> &bull; {store?.city}/{store?.state} &bull; {store?.locationType}
