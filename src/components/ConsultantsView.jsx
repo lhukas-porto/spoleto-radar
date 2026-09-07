@@ -72,8 +72,60 @@ export default function ConsultantsView() {
     setManagingSubordinatesLeader,
     setActiveTab,
     simulatedRole,
-    activeUser
+    activeUser,
+    isAdminUnlocked,
+    hasPermission
   } = useApp();
+
+  // Regras de Hierarquia Spoleto para Cadastro de Membros da Equipe:
+  // - Administrador Master / Modo Admin: Pode tudo
+  // - Diretoria: Pode cadastrar tudo (Diretoria, Gerente Nacional, Gerente Regional, Consultor)
+  // - Gerência Nacional: Pode cadastrar Gerente Regional e Consultor
+  // - Gerência Regional: Pode cadastrar Consultor
+  // - Consultores: Não podem cadastrar membros da equipe (apenas franqueados)
+  const currentEffectiveRole = isAdminUnlocked ? 'ADMIN' : (simulatedRole || 'CONSULTOR');
+
+  const getAllowedRolesToCreate = (role) => {
+    switch (role) {
+      case 'ADMIN':
+      case 'DIRETORIA':
+        return [
+          { value: 'CONSULTOR', label: '👨‍💼 Consultor de Negócios' },
+          { value: 'GERENTE_REGIONAL', label: '🏢 Gerente Regional' },
+          { value: 'GERENTE_NACIONAL', label: '🌐 Gerente Nacional' },
+          { value: 'DIRETORIA', label: '🏛️ Diretoria Executiva' }
+        ];
+      case 'GERENTE_NACIONAL':
+        return [
+          { value: 'CONSULTOR', label: '👨‍💼 Consultor de Negócios' },
+          { value: 'GERENTE_REGIONAL', label: '🏢 Gerente Regional' }
+        ];
+      case 'GERENTE_REGIONAL':
+        return [
+          { value: 'CONSULTOR', label: '👨‍💼 Consultor de Negócios' }
+        ];
+      case 'CONSULTOR':
+      default:
+        return [];
+    }
+  };
+
+  const allowedRolesForCreation = getAllowedRolesToCreate(currentEffectiveRole);
+  const canAddMember = allowedRolesForCreation.length > 0 && (isAdminUnlocked || hasPermission('add_team_member'));
+
+  // Verifica se o usuário atual tem permissão para gerenciar/editar o membro específico
+  const canManageTargetConsultant = (targetMember) => {
+    if (isAdminUnlocked || currentEffectiveRole === 'ADMIN') return true;
+    if (currentEffectiveRole === 'DIRETORIA') return true;
+    const targetRole = targetMember?.role || 'CONSULTOR';
+    if (currentEffectiveRole === 'GERENTE_NACIONAL') {
+      return targetRole === 'GERENTE_REGIONAL' || targetRole === 'CONSULTOR';
+    }
+    if (currentEffectiveRole === 'GERENTE_REGIONAL') {
+      return targetRole === 'CONSULTOR';
+    }
+    return false;
+  };
 
   const [roleFilter, setRoleFilter] = useState('ALL'); // 'ALL' | 'DIRETORIA' | 'GERENTE_NACIONAL' | 'GERENTE_REGIONAL' | 'CONSULTOR'
   const [searchTerm, setSearchTerm] = useState('');
@@ -433,9 +485,18 @@ export default function ConsultantsView() {
           <button className="btn-secondary" onClick={() => setIsRegionsModalOpen(true)}>
             <MapPin size={18} /> Gerenciar Regiões ({availableRegions.length})
           </button>
-          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
-            <Plus size={18} /> Cadastrar Membro
-          </button>
+          {canAddMember && (
+            <button 
+              className="btn-primary" 
+              onClick={() => {
+                const defaultRole = allowedRolesForCreation[0]?.value || 'CONSULTOR';
+                setNewCons(prev => ({ ...prev, role: defaultRole }));
+                setIsAddModalOpen(true);
+              }}
+            >
+              <Plus size={18} /> Cadastrar Membro
+            </button>
+          )}
         </div>
       </div>
 
@@ -719,47 +780,48 @@ export default function ConsultantsView() {
                   </button>
                 )}
 
-                <button 
-                  className="btn-primary" 
-                  style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}
-                  onClick={() => handleOpenEditModal(consultant)}
-                  title="Editar Cadastro e Foto"
-                >
-                  <Edit3 size={13} /> Editar
-                </button>
+                {canManageTargetConsultant(consultant) && (
+                  <>
+                    <button 
+                      className="btn-primary" 
+                      style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}
+                      onClick={() => handleOpenEditModal(consultant)}
+                      title="Editar Cadastro e Foto"
+                    >
+                      <Edit3 size={13} /> Editar
+                    </button>
 
-                <button 
-                  type="button" 
-                  onClick={() => handleDeleteConsultant(consultant)}
-                  style={{ 
-                    color: '#991B1B', 
-                    backgroundColor: '#FEF2F2', 
-                    border: '1px solid #FECACA', 
-                    padding: '0.35rem 0.65rem', 
-                    borderRadius: 'var(--radius-sm)', 
-                    cursor: 'pointer', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    gap: '0.3rem', 
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                    transition: 'all 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#DC2626';
-                    e.currentTarget.style.color = '#FFFFFF';
-                    e.currentTarget.style.borderColor = '#DC2626';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#FEF2F2';
-                    e.currentTarget.style.color = '#991B1B';
-                    e.currentTarget.style.borderColor = '#FECACA';
-                  }}
-                  title={`Excluir ${consultant.name}`}
-                >
-                  <Trash2 size={13} /> Excluir
-                </button>
+                    <button 
+                      type="button" 
+                      onClick={() => handleDeleteConsultant(consultant)}
+                      style={{ 
+                        color: '#991B1B', 
+                        backgroundColor: '#FEF2F2', 
+                        border: '1px solid #FECACA', 
+                        padding: '0.35rem 0.65rem', 
+                        borderRadius: 'var(--radius-sm)', 
+                        cursor: 'pointer', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#DC2626';
+                        e.currentTarget.style.color = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#DC2626';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#FEF2F2';
+                        e.currentTarget.style.color = '#991B1B';
+                        e.currentTarget.style.borderColor = '#FECACA';
+                      }}
+                      title={`Excluir ${consultant.name}`}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           );
@@ -855,10 +917,9 @@ export default function ConsultantsView() {
                       value={newCons.role} 
                       onChange={(e) => setNewCons({ ...newCons, role: e.target.value })}
                     >
-                      <option value="CONSULTOR">👨‍💼 Consultor de Negócios</option>
-                      <option value="GERENTE_REGIONAL">🏢 Gerente Regional</option>
-                      <option value="GERENTE_NACIONAL">🌐 Gerente Nacional</option>
-                      <option value="DIRETORIA">🏛️ Diretoria Executiva</option>
+                      {allowedRolesForCreation.map(r => (
+                        <option key={r.value} value={r.value}>{r.label}</option>
+                      ))}
                     </select>
                   </div>
 
@@ -1012,10 +1073,9 @@ export default function ConsultantsView() {
                       value={editForm.role} 
                       onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
                     >
-                      <option value="CONSULTOR">👨‍💼 Consultor de Negócios</option>
-                      <option value="GERENTE_REGIONAL">🏢 Gerente Regional</option>
-                      <option value="GERENTE_NACIONAL">🌐 Gerente Nacional</option>
-                      <option value="DIRETORIA">🏛️ Diretoria Executiva</option>
+                      {allowedRolesForCreation.map(r => (
+                        <option key={r.value} value={r.value}>{r.label}</option>
+                      ))}
                     </select>
                   </div>
 

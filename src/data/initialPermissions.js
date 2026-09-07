@@ -94,6 +94,30 @@ export const DEFAULT_MODULES = [
     }
   },
   {
+    id: 'add_franchisee',
+    category: 'Franqueados & Parceiros',
+    name: 'Cadastrar / Editar Franqueados',
+    description: 'Cadastrar novos franqueados, editar contatos e vincular restaurantes aos operadores.',
+    permissions: {
+      DIRETORIA: { enabled: true, note: 'Liberado' },
+      GERENTE_NACIONAL: { enabled: true, note: 'Liberado' },
+      GERENTE_REGIONAL: { enabled: true, note: 'Liberado' },
+      CONSULTOR: { enabled: true, note: 'Pode cadastrar e atualizar franqueados da carteira' },
+    }
+  },
+  {
+    id: 'add_team_member',
+    category: 'Gestão da Equipe',
+    name: 'Cadastrar Novos Membros da Equipe',
+    description: 'Adicionar novos colaboradores à rede Spoleto respeitando a hierarquia.',
+    permissions: {
+      DIRETORIA: { enabled: true, note: 'Pode cadastrar todos os níveis' },
+      GERENTE_NACIONAL: { enabled: true, note: 'Pode cadastrar Gerentes Regionais e Consultores' },
+      GERENTE_REGIONAL: { enabled: true, note: 'Pode cadastrar Consultores de Negócios' },
+      CONSULTOR: { enabled: false, note: 'Não pode cadastrar membros da equipe' },
+    }
+  },
+  {
     id: 'reassign_consultant',
     category: 'Gestão da Equipe',
     name: 'Redistribuir Carteira de Lojas',

@@ -26,8 +26,12 @@ export default function FranchiseesView() {
     addFranchisee, 
     updateFranchisee, 
     deleteFranchisee, 
-    setSelectedStoreForProfile 
+    setSelectedStoreForProfile,
+    isAdminUnlocked,
+    hasPermission
   } = useApp();
+
+  const canAddOrEditFranchisee = isAdminUnlocked || hasPermission('add_franchisee');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -171,9 +175,11 @@ export default function FranchiseesView() {
           </p>
         </div>
 
-        <button className="btn-primary" onClick={handleOpenCreate}>
-          <Plus size={16} /> Cadastrar Novo Franqueado
-        </button>
+        {canAddOrEditFranchisee && (
+          <button className="btn-primary" onClick={handleOpenCreate}>
+            <Plus size={16} /> Cadastrar Novo Franqueado
+          </button>
+        )}
       </div>
 
       {/* Mini KPIs de Franqueados */}
