@@ -1003,6 +1003,17 @@ export default function StoresView() {
                   />
                 </div>
 
+                {/* Endereço Completo posicionado logo abaixo do CEP */}
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Endereço Completo</label>
+                  <input 
+                    type="text" 
+                    value={newStore.address} 
+                    onChange={(e) => setNewStore({ ...newStore, address: e.target.value })} 
+                    placeholder="Ex: Av. Paulista, 1000 - Loja 20, Bela Vista" 
+                  />
+                </div>
+
                 {/* Todos os 27 Estados do Brasil */}
                 <div className="form-group">
                   <label className="form-label">Estado (UF) *</label>
@@ -1123,16 +1134,6 @@ export default function StoresView() {
                     onChange={(e) => setNewStore({ ...newStore, email: e.target.value.toLowerCase() })} 
                     placeholder="loja@spoleto.com.br" 
                     style={{ textTransform: 'lowercase' }}
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Endereço Completo</label>
-                  <input 
-                    type="text" 
-                    value={newStore.address} 
-                    onChange={(e) => setNewStore({ ...newStore, address: e.target.value })} 
-                    placeholder="Ex: Av. Paulista, 1000 - Loja 20, Bela Vista" 
                   />
                 </div>
 
@@ -1288,6 +1289,17 @@ export default function StoresView() {
                   />
                 </div>
 
+                {/* Endereço Completo posicionado logo abaixo do CEP */}
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Endereço Completo</label>
+                  <input 
+                    type="text" 
+                    value={editStoreForm.address} 
+                    onChange={(e) => setEditStoreForm({ ...editStoreForm, address: e.target.value })} 
+                    placeholder="Ex: Av. Paulista, 1000 - Loja 20, Bela Vista" 
+                  />
+                </div>
+
                 {/* Todos os 27 Estados do Brasil */}
                 <div className="form-group">
                   <label className="form-label">Estado (UF) *</label>
@@ -1420,16 +1432,6 @@ export default function StoresView() {
                     onChange={(e) => setEditStoreForm({ ...editStoreForm, email: e.target.value.toLowerCase() })} 
                     placeholder="loja@spoleto.com.br" 
                     style={{ textTransform: 'lowercase' }}
-                  />
-                </div>
-
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label className="form-label">Endereço Completo</label>
-                  <input 
-                    type="text" 
-                    value={editStoreForm.address} 
-                    onChange={(e) => setEditStoreForm({ ...editStoreForm, address: e.target.value })} 
-                    placeholder="Ex: Av. Paulista, 1000 - Loja 20, Bela Vista" 
                   />
                 </div>
 
