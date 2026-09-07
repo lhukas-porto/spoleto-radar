@@ -482,9 +482,6 @@ export default function ConsultantsView() {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button className="btn-secondary" onClick={() => setIsRegionsModalOpen(true)}>
-            <MapPin size={18} /> Gerenciar Regiões ({availableRegions.length})
-          </button>
           {canAddMember && (
             <button 
               className="btn-primary" 
@@ -1323,107 +1320,6 @@ export default function ConsultantsView() {
       )}
 
       {/* =========================================================================
-          MODAL DE GERENCIAMENTO DE REGIÕES OFICIAIS
-          ========================================================================= */}
-      {isRegionsModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsRegionsModalOpen(false)}>
-          <div className="modal-card" style={{ maxWidth: '650px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', padding: '1.75rem' }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2 className="modal-title">Gerenciador de Regiões Oficiais</h2>
-              <button className="modal-close" onClick={() => setIsRegionsModalOpen(false)}>
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Formulário de Nova Região */}
-            <form onSubmit={handleAddNewRegion} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <input 
-                type="text" 
-                placeholder="Nome da nova região..." 
-                value={newRegionInput}
-                onChange={(e) => setNewRegionInput(e.target.value)}
-                style={{ flex: 1, fontSize: '0.85rem' }}
-              />
-              <button type="submit" className="btn-primary" style={{ fontSize: '0.85rem' }}>
-                <Plus size={15} /> Adicionar Região
-              </button>
-            </form>
-
-            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '0.5rem', maxHeight: '350px' }}>
-              {availableRegions.map(regionName => {
-                const isEditing = editingRegionOldName === regionName;
-                const consultantsCount = consultants.filter(c => c.region === regionName).length;
-
-                return (
-                  <div 
-                    key={regionName}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.65rem 0.85rem',
-                      borderBottom: '1px solid #F3F4F6',
-                      background: isEditing ? '#FAF8F5' : '#FFFFFF'
-                    }}
-                  >
-                    {isEditing ? (
-                      <form onSubmit={handleSaveEditRegion} style={{ display: 'flex', gap: '0.5rem', flex: 1, marginRight: '0.5rem' }}>
-                        <input 
-                          type="text" 
-                          value={editingRegionNewName}
-                          onChange={(e) => setEditingRegionNewName(e.target.value)}
-                          style={{ flex: 1, fontSize: '0.82rem' }}
-                          autoFocus
-                        />
-                        <button type="submit" className="btn-primary" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>
-                          Salvar
-                        </button>
-                        <button type="button" className="btn-secondary" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} onClick={() => setEditingRegionOldName(null)}>
-                          Cancelar
-                        </button>
-                      </form>
-                    ) : (
-                      <>
-                        <div>
-                          <strong style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>{regionName}</strong>
-                          <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                            ({consultantsCount} membro{consultantsCount !== 1 ? 's' : ''})
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          <button 
-                            type="button" 
-                            className="btn-secondary" 
-                            style={{ padding: '0.25rem 0.45rem', fontSize: '0.75rem' }}
-                            onClick={() => handleStartEditRegion(regionName)}
-                          >
-                            <Edit3 size={13} />
-                          </button>
-                          <button 
-                            type="button" 
-                            className="btn-secondary" 
-                            style={{ padding: '0.25rem 0.45rem', fontSize: '0.75rem', color: '#991B1B' }}
-                            onClick={() => handleDeleteRegion(regionName)}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-              <button className="btn-primary" onClick={() => setIsRegionsModalOpen(false)}>
-                Concluir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* =========================================================================
           MODAL DE ZOOM DA FOTO DE PERFIL

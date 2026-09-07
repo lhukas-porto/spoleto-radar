@@ -4,12 +4,14 @@ import {
   Layers, 
   Building2, 
   Calendar,
+  MapPin,
   ShieldCheck,
   Lock
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import TaxonomyView from './TaxonomyView';
 import InternalAreasManager from './InternalAreasManager';
+import RegionsManager from './RegionsManager';
 import WorkShiftsManager from './WorkShiftsManager';
 import RolePermissionsManager from './RolePermissionsManager';
 
@@ -35,7 +37,7 @@ export default function SettingsView({ defaultSubTab = 'taxonomy' }) {
             Configurações do Sistema
           </h1>
           <p className="section-subtitle">
-            Gerencie os parâmetros operacionais da rede Spoleto: Matriz de Tópicos, Áreas Internas, Escalas da Equipe e Controle de Acessos.
+            Gerencie os parâmetros operacionais da rede Spoleto: Matriz de Tópicos, Áreas Internas, Regiões Oficiais, Escalas da Equipe e Controle de Acessos.
           </p>
         </div>
       </div>
@@ -107,6 +109,33 @@ export default function SettingsView({ defaultSubTab = 'taxonomy' }) {
             Áreas Internas
           </button>
         )}
+
+        {/* Sub-Aba de Regiões & Polos Operacionais */}
+        <button
+          type="button"
+          onClick={() => setActiveSubTab('regions')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            padding: '0.6rem 1.05rem',
+            fontSize: '0.86rem',
+            fontWeight: activeSubTab === 'regions' ? 800 : 600,
+            color: activeSubTab === 'regions' ? 'var(--primary-brown)' : 'var(--text-muted)',
+            borderBottom: activeSubTab === 'regions' ? '3px solid var(--primary-brown)' : '3px solid transparent',
+            background: activeSubTab === 'regions' ? 'var(--primary-brown-light)' : 'transparent',
+            borderTopLeftRadius: 'var(--radius-md)',
+            borderTopRightRadius: 'var(--radius-md)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            marginBottom: '-2px',
+            flexShrink: 0
+          }}
+        >
+          <MapPin size={17} />
+          Regiões da Rede
+        </button>
 
         {/* Sub-Aba de Escalas de Colaboradores */}
         <button
@@ -180,6 +209,7 @@ export default function SettingsView({ defaultSubTab = 'taxonomy' }) {
       {/* Conteúdo da Sub-Aba Ativa */}
       {activeSubTab === 'taxonomy' && <TaxonomyView />}
       {activeSubTab === 'internal-areas' && <InternalAreasManager />}
+      {activeSubTab === 'regions' && <RegionsManager />}
       {activeSubTab === 'work-shifts' && <WorkShiftsManager />}
       {activeSubTab === 'permissions' && (
         isAdminUnlocked ? <RolePermissionsManager /> : <TaxonomyView />

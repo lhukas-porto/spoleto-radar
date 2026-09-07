@@ -154,6 +154,18 @@ export const DEFAULT_MODULES = [
     }
   },
   {
+    id: 'settings_regions',
+    category: 'Configurações do Sistema',
+    name: 'Gerenciar Regiões & Polos Operacionais',
+    description: 'Criar, renomear e excluir os polos regionais oficiais de alocação de equipe.',
+    permissions: {
+      DIRETORIA: { enabled: true, note: 'Pode gerenciar todos os polos' },
+      GERENTE_NACIONAL: { enabled: true, note: 'Pode gerenciar polos da rede' },
+      GERENTE_REGIONAL: { enabled: false, note: 'Somente leitura' },
+      CONSULTOR: { enabled: false, note: 'Bloqueado' },
+    }
+  },
+  {
     id: 'settings_work_shifts',
     category: 'Configurações do Sistema',
     name: 'Gerenciar Escalas de Colaboradores',
