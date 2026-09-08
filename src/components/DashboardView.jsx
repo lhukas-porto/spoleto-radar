@@ -20,7 +20,10 @@ import {
   Handshake,
   PieChart as PieIcon,
   Flame,
-  Send
+  Send,
+  Store,
+  MapPin,
+  X
 } from 'lucide-react';
 import RegionalBenchmarkView from './RegionalBenchmarkView';
 
@@ -42,6 +45,7 @@ export default function DashboardView() {
 
   const [hoveredSlice, setHoveredSlice] = useState(null);
   const [drilldownCategory, setDrilldownCategory] = useState(null); // null = Main Topics; categoryId = Subtopics
+  const [selectedSubproblem, setSelectedSubproblem] = useState(null); // null = nenhum; subproblemId = lojas com esse problema
   const [dashboardSubTab, setDashboardSubTab] = useState('overview'); // 'overview' | 'benchmark' | 'ranking'
 
   // High level KPIs
@@ -134,6 +138,43 @@ export default function DashboardView() {
   }).sort((a, b) => b.count - a.count) : [];
 
   const totalSubBottlenecks = subproblemBottlenecks.reduce((sum, s) => sum + s.count, 0);
+
+  // Mapeamento das lojas que apresentam o subtópico selecionado
+  const affectedStoresForSubproblem = (drilldownCategory && selectedSubproblem) ? (() => {
+    const storeMap = new Map();
+    visits.forEach(v => {
+      const matchDiag = (v.diagnostics || []).filter(d => 
+        d.categoryId === drilldownCategory && (d.subproblemId || 'sub-outro') === selectedSubproblem
+      );
+      if (matchDiag.length > 0) {
+        const store = stores.find(s => s.id === v.storeId || s.code === v.storeId);
+        const storeId = store?.id || v.storeId;
+        if (!storeMap.has(storeId)) {
+          storeMap.set(storeId, {
+            store,
+            storeId,
+            storeName: store?.name || v.storeName || 'Loja não identificada',
+            storeCode: store?.code || v.storeCode || '',
+            state: store?.state || '',
+            city: store?.city || '',
+            franchisee: store?.franchisee || '',
+            occurrences: []
+          });
+        }
+        matchDiag.forEach(diag => {
+          storeMap.get(storeId).occurrences.push({
+            visitId: v.id,
+            date: v.date,
+            consultantId: v.consultantId,
+            severity: diag.severity,
+            notes: diag.notes,
+            actionPlan: diag.actionPlan
+          });
+        });
+      }
+    });
+    return Array.from(storeMap.values());
+  })() : [];
 
   // Delivery specific metric
   const deliveryVisitsWithIssues = visits.filter(v =>
@@ -512,7 +553,10 @@ export default function DashboardView() {
                     </span>
                     <button
                       className="btn-secondary"
-                      onClick={() => setDrilldownCategory(null)}
+                      onClick={() => {
+                        setDrilldownCategory(null);
+                        setSelectedSubproblem(null);
+                      }}
                       style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', background: '#FFFFFF' }}
                       title="Fechar gráfico de subtópicos"
                     >
@@ -526,97 +570,252 @@ export default function DashboardView() {
                     Nenhum subtópico detalhado foi registrado ainda para este tema nas visitas.
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.25rem' }}>
-                    {/* Donut dos Subtópicos */}
-                    <div style={{ position: 'relative', width: '170px', height: '170px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="170" height="170" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r={radius}
-                          fill="transparent"
-                          stroke="#EBE5DF"
-                          strokeWidth="22"
-                        />
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.25rem' }}>
+                      {/* Donut dos Subtópicos */}
+                      <div style={{ position: 'relative', width: '170px', height: '170px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="170" height="170" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
+                          <circle
+                            cx="80"
+                            cy="80"
+                            r={radius}
+                            fill="transparent"
+                            stroke="#EBE5DF"
+                            strokeWidth="22"
+                          />
 
-                        {(() => {
-                          let accSub = 0;
-                          return subproblemBottlenecks.map((sub, idx) => {
-                            const percent = totalSubBottlenecks > 0 ? (sub.count / totalSubBottlenecks) : 0;
-                            const strokeDasharray = `${percent * circumference} ${circumference}`;
-                            const strokeDashoffset = -accSub * circumference;
-                            accSub += percent;
-                            const color = sub.color || chartColors[idx % chartColors.length];
+                          {(() => {
+                            let accSub = 0;
+                            return subproblemBottlenecks.map((sub, idx) => {
+                              const percent = totalSubBottlenecks > 0 ? (sub.count / totalSubBottlenecks) : 0;
+                              const strokeDasharray = `${percent * circumference} ${circumference}`;
+                              const strokeDashoffset = -accSub * circumference;
+                              accSub += percent;
+                              const color = sub.color || chartColors[idx % chartColors.length];
+                              const isSelectedSub = selectedSubproblem === sub.id;
 
-                            return (
-                              <circle
-                                key={sub.id}
-                                cx="80"
-                                cy="80"
-                                r={radius}
-                                fill="transparent"
-                                stroke={color}
-                                strokeWidth={22}
-                                strokeDasharray={strokeDasharray}
-                                strokeDashoffset={strokeDashoffset}
-                                style={{
-                                  transition: 'all 0.25s ease'
-                                }}
-                              />
-                            );
-                          });
-                        })()}
-                      </svg>
+                              return (
+                                <circle
+                                  key={sub.id}
+                                  cx="80"
+                                  cy="80"
+                                  r={radius}
+                                  fill="transparent"
+                                  stroke={color}
+                                  strokeWidth={isSelectedSub ? 28 : 22}
+                                  strokeDasharray={strokeDasharray}
+                                  strokeDashoffset={strokeDashoffset}
+                                  onClick={() => setSelectedSubproblem(prev => prev === sub.id ? null : sub.id)}
+                                  style={{
+                                    cursor: 'pointer',
+                                    transition: 'all 0.25s ease',
+                                    opacity: selectedSubproblem ? (isSelectedSub ? 1 : 0.45) : 1
+                                  }}
+                                />
+                              );
+                            });
+                          })()}
+                        </svg>
 
-                      <div style={{ position: 'absolute', textAlign: 'center', pointerEvents: 'none' }}>
-                        <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
-                          {totalSubBottlenecks}
-                        </span>
-                        <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                          Subtópicos
-                        </span>
+                        <div style={{ position: 'absolute', textAlign: 'center', pointerEvents: 'none' }}>
+                          <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary-brown)', display: 'block', lineHeight: '1.1' }}>
+                            {selectedSubproblem 
+                              ? (subproblemBottlenecks.find(s => s.id === selectedSubproblem)?.count || 0)
+                              : totalSubBottlenecks}
+                          </span>
+                          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                            {selectedSubproblem ? 'Nesta Falha' : 'Subtópicos'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Legenda Interativa dos Subtópicos */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '220px', maxHeight: '210px', overflowY: 'auto' }}>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.2rem', fontWeight: 600 }}>
+                          💡 Clique em qualquer problema abaixo para ver as lojas afetadas:
+                        </div>
+                        {subproblemBottlenecks.map((sub, idx) => {
+                          const percent = totalSubBottlenecks > 0 ? Math.round((sub.count / totalSubBottlenecks) * 100) : 0;
+                          const color = sub.color || chartColors[idx % chartColors.length];
+                          const isSelectedSub = selectedSubproblem === sub.id;
+
+                          return (
+                            <div
+                              key={sub.id}
+                              onClick={() => setSelectedSubproblem(prev => prev === sub.id ? null : sub.id)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '0.35rem 0.6rem',
+                                borderRadius: 'var(--radius-sm)',
+                                backgroundColor: isSelectedSub ? '#FFFFFF' : '#FFFFFF',
+                                border: isSelectedSub ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                                cursor: 'pointer',
+                                boxShadow: isSelectedSub ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
+                                transition: 'all 0.15s ease',
+                                transform: isSelectedSub ? 'scale(1.01)' : 'none'
+                              }}
+                              title="Clique para listar as lojas com este problema"
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', overflow: 'hidden' }}>
+                                <span style={{ width: '10px', height: '10px', borderRadius: '3px', backgroundColor: color, flexShrink: 0 }} />
+                                <span style={{ fontSize: '0.78rem', fontWeight: isSelectedSub ? 700 : 500, color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={sub.name}>
+                                  {sub.name}
+                                </span>
+                              </div>
+
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+                                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: color }}>
+                                  {percent}%
+                                </span>
+                                <span className="count-pill count-pill-dark" style={{ fontSize: '0.7rem' }}>
+                                  {sub.count}
+                                </span>
+                                <ChevronRight size={13} color={isSelectedSub ? color : 'var(--text-muted)'} style={{ transform: isSelectedSub ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s ease' }} />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    {/* Legenda dos Subtópicos */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '180px', maxHeight: '190px', overflowY: 'auto' }}>
-                      {subproblemBottlenecks.map((sub, idx) => {
-                        const percent = totalSubBottlenecks > 0 ? Math.round((sub.count / totalSubBottlenecks) * 100) : 0;
-                        const color = sub.color || chartColors[idx % chartColors.length];
-
-                        return (
-                          <div
-                            key={sub.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              padding: '0.3rem 0.5rem',
-                              borderRadius: 'var(--radius-sm)',
-                              backgroundColor: '#FFFFFF',
-                              border: '1px solid var(--border-subtle)'
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', overflow: 'hidden' }}>
-                              <span style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: color, flexShrink: 0 }} />
-                              <span style={{ fontSize: '0.78rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={sub.name}>
-                                {sub.name}
-                              </span>
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
-                              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: color }}>
-                                {percent}%
-                              </span>
-                              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                                ({sub.count})
+                    {/* ========================================================= */}
+                    {/* PAINEL DE LOJAS AFETADAS PELO PROBLEMA SELECIONADO       */}
+                    {/* ========================================================= */}
+                    {selectedSubproblem && (
+                      <div style={{
+                        marginTop: '1.25rem',
+                        padding: '1.15rem',
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-subtle)',
+                        boxShadow: 'var(--shadow-sm)',
+                        animation: 'fadeIn 0.2s ease'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.65rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Store size={18} color="var(--primary-brown)" />
+                            <div>
+                              <h5 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: 700 }}>
+                                Lojas com: "{subproblemBottlenecks.find(s => s.id === selectedSubproblem)?.name}"
+                              </h5>
+                              <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                                {affectedStoresForSubproblem.length} {affectedStoresForSubproblem.length === 1 ? 'loja identificada' : 'lojas identificadas'} nesta não-conformidade
                               </span>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setSelectedSubproblem(null)}
+                            style={{
+                              background: '#F1F5F9',
+                              border: 'none',
+                              borderRadius: 'var(--radius-full)',
+                              padding: '0.25rem 0.6rem',
+                              fontSize: '0.72rem',
+                              color: 'var(--text-muted)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem'
+                            }}
+                          >
+                            <X size={12} /> Limpar seleção
+                          </button>
+                        </div>
+
+                        {affectedStoresForSubproblem.length === 0 ? (
+                          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic', margin: '0.5rem 0' }}>
+                            Nenhuma loja vinculada a este problema nos relatórios recentes.
+                          </p>
+                        ) : (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem', maxHeight: '260px', overflowY: 'auto', paddingRight: '0.3rem' }}>
+                            {affectedStoresForSubproblem.map(item => (
+                              <div
+                                key={item.storeId}
+                                onClick={() => {
+                                  if (item.store) {
+                                    setSelectedStoreForProfile(item.store);
+                                  }
+                                }}
+                                style={{
+                                  border: '1px solid var(--border-subtle)',
+                                  borderRadius: 'var(--radius-sm)',
+                                  padding: '0.75rem',
+                                  backgroundColor: '#FAF8F5',
+                                  cursor: item.store ? 'pointer' : 'default',
+                                  transition: 'all 0.15s ease',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'space-between',
+                                  gap: '0.5rem'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (item.store) {
+                                    e.currentTarget.style.borderColor = 'var(--primary-brown)';
+                                    e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (item.store) {
+                                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                                    e.currentTarget.style.backgroundColor = '#FAF8F5';
+                                  }
+                                }}
+                              >
+                                <div>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.4rem' }}>
+                                    <strong style={{ fontSize: '0.84rem', color: 'var(--text-main)' }}>
+                                      {item.storeName}
+                                    </strong>
+                                    {item.storeCode && (
+                                      <span style={{ fontSize: '0.68rem', background: '#FFFFFF', padding: '0.1rem 0.35rem', borderRadius: '4px', border: '1px solid var(--border-subtle)', fontWeight: 700, color: 'var(--primary-brown)', whiteSpace: 'nowrap' }}>
+                                        {item.storeCode}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem' }}>
+                                    <MapPin size={11} />
+                                    <span>{item.city || 'Cidade N/D'}{item.state ? ` - ${item.state}` : ''}</span>
+                                    {item.franchisee && <span>&bull; Franqueado: {item.franchisee}</span>}
+                                  </div>
+                                </div>
+
+                                <div style={{ borderTop: '1px dashed #E5E7EB', paddingTop: '0.45rem', fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                                  {item.occurrences.map((occ, oIdx) => (
+                                    <div key={oIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                        <span style={{ 
+                                          width: '6px', 
+                                          height: '6px', 
+                                          borderRadius: '50%', 
+                                          backgroundColor: occ.severity === 'Crítica' ? '#EF4444' : (occ.severity === 'Alta' ? '#F59E0B' : '#3B82F6') 
+                                        }} />
+                                        <span>Visita de {new Date(occ.date + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
+                                      </span>
+                                      <span style={{ fontWeight: 600, color: occ.actionPlan?.status === 'Concluído' ? '#059669' : '#DC2626' }}>
+                                        {occ.actionPlan?.status || 'Plano Registrado'}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {item.store && (
+                                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.2rem', color: 'var(--primary-brown)', fontSize: '0.72rem', fontWeight: 700 }}>
+                                    <span>Ver Ficha 360º da Loja</span>
+                                    <ChevronRight size={12} />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
