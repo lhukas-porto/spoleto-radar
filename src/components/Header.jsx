@@ -67,10 +67,11 @@ export default function Header() {
             }}
           >
             <FileText size={16} style={{ flexShrink: 0 }} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: 1.15 }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Relatórios</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>de Visitas</span>
-            </div>
+            <span className="nav-tab-reports-text">
+              <span className="nav-tab-reports-line1">Relatórios</span>
+              <span className="nav-tab-reports-sep"> de </span>
+              <span className="nav-tab-reports-line2">Visitas</span>
+            </span>
             <span 
               style={{ 
                 background: activeTab === 'reports' ? 'var(--primary-brown-light, #F5EFEB)' : 'rgba(255, 255, 255, 0.18)',

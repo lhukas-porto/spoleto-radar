@@ -197,6 +197,51 @@ h1, h2, h3, .brand-title, .report-title {
   box-shadow: var(--shadow-sm);
 }
 
+/* ===== Texto Responsivo do Botão "Relatórios de Visitas" ===== */
+/* Em telas grandes: tudo em 1 linha (Relatórios de Visitas) */
+.nav-tab-reports-text {
+  display: inline;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.nav-tab-reports-line1,
+.nav-tab-reports-line2 {
+  display: inline;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.nav-tab-reports-sep {
+  display: inline;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Em telas menores (≤ 1440px): quebra em 2 linhas */
+@media screen and (max-width: 1440px) {
+  .nav-tab-reports-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  .nav-tab-reports-line1,
+  .nav-tab-reports-line2 {
+    display: block;
+    font-size: 0.85rem;
+  }
+
+  .nav-tab-reports-sep {
+    display: none;
+  }
+}
+
 /* Badge / Pílula Padronizada de Contadores */
 .count-pill {
   display: inline-flex;
@@ -702,6 +747,10 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
     font-size: 0.76rem;
     gap: 0.25rem;
   }
+  .nav-tab-reports-line1,
+  .nav-tab-reports-line2 {
+    font-size: inherit;
+  }
   .nav-tab span.tab-count {
     display: none;
   }
@@ -719,6 +768,10 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   .nav-tab {
     padding: 0.35rem 0.45rem;
     font-size: 0.74rem;
+  }
+  .nav-tab-reports-line1,
+  .nav-tab-reports-line2 {
+    font-size: inherit;
   }
   .header-brand img {
     height: 20px !important;

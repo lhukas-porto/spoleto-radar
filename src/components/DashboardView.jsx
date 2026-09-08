@@ -40,7 +40,8 @@ export default function DashboardView() {
     setSelectedStaffForProfile,
     setSelectedStoreForProfile,
     simulatedRole,
-    activeUser
+    activeUser,
+    canAccessSettings
   } = useApp();
 
   const [hoveredSlice, setHoveredSlice] = useState(null);
@@ -571,7 +572,7 @@ export default function DashboardView() {
                   </div>
                 ) : (
                   <>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1.25rem', overflow: 'hidden', maxWidth: '100%' }}>
                       {/* Donut dos Subtópicos */}
                       <div style={{ position: 'relative', width: '170px', height: '170px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg width="170" height="170" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
@@ -630,7 +631,7 @@ export default function DashboardView() {
                       </div>
 
                       {/* Legenda Interativa dos Subtópicos */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '220px', maxHeight: '210px', overflowY: 'auto' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: '220px', maxHeight: '210px', overflowY: 'auto', overflowX: 'hidden' }}>
                         <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.2rem', fontWeight: 600 }}>
                           💡 Clique em qualquer problema abaixo para ver as lojas afetadas:
                         </div>
@@ -653,8 +654,7 @@ export default function DashboardView() {
                                 border: isSelectedSub ? `2px solid ${color}` : '1px solid var(--border-subtle)',
                                 cursor: 'pointer',
                                 boxShadow: isSelectedSub ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
-                                transition: 'all 0.15s ease',
-                                transform: isSelectedSub ? 'scale(1.01)' : 'none'
+                                transition: 'all 0.15s ease'
                               }}
                               title="Clique para listar as lojas com este problema"
                             >
@@ -824,13 +824,15 @@ export default function DashboardView() {
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 {drilldownCategory ? 'Clique no mesmo tema ou em "Fechar" para ocultar o gráfico inferior.' : 'Dica: clique em qualquer tema para abrir o gráfico dos subtópicos abaixo.'}
               </span>
-              <button
-                className="btn-secondary"
-                style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
-                onClick={() => setActiveTab('taxonomy')}
-              >
-                Ver Matriz de Tópicos <ArrowRight size={14} />
-              </button>
+              {canAccessSettings && (
+                <button
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+                  onClick={() => setActiveTab('taxonomy')}
+                >
+                  Ver Matriz de Tópicos <ArrowRight size={14} />
+                </button>
+              )}
             </div>
           </div>
 
