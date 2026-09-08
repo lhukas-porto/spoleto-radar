@@ -90,7 +90,7 @@ export default function RoleSimulatorBar() {
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', opacity: 0.9 }}>
           <Eye size={14} />
-          <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.4px', opacity: 0.85 }}>Ver como:</span>
+          <span className="role-sim-text" style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.4px', opacity: 0.85 }}>Ver como:</span>
         </span>
 
         <span style={{ 
@@ -109,7 +109,7 @@ export default function RoleSimulatorBar() {
           <span>{currentBadge.label}</span>
         </span>
 
-        <span style={{ 
+        <span className="role-sim-user" style={{ 
           maxWidth: '120px', 
           overflow: 'hidden', 
           textOverflow: 'ellipsis', 

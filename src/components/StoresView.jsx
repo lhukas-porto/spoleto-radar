@@ -1032,7 +1032,7 @@ export default function StoresView() {
                 {/* Cidades Oficiais IBGE do Estado Selecionado */}
                 <div className="form-group">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                    <label className="form-label" style={{ margin: 0 }}>Cidade (IBGE - {newStore.state}) *</label>
+                    <label className="form-label" style={{ margin: 0 }}>Cidade *</label>
                     {loadingNewCities && (
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Carregando cidades...</span>
                     )}
@@ -1318,7 +1318,7 @@ export default function StoresView() {
                 {/* Cidades Oficiais IBGE do Estado Selecionado */}
                 <div className="form-group">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                    <label className="form-label" style={{ margin: 0 }}>Cidade (IBGE - {editStoreForm.state}) *</label>
+                    <label className="form-label" style={{ margin: 0 }}>Cidade *</label>
                     {loadingEditCities && (
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Carregando cidades...</span>
                     )}

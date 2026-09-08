@@ -60,21 +60,21 @@ export default function Header() {
             className={`nav-tab ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveTab('reports')}
           >
-            <FileText size={16} /> Relatórios & Visitas ({visibleVisits.length})
+            <FileText size={16} /> Relatórios <span className="tab-count">& Visitas ({visibleVisits.length})</span>
           </button>
 
           <button 
             className={`nav-tab ${activeTab === 'stores' ? 'active' : ''}`}
             onClick={() => setActiveTab('stores')}
           >
-            <Store size={16} /> Rede de Lojas ({visibleStores.length})
+            <Store size={16} /> Lojas <span className="tab-count">({visibleStores.length})</span>
           </button>
 
           <button 
             className={`nav-tab ${activeTab === 'consultants' ? 'active' : ''}`}
             onClick={() => setActiveTab('consultants')}
           >
-            <Users size={16} /> Equipe Spoleto ({visibleConsultants.length})
+            <Users size={16} /> Equipe <span className="tab-count">({visibleConsultants.length})</span>
           </button>
 
           {canAccessSettings && (
