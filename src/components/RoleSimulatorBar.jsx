@@ -43,17 +43,17 @@ export default function RoleSimulatorBar() {
   const getRoleBadge = (role) => {
     switch (role) {
       case 'ADMIN':
-        return { label: 'Administrador', icon: <Crown size={13} />, bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' };
+        return { label: 'Admin', icon: <Crown size={13} />, bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' };
       case 'DIRETORIA':
-        return { label: 'Diretoria Nacional', icon: <Award size={13} />, bg: '#F3E8FF', text: '#6B21A8', border: '#E9D5FF' };
+        return { label: 'Diretoria', icon: <Award size={13} />, bg: '#F3E8FF', text: '#6B21A8', border: '#E9D5FF' };
       case 'GERENTE_NACIONAL':
-        return { label: 'Gerência Nacional', icon: <Target size={13} />, bg: '#E0F2FE', text: '#0369A1', border: '#BAE6FD' };
+        return { label: 'Ger. Nacional', icon: <Target size={13} />, bg: '#E0F2FE', text: '#0369A1', border: '#BAE6FD' };
       case 'GERENTE_REGIONAL':
-        return { label: 'Gerente Regional', icon: <MapPin size={13} />, bg: '#ECFDF5', text: '#047857', border: '#A7F3D0' };
+        return { label: 'Ger. Regional', icon: <MapPin size={13} />, bg: '#ECFDF5', text: '#047857', border: '#A7F3D0' };
       case 'CONSULTOR':
-        return { label: 'Consultor de Negócios', icon: <Briefcase size={13} />, bg: '#FFF7ED', text: '#C2410C', border: '#FFEDD5' };
+        return { label: 'Consultor', icon: <Briefcase size={13} />, bg: '#FFF7ED', text: '#C2410C', border: '#FFEDD5' };
       default:
-        return { label: 'Administrador', icon: <ShieldCheck size={13} />, bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' };
+        return { label: 'Admin', icon: <ShieldCheck size={13} />, bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' };
     }
   };
 
