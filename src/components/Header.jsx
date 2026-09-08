@@ -59,8 +59,36 @@ export default function Header() {
           <button 
             className={`nav-tab ${activeTab === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveTab('reports')}
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '0.45rem',
+              textAlign: 'center'
+            }}
           >
-            <FileText size={16} /> Relatórios <span className="tab-count">& Visitas ({visibleVisits.length})</span>
+            <FileText size={16} style={{ flexShrink: 0 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: 1.15 }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>Relatórios</span>
+              <span style={{ fontSize: '0.74rem', opacity: 0.9 }}>de Visitas</span>
+            </div>
+            <span 
+              style={{ 
+                background: activeTab === 'reports' ? 'var(--primary-brown-light, #F5EFEB)' : 'rgba(255, 255, 255, 0.18)',
+                color: activeTab === 'reports' ? 'var(--primary-brown)' : '#FFFFFF',
+                border: activeTab === 'reports' ? '1px solid var(--border-subtle)' : '1px solid rgba(255, 255, 255, 0.3)',
+                padding: '0.15rem 0.45rem',
+                borderRadius: '10px',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                lineHeight: 1,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf: 'center'
+              }}
+            >
+              {visibleVisits.length}
+            </span>
           </button>
 
           <button 
