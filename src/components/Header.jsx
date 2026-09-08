@@ -31,9 +31,9 @@ export default function Header() {
       <div className="navbar-container">
         {/* Brand com o Logo Oficial Spoleto Radar */}
         <div 
-          className="brand-wrapper" 
+          className="brand-wrapper header-brand" 
           onClick={() => setActiveTab('dashboard')} 
-          style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', cursor: 'pointer' }}
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', cursor: 'pointer', flexShrink: 0 }}
         >
           <SpoletoRadarLogo />
         </div>
@@ -87,8 +87,8 @@ export default function Header() {
           )}
         </nav>
 
-        {/* Ações da Direita: Simulador de Perfil ("Ver como..."), Repositório & Notificações */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        {/* Ações da Direita: Simulador de Perfil ("Ver como..."), Repositório & Notificações - NUNCA ENCOLHEM NEM CORTAM */}
+        <div className="header-right-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
           {/* Seletor "Ver como..." */}
           <RoleSimulatorBar />
           {/* Ícone de Clips - Repositório de Documentos */}
@@ -108,7 +108,8 @@ export default function Header() {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
+              flexShrink: 0
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
