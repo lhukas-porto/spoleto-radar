@@ -668,6 +668,8 @@ export function AppProvider({ children }) {
                 address: cloud.address || local.address || `${cloud.name} - ${cloud.city}/${cloud.state}`,
                 franchisee: cloud.franchisee ? cloud.franchisee.toUpperCase().trim() : local.franchisee,
                 locationType: cloud.location_type || cloud.locationType || local.locationType || 'Shopping',
+                workShift: cloud.work_shift || cloud.workShift || local.workShift || '6x1',
+                status: cloud.status || local.status || 'Ativa',
                 phone: cloud.phone ? formatPhoneNumber(cloud.phone) : local.phone,
                 email: (cloud.email || local.email || '').toLowerCase().trim(),
                 consultantId: cloud.consultant_id || cloud.consultantId || local.consultantId || null,
@@ -1292,6 +1294,8 @@ export function AppProvider({ children }) {
           state: updatedData.state || s.state,
           cep: updatedData.cep !== undefined ? formatCEP(updatedData.cep) : s.cep,
           locationType: updatedData.locationType || s.locationType,
+          workShift: updatedData.workShift !== undefined ? updatedData.workShift : (s.workShift || '6x1'),
+          status: updatedData.status !== undefined ? updatedData.status : (s.status || 'Ativa'),
           franchisee: updatedData.franchisee !== undefined ? updatedData.franchisee.toUpperCase().trim() : s.franchisee,
           phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : s.phone,
           email: updatedData.email !== undefined ? updatedData.email.toLowerCase().trim() : s.email,
@@ -1304,6 +1308,11 @@ export function AppProvider({ children }) {
         return updatedObj;
       });
     });
+
+    // Sync selectedStoreForProfile if this store is currently open in the profile modal
+    if (selectedStoreForProfile && selectedStoreForProfile.id === storeId && updatedObj) {
+      setSelectedStoreForProfile(updatedObj);
+    }
 
     // Sync consultant assignment if changed
     if (oldConsultantId !== newConsultantId) {
@@ -1331,6 +1340,8 @@ export function AppProvider({ children }) {
           address: updatedObj.address,
           franchisee: updatedObj.franchisee,
           location_type: updatedObj.locationType,
+          work_shift: updatedObj.workShift,
+          status: updatedObj.status,
           phone: updatedObj.phone,
           email: updatedObj.email,
           consultant_id: updatedObj.consultantId,
