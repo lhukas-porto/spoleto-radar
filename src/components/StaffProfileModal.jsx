@@ -315,8 +315,8 @@ export default function StaffProfileModal() {
               {/* Liderados / Equipe Direta */}
               <div style={{ padding: '0.85rem', background: '#FAFAFA', borderRadius: 'var(--radius-sm)', border: '1px solid #E5E7EB' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Liderados Diretos ({subordinates.length})
+                  <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'flex', alignItems: 'center' }}>
+                    Liderados Diretos <span className="count-pill count-pill-dark" style={{ marginLeft: '0.35rem' }}>{subordinates.length}</span>
                   </span>
                   {role !== 'CONSULTOR' && (
                     <button
@@ -361,7 +361,7 @@ export default function StaffProfileModal() {
             <div style={{ padding: '1.25rem', background: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
                 <h4 style={{ fontSize: '0.95rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Store size={18} color="var(--primary-brown)" /> Carteira de Lojas Exclusiva ({assignedStoreList.length})
+                  <Store size={18} color="var(--primary-brown)" /> Carteira de Lojas Exclusiva <span className="count-pill count-pill-dark">{assignedStoreList.length}</span>
                 </h4>
               </div>
 

@@ -331,10 +331,12 @@ export default function NotificationBell() {
                 color: filterType === 'all' ? '#FFFFFF' : 'var(--text-secondary)',
                 fontWeight: 700,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                display: 'inline-flex',
+                alignItems: 'center'
               }}
             >
-              Todas ({notifications.length})
+              Todas <span className="count-pill" style={{ background: filterType === 'all' ? 'rgba(255,255,255,0.25)' : '#F1E9E4', color: filterType === 'all' ? '#FFFFFF' : 'var(--primary-brown)' }}>{notifications.length}</span>
             </button>
 
             <button
@@ -349,10 +351,12 @@ export default function NotificationBell() {
                 color: filterType === 'sla' ? '#FFFFFF' : '#991B1B',
                 fontWeight: 700,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                display: 'inline-flex',
+                alignItems: 'center'
               }}
             >
-              🚨 Alertas SLA ({notifications.filter(n => n.type === 'sla').length})
+              🚨 Alertas SLA <span className="count-pill" style={{ background: filterType === 'sla' ? 'rgba(255,255,255,0.25)' : '#FEE2E2', color: filterType === 'sla' ? '#FFFFFF' : '#991B1B', borderColor: 'transparent' }}>{notifications.filter(n => n.type === 'sla').length}</span>
             </button>
 
             <button

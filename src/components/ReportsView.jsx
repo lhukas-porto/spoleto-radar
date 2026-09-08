@@ -147,7 +147,7 @@ export default function ReportsView() {
           onClick={() => setActiveSubTab('visits')}
           style={{ fontSize: '0.85rem' }}
         >
-          <FileText size={15} /> Visitas Realizadas ({filteredVisits.length})
+          <FileText size={15} /> Visitas Realizadas <span className="count-pill">{filteredVisits.length}</span>
         </button>
 
         <button
@@ -155,7 +155,7 @@ export default function ReportsView() {
           onClick={() => setActiveSubTab('action-plans')}
           style={{ fontSize: '0.85rem' }}
         >
-          <CheckCircle2 size={15} /> Planos de Ação Individuais ({allActionPlans.length})
+          <CheckCircle2 size={15} /> Planos de Ação Individuais <span className="count-pill">{allActionPlans.length}</span>
         </button>
       </div>
 

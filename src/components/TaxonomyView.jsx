@@ -212,8 +212,8 @@ export default function TaxonomyView() {
         {/* Lista Lateral de Tópicos Principais */}
         <div className="card-panel" style={{ padding: '0.75rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', marginBottom: '0.25rem' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-              Tópicos Principais ({categories.length})
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+              Tópicos Principais <span className="count-pill count-pill-dark">{categories.length}</span>
             </span>
             <button 
               type="button" 

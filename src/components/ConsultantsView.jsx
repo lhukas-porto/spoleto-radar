@@ -508,7 +508,7 @@ export default function ConsultantsView() {
               onClick={() => setRoleFilter('ALL')}
               style={{ fontSize: '0.82rem', padding: '0.4rem 0.75rem' }}
             >
-              Todos ({consultants.length})
+              Todos <span className="count-pill">{consultants.length}</span>
             </button>
 
             <button
@@ -516,7 +516,7 @@ export default function ConsultantsView() {
               onClick={() => setRoleFilter('DIRETORIA')}
               style={{ fontSize: '0.82rem', padding: '0.4rem 0.75rem' }}
             >
-              🏛️ Diretoria ({consultants.filter(c => c.role === 'DIRETORIA').length})
+              🏛️ Diretoria <span className="count-pill">{consultants.filter(c => c.role === 'DIRETORIA').length}</span>
             </button>
 
             <button
@@ -524,7 +524,7 @@ export default function ConsultantsView() {
               onClick={() => setRoleFilter('GERENTE_NACIONAL')}
               style={{ fontSize: '0.82rem', padding: '0.4rem 0.75rem' }}
             >
-              🌐 Gerência Nacional ({consultants.filter(c => c.role === 'GERENTE_NACIONAL').length})
+              🌐 Gerência Nacional <span className="count-pill">{consultants.filter(c => c.role === 'GERENTE_NACIONAL').length}</span>
             </button>
 
             <button
@@ -532,7 +532,7 @@ export default function ConsultantsView() {
               onClick={() => setRoleFilter('GERENTE_REGIONAL')}
               style={{ fontSize: '0.82rem', padding: '0.4rem 0.75rem' }}
             >
-              🏢 Gerências Regionais ({consultants.filter(c => c.role === 'GERENTE_REGIONAL').length})
+              🏢 Gerências Regionais <span className="count-pill">{consultants.filter(c => c.role === 'GERENTE_REGIONAL').length}</span>
             </button>
 
             <button
@@ -540,7 +540,7 @@ export default function ConsultantsView() {
               onClick={() => setRoleFilter('CONSULTOR')}
               style={{ fontSize: '0.82rem', padding: '0.4rem 0.75rem' }}
             >
-              👨‍💼 Consultores ({consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR').length})
+              👨‍💼 Consultores <span className="count-pill">{consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR').length}</span>
             </button>
           </div>
 

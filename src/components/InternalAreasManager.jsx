@@ -80,7 +80,7 @@ export default function InternalAreasManager() {
         <div>
           <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Building2 size={22} color="var(--primary-brown)" />
-            Áreas Internas da Franqueadora ({internalAreas.length})
+            Áreas Internas da Franqueadora <span className="count-pill count-pill-dark">{internalAreas.length}</span>
           </h3>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '0.2rem 0 0' }}>
             Departamentos corporativos Spoleto que podem ser selecionados como responsáveis técnicos nos Planos de Ação.

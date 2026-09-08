@@ -485,7 +485,7 @@ export default function OverdueActionsModal() {
               }}
             >
               <Layers size={16} />
-              Todos os Planos de Ação ({allActionPlanRows.length})
+              Todos os Planos de Ação <span className="count-pill" style={{ background: activeTabMode === 'all-plans' ? '#FEE2E2' : 'rgba(255,255,255,0.25)', color: activeTabMode === 'all-plans' ? '#991B1B' : '#FFFFFF', border: 'none' }}>{allActionPlanRows.length}</span>
             </button>
           </div>
         </div>

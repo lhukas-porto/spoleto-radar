@@ -95,14 +95,14 @@ export default function Header() {
             className={`nav-tab ${activeTab === 'stores' ? 'active' : ''}`}
             onClick={() => setActiveTab('stores')}
           >
-            <Store size={16} /> Lojas <span className="tab-count">({visibleStores.length})</span>
+            <Store size={16} /> Lojas <span className="count-pill">{visibleStores.length}</span>
           </button>
 
           <button 
             className={`nav-tab ${activeTab === 'consultants' ? 'active' : ''}`}
             onClick={() => setActiveTab('consultants')}
           >
-            <Users size={16} /> Equipe <span className="tab-count">({visibleConsultants.length})</span>
+            <Users size={16} /> Equipe <span className="count-pill">{visibleConsultants.length}</span>
           </button>
 
           {canAccessSettings && (

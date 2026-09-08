@@ -199,7 +199,7 @@ export default function SubordinatesModal() {
               style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
               onClick={handleSelectAllFiltered}
             >
-              <CheckSquare size={13} /> Marcar Filtrados ({filteredMembers.length})
+              <CheckSquare size={13} /> Marcar Filtrados <span className="count-pill">{filteredMembers.length}</span>
             </button>
             <button 
               type="button" 
@@ -232,7 +232,7 @@ export default function SubordinatesModal() {
               onClick={() => setRoleFilter('ALL')}
               style={{ fontSize: '0.75rem', padding: '0.35rem 0.6rem' }}
             >
-              Todos ({eligibleMembers.length})
+              Todos <span className="count-pill">{eligibleMembers.length}</span>
             </button>
 
             {eligibleMembers.some(c => c.role === 'GERENTE_REGIONAL') && (

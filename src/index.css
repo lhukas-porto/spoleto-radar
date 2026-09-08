@@ -197,6 +197,55 @@ h1, h2, h3, .brand-title, .report-title {
   box-shadow: var(--shadow-sm);
 }
 
+/* Badge / Pílula Padronizada de Contadores */
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.12rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-left: 0.35rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.nav-tab.active .count-pill {
+  background: var(--primary-brown-light, #F5EFEB);
+  color: var(--primary-brown);
+  border-color: var(--border-subtle);
+}
+
+.count-pill-dark {
+  background: #F1E9E4;
+  color: var(--primary-brown);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-primary .count-pill,
+button.active .count-pill {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-secondary .count-pill {
+  background: #F1E9E4;
+  color: var(--primary-brown);
+  border-color: var(--border-subtle);
+}
+
+.btn-secondary.btn-primary .count-pill {
+  background: rgba(255, 255, 255, 0.28);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 /* =========================================================================
    CARDS & PAINÉIS
    ========================================================================= */

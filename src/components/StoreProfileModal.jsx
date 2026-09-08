@@ -500,7 +500,7 @@ export default function StoreProfileModal({ store, onClose }) {
                 whiteSpace: 'nowrap'
               }}
             >
-              <Calendar size={15} /> Visitas ({storeVisits.length})
+              <Calendar size={15} /> Visitas <span className={`count-pill ${activeTab === 'timeline' ? 'count-pill-dark' : ''}`} style={{ background: activeTab === 'timeline' ? 'var(--primary-brown-light)' : '#F1F5F9', color: activeTab === 'timeline' ? 'var(--primary-brown)' : '#64748B', border: '1px solid var(--border-subtle)' }}>{storeVisits.length}</span>
             </button>
 
             <button
@@ -520,7 +520,7 @@ export default function StoreProfileModal({ store, onClose }) {
                 whiteSpace: 'nowrap'
               }}
             >
-              <RotateCcw size={15} /> Reincidências ({reoccurringProblems.length})
+              <RotateCcw size={15} /> Reincidências <span className={`count-pill ${activeTab === 'reoccurrences' ? 'count-pill-dark' : ''}`} style={{ background: activeTab === 'reoccurrences' ? 'var(--primary-brown-light)' : '#F1F5F9', color: activeTab === 'reoccurrences' ? 'var(--primary-brown)' : '#64748B', border: '1px solid var(--border-subtle)' }}>{reoccurringProblems.length}</span>
             </button>
 
             <button
@@ -540,7 +540,7 @@ export default function StoreProfileModal({ store, onClose }) {
                 whiteSpace: 'nowrap'
               }}
             >
-              <FileText size={15} /> Planos de Ação ({totalActions})
+              <FileText size={15} /> Planos de Ação <span className={`count-pill ${activeTab === 'actions' ? 'count-pill-dark' : ''}`} style={{ background: activeTab === 'actions' ? 'var(--primary-brown-light)' : '#F1F5F9', color: activeTab === 'actions' ? 'var(--primary-brown)' : '#64748B', border: '1px solid var(--border-subtle)' }}>{totalActions}</span>
             </button>
 
             <button
@@ -560,7 +560,7 @@ export default function StoreProfileModal({ store, onClose }) {
                 whiteSpace: 'nowrap'
               }}
             >
-              <Users size={15} /> Equipe & Turnover ({storeTurnoverRecords.length})
+              <Users size={15} /> Equipe & Turnover <span className={`count-pill ${activeTab === 'turnover' ? 'count-pill-dark' : ''}`} style={{ background: activeTab === 'turnover' ? 'var(--primary-brown-light)' : '#F1F5F9', color: activeTab === 'turnover' ? 'var(--primary-brown)' : '#64748B', border: '1px solid var(--border-subtle)' }}>{storeTurnoverRecords.length}</span>
             </button>
           </div>
         </div>

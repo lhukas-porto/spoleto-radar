@@ -401,7 +401,7 @@ export default function StoresView() {
             transition: 'all 0.15s ease'
           }}
         >
-          <Store size={16} /> Lojas Físicas ({stores.length})
+          <Store size={16} /> Lojas Físicas <span className="count-pill">{stores.length}</span>
         </button>
 
         <button
@@ -446,7 +446,7 @@ export default function StoresView() {
             transition: 'all 0.15s ease'
           }}
         >
-          <Users size={16} /> Franqueados da Rede ({franchisees.length})
+          <Users size={16} /> Franqueados da Rede <span className="count-pill">{franchisees.length}</span>
         </button>
       </div>
 
