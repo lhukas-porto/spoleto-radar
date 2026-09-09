@@ -111,3 +111,29 @@ ALTER TABLE public.stores ADD COLUMN IF NOT EXISTS franchise_contract_expiration
 -- 10. REMOÇÃO COMPLETA DE PONTUAÇÃO DE LOJAS
 ALTER TABLE public.stores DROP COLUMN IF EXISTS rating_score;
 
+-- 11. TABELA DE DOCUMENTOS & MODELOS DO REPOSITÓRIO SPOLETO
+CREATE TABLE IF NOT EXISTS public.repository_documents (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'Gestão & Negócios',
+  format TEXT NOT NULL DEFAULT 'pdf',
+  file_size TEXT,
+  version TEXT DEFAULT 'v2026.1',
+  downloads INTEGER DEFAULT 0,
+  description TEXT,
+  download_url TEXT,
+  storage_path TEXT,
+  is_cloud_link BOOLEAN DEFAULT FALSE,
+  cloud_url TEXT,
+  cloud_provider TEXT,
+  author TEXT DEFAULT 'Equipe Spoleto',
+  is_official BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.repository_documents ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Permitir acesso total a repository_documents" ON public.repository_documents;
+CREATE POLICY "Permitir acesso total a repository_documents" ON public.repository_documents FOR ALL USING (true) WITH CHECK (true);
+
+

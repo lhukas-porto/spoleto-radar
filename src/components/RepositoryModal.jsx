@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   X, 
@@ -21,7 +21,8 @@ import {
   Tag,
   Cloud,
   Link2,
-  Globe
+  Globe,
+  RefreshCw
 } from 'lucide-react';
 import { 
   saveFileBinary, 
@@ -112,12 +113,20 @@ export function resolveCloudUrl(rawUrl, defaultFormat = 'pdf') {
 }
 
 export default function RepositoryModal({ isOpen, onClose }) {
-  const { documents = [], addDocument, deleteDocument, showToast, activeUser } = useApp();
+  const { 
+    documents = [], 
+    addDocument, 
+    deleteDocument, 
+    showToast, 
+    activeUser, 
+    syncDocumentsWithSupabaseStorage 
+  } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [selectedFormat, setSelectedFormat] = useState('all'); // 'all' | 'xlsx' | 'docx' | 'pptx' | 'pdf'
   const [isUploading, setIsUploading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Form de upload (Arquivo Local ou Link da Nuvem)
   const [uploadMode, setUploadMode] = useState('file'); // 'file' | 'cloud'
@@ -131,6 +140,13 @@ export default function RepositoryModal({ isOpen, onClose }) {
   const [documentToDelete, setDocumentToDelete] = useState(null);
 
   const fileInputRef = useRef(null);
+
+  // Sincroniza arquivos do Supabase Storage sempre que o modal do repositório for aberto
+  useEffect(() => {
+    if (isOpen && syncDocumentsWithSupabaseStorage) {
+      syncDocumentsWithSupabaseStorage();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -532,7 +548,39 @@ export default function RepositoryModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <button
+              type="button"
+              onClick={async () => {
+                if (isSyncing) return;
+                setIsSyncing(true);
+                if (syncDocumentsWithSupabaseStorage) {
+                  await syncDocumentsWithSupabaseStorage();
+                  showToast('Arquivos sincronizados com a nuvem Supabase!');
+                }
+                setIsSyncing(false);
+              }}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                color: '#FFFFFF',
+                border: '1px solid rgba(255, 255, 255, 0.22)',
+                borderRadius: 'var(--radius-sm)',
+                fontWeight: 600,
+                fontSize: '0.8rem',
+                padding: '0.45rem 0.8rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: isSyncing ? 'not-allowed' : 'pointer',
+                transition: 'all 0.15s ease',
+                opacity: isSyncing ? 0.7 : 1
+              }}
+              title="Buscar novos arquivos enviados no Supabase Storage"
+            >
+              <RefreshCw size={14} style={{ animation: isSyncing ? 'spin 1s linear infinite' : 'none' }} />
+              {isSyncing ? 'Sincronizando...' : 'Sincronizar Nuvem'}
+            </button>
+
             <button
               onClick={() => setIsUploading(!isUploading)}
               className="btn-primary"

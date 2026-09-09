@@ -9,7 +9,9 @@ import {
 } from '../data/initialData';
 import { DEFAULT_MODULES, DEFAULT_ROLES } from '../data/initialPermissions';
 import { INITIAL_WORK_SHIFTS } from '../data/initialWorkShifts';
+import { INITIAL_DOCUMENTS } from '../data/initialDocuments';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
+import { SUPABASE_BUCKET_NAME, SUPABASE_REPOSITORY_FOLDER, deleteFileFromSupabase } from '../services/documentStorage';
 import { formatPhoneNumber } from '../utils/dateHelpers';
 import { formatCEP } from '../utils/brazilianLocations';
 import { getFranchiseeGroups } from '../utils/franchiseeHelpers';
@@ -174,10 +176,10 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {}
     }
-    return [];
+    return INITIAL_DOCUMENTS;
   });
 
   const [turnoverRecords, setTurnoverRecords] = useState(() => {
@@ -354,6 +356,83 @@ export function AppProvider({ children }) {
     return true;
   };
 
+  // Sincronização inteligente dos arquivos armazenados no bucket do Supabase Storage
+  const syncDocumentsWithSupabaseStorage = async () => {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const { data, error } = await supabase.storage
+        .from(SUPABASE_BUCKET_NAME)
+        .list(SUPABASE_REPOSITORY_FOLDER);
+
+      if (error || !data || !Array.isArray(data)) return;
+
+      const storageDocs = data
+        .filter(item => item.name && !item.name.startsWith('.'))
+        .map(item => {
+          const storagePath = `${SUPABASE_REPOSITORY_FOLDER}/${item.name}`;
+          const { data: pubUrl } = supabase.storage
+            .from(SUPABASE_BUCKET_NAME)
+            .getPublicUrl(storagePath);
+
+          const parts = item.name.split('_');
+          const docId = parts[0];
+          const rawName = parts.slice(1).join('_') || item.name;
+          const ext = item.name.split('.').pop()?.toLowerCase() || 'pdf';
+          const titleWithoutExt = rawName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+
+          const sizeInMb = item.metadata?.size ? (item.metadata.size / (1024 * 1024)).toFixed(1) : 0;
+          const fileSize = sizeInMb > 0 ? `${sizeInMb} MB` : `${Math.round((item.metadata?.size || 1024) / 1024)} KB`;
+
+          let category = 'Gestão & Negócios';
+          const lower = titleWithoutExt.toLowerCase();
+          if (lower.includes('dre') || lower.includes('conta') || lower.includes('cmv') || lower.includes('financeiro') || lower.includes('despesa') || lower.includes('tabela')) {
+            category = 'Financeiro & CMV';
+          } else if (lower.includes('receita') || lower.includes('cozinha') || lower.includes('mci') || lower.includes('limpeza') || lower.includes('escala')) {
+            category = 'Operação & Cozinha';
+          } else if (lower.includes('validade') || lower.includes('sanit') || lower.includes('qa') || lower.includes('qualidade')) {
+            category = 'Qualidade & Sanitário';
+          } else if (lower.includes('delivery') || lower.includes('ifood')) {
+            category = 'Delivery & iFood';
+          } else if (lower.includes('treinamento') || lower.includes('pessoa')) {
+            category = 'Pessoas & Treinamento';
+          } else if (lower.includes('plano') || lower.includes('ata') || lower.includes('radar') || lower.includes('implementa')) {
+            category = 'Planos de Ação';
+          }
+
+          return {
+            id: docId || item.id || `doc-${Date.now()}`,
+            title: titleWithoutExt,
+            category,
+            format: ext,
+            fileSize,
+            version: 'v2026.1',
+            updatedAt: item.updated_at ? item.updated_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            downloads: 0,
+            description: 'Arquivo oficial armazenado no Repositório Spoleto.',
+            downloadUrl: pubUrl?.publicUrl || null,
+            storagePath,
+            isSupabaseFile: true,
+            hasRealFile: true,
+            originalFileName: rawName,
+            author: 'Equipe Spoleto',
+            isOfficial: true
+          };
+        });
+
+      setDocuments(prev => {
+        const storagePaths = new Set(storageDocs.map(d => d.storagePath));
+        const cleanPrev = prev.filter(d => !d.storagePath || !storagePaths.has(d.storagePath));
+        const merged = [...storageDocs, ...cleanPrev];
+        try {
+          localStorage.setItem('spoleto_documents_v1', JSON.stringify(merged));
+        } catch (e) {}
+        return merged;
+      });
+    } catch (err) {
+      console.warn('Erro ao sincronizar documentos do Supabase Storage:', err);
+    }
+  };
+
   // Persiste documentos
   useEffect(() => {
     try {
@@ -367,7 +446,15 @@ export function AppProvider({ children }) {
     setDocuments(prev => [newDoc, ...prev]);
   };
 
-  const deleteDocument = (docId) => {
+  const deleteDocument = async (docId) => {
+    const doc = documents.find(d => d.id === docId);
+    if (doc?.storagePath) {
+      try {
+        await deleteFileFromSupabase(doc.storagePath);
+      } catch (e) {
+        console.warn('Erro ao remover do Supabase Storage:', e);
+      }
+    }
     setDocuments(prev => prev.filter(d => d.id !== docId));
   };
 
@@ -769,6 +856,7 @@ export function AppProvider({ children }) {
     }
 
     loadFromSupabase();
+    syncDocumentsWithSupabaseStorage();
   }, []);
 
   // Save to LocalStorage (v2 keys)
@@ -1866,6 +1954,7 @@ export function AppProvider({ children }) {
       setIsRepositoryOpen,
       addDocument,
       deleteDocument,
+      syncDocumentsWithSupabaseStorage,
       turnoverRecords,
       addTurnoverRecord,
       deleteTurnoverRecord,
