@@ -31,6 +31,16 @@ const isLegacyMockStaff = (c) => {
   return false;
 };
 
+// IDs dos 6 documentos de demonstração originais para expurgo definitivo
+const LEGACY_SAMPLE_DOC_IDS = new Set([
+  'doc-cmv-calc',
+  'doc-reuniao-franqueado',
+  'doc-manual-qa',
+  'doc-ata-alinhamento',
+  'doc-delivery-guia',
+  'doc-escala-equipe'
+]);
+
 export function AppProvider({ children }) {
   // Navigation State
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -176,10 +186,12 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.filter(d => !LEGACY_SAMPLE_DOC_IDS.has(d.id));
+        }
       } catch (e) {}
     }
-    return INITIAL_DOCUMENTS;
+    return [];
   });
 
   const [turnoverRecords, setTurnoverRecords] = useState(() => {
@@ -421,7 +433,9 @@ export function AppProvider({ children }) {
 
       setDocuments(prev => {
         const storagePaths = new Set(storageDocs.map(d => d.storagePath));
-        const cleanPrev = prev.filter(d => !d.storagePath || !storagePaths.has(d.storagePath));
+        const cleanPrev = prev
+          .filter(d => !d.storagePath || !storagePaths.has(d.storagePath))
+          .filter(d => !LEGACY_SAMPLE_DOC_IDS.has(d.id));
         const merged = [...storageDocs, ...cleanPrev];
         try {
           localStorage.setItem('spoleto_documents_v1', JSON.stringify(merged));
@@ -455,7 +469,13 @@ export function AppProvider({ children }) {
         console.warn('Erro ao remover do Supabase Storage:', e);
       }
     }
-    setDocuments(prev => prev.filter(d => d.id !== docId));
+    setDocuments(prev => {
+      const next = prev.filter(d => d.id !== docId);
+      try {
+        localStorage.setItem('spoleto_documents_v1', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
   };
 
   // ==========================================
