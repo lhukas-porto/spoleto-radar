@@ -15,6 +15,7 @@ import { SUPABASE_BUCKET_NAME, SUPABASE_REPOSITORY_FOLDER, deleteFileFromSupabas
 import { formatPhoneNumber } from '../utils/dateHelpers';
 import { formatCEP } from '../utils/brazilianLocations';
 import { getFranchiseeGroups } from '../utils/franchiseeHelpers';
+import { sortSubproblemsBySeverity } from '../utils/taxonomyHelpers';
 
 const AppContext = createContext();
 
@@ -121,21 +122,27 @@ export function AppProvider({ children }) {
 
   const [categories, setCategories] = useState(() => {
     const saved = localStorage.getItem('trigo_categories_v2');
+    let baseList = INITIAL_CATEGORIES;
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed.length >= 18) {
-          // Atualiza denominação consultiva caso ainda esteja com termo antigo
-          return parsed.map(c => {
-            if (c.id === 'cat-qa' && c.name?.includes('AUDITORIA')) {
-              return { ...c, name: 'Q.A (PADRÃO DE QUALIDADE & EXCELÊNCIA)' };
-            }
-            return c;
-          });
+        if (Array.isArray(parsed) && parsed.length >= 18) {
+          baseList = parsed;
         }
       } catch (e) {}
     }
-    return INITIAL_CATEGORIES;
+
+    return baseList.map(c => {
+      let name = c.name;
+      if (c.id === 'cat-qa' && c.name?.includes('AUDITORIA')) {
+        name = 'Q.A (PADRÃO DE QUALIDADE & EXCELÊNCIA)';
+      }
+      return {
+        ...c,
+        name,
+        subproblems: sortSubproblemsBySeverity(c.subproblems || [])
+      };
+    });
   });
 
   const [visits, setVisits] = useState(() => {
@@ -850,7 +857,11 @@ export function AppProvider({ children }) {
         // Fetch Categories
         const { data: cloudCategories } = await supabase.from('categories').select('*');
         if (cloudCategories && cloudCategories.length > 0) {
-          setCategories(cloudCategories);
+          const sortedCloud = cloudCategories.map(c => ({
+            ...c,
+            subproblems: sortSubproblemsBySeverity(c.subproblems || [])
+          }));
+          setCategories(sortedCloud);
         }
 
         // Fetch Visits
@@ -1813,7 +1824,7 @@ export function AppProvider({ children }) {
         if (cat.id !== categoryId) return cat;
         updatedCat = {
           ...cat,
-          subproblems: [...(cat.subproblems || []), newSubproblem]
+          subproblems: sortSubproblemsBySeverity([...(cat.subproblems || []), newSubproblem])
         };
         return updatedCat;
       });
@@ -1849,7 +1860,7 @@ export function AppProvider({ children }) {
         });
         updatedCat = {
           ...cat,
-          subproblems: updatedSubs
+          subproblems: sortSubproblemsBySeverity(updatedSubs)
         };
         return updatedCat;
       });

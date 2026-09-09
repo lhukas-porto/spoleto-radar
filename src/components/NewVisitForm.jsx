@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import DateInput from './DateInput';
 import SignaturePad from './SignaturePad';
+import { sortSubproblemsBySeverity } from '../utils/taxonomyHelpers';
 import { 
   ClipboardCheck, 
   Store, 
@@ -708,7 +709,7 @@ export default function NewVisitForm() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {diagnostics.map((diag, index) => {
                 const currentCategory = categories.find(c => c.id === diag.categoryId);
-                const currentSubproblems = currentCategory ? currentCategory.subproblems : [];
+                const currentSubproblems = currentCategory ? sortSubproblemsBySeverity(currentCategory.subproblems) : [];
                 const currentSubproblem = currentSubproblems.find(s => s.id === diag.subproblemId) || currentSubproblems[0];
 
                 return (

@@ -588,6 +588,13 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   border: 1px solid #BAE6FD;
 }
 
+.badge-baixa,
+.badge-leve {
+  background-color: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
 .badge-concluido {
   background-color: var(--status-concluido-bg);
   color: var(--status-concluido-text);

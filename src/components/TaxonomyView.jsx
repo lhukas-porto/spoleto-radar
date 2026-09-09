@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   Settings2, 
@@ -14,8 +14,10 @@ import {
   CheckCircle2,
   Edit2,
   Trash2,
-  Check
+  Check,
+  ArrowDownNarrowWide
 } from 'lucide-react';
+import { sortSubproblemsBySeverity, getSeverityBadgeClass } from '../utils/taxonomyHelpers';
 
 export default function TaxonomyView() {
   const { 
@@ -73,6 +75,11 @@ export default function TaxonomyView() {
   };
 
   const selectedCategory = categories.find(c => c.id === selectedCatId) || categories[0];
+
+  // Subtópicos organizados por importância: Crítica -> Alta -> Média -> Baixa
+  const sortedSubproblems = useMemo(() => {
+    return sortSubproblemsBySeverity(selectedCategory?.subproblems || []);
+  }, [selectedCategory]);
 
   // Open Edit Category Modal (Passa o objeto exato)
   const handleOpenEditCategory = (cat) => {
@@ -363,7 +370,18 @@ export default function TaxonomyView() {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  {selectedCategory.subproblems.map((sub, idx) => (
+                  {/* Indicador de Ordenação por Importância */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Subtópicos Cadastrados ({sortedSubproblems.length})
+                    </span>
+                    <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#FAF8F5', padding: '0.25rem 0.65rem', borderRadius: 'var(--radius-sm)', border: '1px solid #E8DFD8' }}>
+                      <ArrowDownNarrowWide size={14} color="var(--accent-gold-dark)" />
+                      Ordem de Importância: <strong style={{ color: 'var(--primary-brown)' }}>Alta → Média → Baixa</strong>
+                    </span>
+                  </div>
+
+                  {sortedSubproblems.map((sub, idx) => (
                     <div 
                       key={sub.id}
                       style={{
@@ -385,7 +403,7 @@ export default function TaxonomyView() {
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span className={`badge ${sub.defaultSeverity === 'Crítica' ? 'badge-critica' : sub.defaultSeverity === 'Alta' ? 'badge-alta' : 'badge-media'}`}>
+                          <span className={`badge ${getSeverityBadgeClass(sub.defaultSeverity)}`}>
                             {sub.defaultSeverity}
                           </span>
 
