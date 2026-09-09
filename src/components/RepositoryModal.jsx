@@ -369,9 +369,8 @@ export default function RepositoryModal({ isOpen, onClose }) {
     }
   };
 
-  // Helper to download a Blob with proper filename and MIME type
-  const downloadBlobFile = async (blobData, rawFileName, format) => {
-    // Determine MIME type based on format
+  // Helper para download direto, limpo e seguro (sem pedir permissões intrusivas de escrita no disco)
+  const downloadBlobFile = (blobData, rawFileName, format) => {
     const mimeMap = {
       doc: 'application/msword',
       docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -388,35 +387,15 @@ export default function RepositoryModal({ isOpen, onClose }) {
     const safeName = rawFileName.replace(/[\\/:*?"<>|]/g, '_');
     const fileName = safeName.endsWith(`.${format}`) ? safeName : `${safeName}.${format}`;
 
-    const fallbackDownload = () => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 3000);
-      showToast(`Baixando: ${safeName}`);
-    };
-
-    if (typeof window !== 'undefined' && window.showSaveFilePicker) {
-      try {
-        const handle = await window.showSaveFilePicker({
-          suggestedName: fileName,
-          types: [{ description: `${format?.toUpperCase()} file`, accept: { [mimeType]: [`.${format}`] } }]
-        });
-        const writable = await handle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-        showToast(`Arquivo salvo como ${fileName}`);
-      } catch (e) {
-        console.warn('showSaveFilePicker falhou, usando fallback:', e);
-        fallbackDownload();
-      }
-    } else {
-      fallbackDownload();
-    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    showToast(`Baixando: ${safeName}`);
   };
 
   const handleDownload = async (doc) => {
