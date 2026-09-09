@@ -1670,13 +1670,32 @@ export default function StoresView() {
 
                 <div className="form-group">
                   <label className="form-label">E-mail da Unidade / Franqueado</label>
-                  <input 
-                    type="email" 
-                    value={editStoreForm.email} 
-                    onChange={(e) => setEditStoreForm({ ...editStoreForm, email: e.target.value.toLowerCase() })} 
-                    placeholder="loja@spoleto.com.br" 
-                    style={{ textTransform: 'lowercase' }}
-                  />
+                  {(() => {
+                    const linked = editingStore && getStoreFranchisees ? getStoreFranchisees(editingStore.id) : [];
+                    const withEmails = linked.filter(f => f.email);
+                    if (withEmails.length > 1) {
+                      return withEmails.map(f => (
+                        <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', minWidth: 80 }}>{f.name.split(' ')[0]}:</span>
+                          <input
+                            type="email"
+                            readOnly
+                            value={f.email}
+                            style={{ textTransform: 'lowercase', background: 'var(--bg-subtle, #f5f5f5)', cursor: 'default', flex: 1 }}
+                          />
+                        </div>
+                      ));
+                    }
+                    return (
+                      <input
+                        type="email"
+                        readOnly
+                        value={withEmails[0]?.email || editStoreForm.email || ''}
+                        placeholder="loja@spoleto.com.br"
+                        style={{ textTransform: 'lowercase', background: 'var(--bg-subtle, #f5f5f5)', cursor: 'default' }}
+                      />
+                    );
+                  })()}
                 </div>
 
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>

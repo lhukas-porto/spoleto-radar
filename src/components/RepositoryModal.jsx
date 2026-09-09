@@ -28,8 +28,10 @@ import {
   getFileBinary, 
   deleteFileBinary,
   uploadFileToSupabase,
-  deleteFileFromSupabase
+  deleteFileFromSupabase,
+  SUPABASE_BUCKET_NAME
 } from '../services/documentStorage';
+import { supabase } from '../services/supabase';
 
 /**
  * Resolve URLs da nuvem (Google Drive, Dropbox, OneDrive, Web) para download direto
@@ -351,55 +353,101 @@ export default function RepositoryModal({ isOpen, onClose }) {
     }
   };
 
+  // Helper to download a Blob with proper filename and MIME type
+  const downloadBlobFile = async (blobData, rawFileName, format) => {
+    // Determine MIME type based on format
+    const mimeMap = {
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      xls: 'application/vnd.ms-excel',
+      ppt: 'application/vnd.ms-powerpoint',
+      pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      pdf: 'application/pdf',
+      csv: 'text/csv',
+      txt: 'text/plain'
+    };
+    const mimeType = mimeMap[format?.toLowerCase()] || 'application/octet-stream';
+    const blob = new Blob([blobData], { type: mimeType });
+    const safeName = rawFileName.replace(/[\\/:*?"<>|]/g, '_');
+    const fileName = safeName.endsWith(`.${format}`) ? safeName : `${safeName}.${format}`;
+
+    const fallbackDownload = () => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+      showToast(`Baixando: ${safeName}`);
+    };
+
+    if (typeof window !== 'undefined' && window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: `${format?.toUpperCase()} file`, accept: { [mimeType]: [`.${format}`] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        showToast(`Arquivo salvo como ${fileName}`);
+      } catch (e) {
+        console.warn('showSaveFilePicker falhou, usando fallback:', e);
+        fallbackDownload();
+      }
+    } else {
+      fallbackDownload();
+    }
+  };
+
   const handleDownload = async (doc) => {
-    // 1. Tenta recuperar o arquivo real salvo no IndexedDB (upload local)
+    // 1. Try local IndexedDB storage
     try {
       const fileRecord = await getFileBinary(doc.id);
       if (fileRecord && fileRecord.data) {
-        const blob = fileRecord.data;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileRecord.fileName || `${doc.title}.${doc.format}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showToast(`Baixando: ${doc.title}`);
+        downloadBlobFile(fileRecord.data, fileRecord.fileName || doc.originalFileName || doc.title, doc.format);
         return;
       }
     } catch (e) {
       console.warn('Não foi possível ler do IndexedDB:', e);
     }
 
-    // 2. Se for link da nuvem ou downloadUrl externa válida
-    const targetUrl = doc.downloadUrl || doc.cloudUrl;
-    if (targetUrl && !targetUrl.startsWith('blob:')) {
-      const a = document.createElement('a');
-      a.href = targetUrl;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.download = `${doc.title}.${doc.format}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast(`Iniciando download do ${doc.cloudProvider || 'Nuvem'}...`);
-      return;
+    // 2. If Supabase file, download via Supabase SDK
+    if (doc.isSupabaseFile && doc.storagePath) {
+      try {
+        const { data, error } = await supabase.storage.from(SUPABASE_BUCKET_NAME).download(doc.storagePath);
+        if (error) {
+          console.warn('Error downloading from Supabase:', error);
+        } else if (data) {
+          const fileName = doc.originalFileName || doc.title;
+          downloadBlobFile(data, fileName, doc.format);
+          return;
+        }
+      } catch (err) {
+        console.warn('Supabase download failed:', err);
+      }
     }
 
-    // 3. Fallback: modelo oficial institucional com dados de exemplo
-    const simulatedText = `========================================================\nSPOLETO - CONSULTORIA DE NEGÓCIOS & OPERAÇÕES\nMODELO OFICIAL: ${doc.title.toUpperCase()}\nVERSÃO: ${doc.version} | CATEGORIA: ${doc.category}\nAUTOR: ${doc.author}\n========================================================\n\nEste é o modelo padrão de trabalho homologado pela rede Spoleto.\nDescrição: ${doc.description}\n\nUtilize este modelo oficial nas rotinas operacionais e reuniões com franqueados.`;
-    const blob = new Blob([simulatedText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${doc.title.replace(/\s+/g, '_')}_${doc.version}.${doc.format === 'xlsx' ? 'txt' : doc.format}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    // 3. External cloud URL (Google Drive, Dropbox, etc.)
+    const targetUrl = doc.downloadUrl || doc.cloudUrl;
+    if (targetUrl && !targetUrl.startsWith('blob:')) {
+      try {
+        const response = await fetch(targetUrl);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const arrayBuffer = await response.arrayBuffer();
+        downloadBlobFile(arrayBuffer, doc.originalFileName || doc.title, doc.format);
+        return;
+      } catch (err) {
+        console.warn('Failed to fetch external file:', err);
+      }
+    }
 
-    showToast(`Baixando: ${doc.title}`);
+    // 4. Fallback simulated text file
+    const simulatedText = `========================================================\nSPOLETO - CONSULTORIA DE NEGÓCIOS & OPERAÇÕES\nMODELO OFICIAL: ${doc.title.toUpperCase()}\nVERSÃO: ${doc.version} | CATEGORIA: ${doc.category}\nAUTOR: ${doc.author}\n========================================================\n\nEste é o modelo padrão de trabalho homologado pela rede Spoleto.\nDescrição: ${doc.description}\n\nUtilize este modelo oficial nas rotinas operacionais e reuniões com franqueados.`;
+    downloadBlobFile(simulatedText, doc.originalFileName || doc.title, doc.format === 'xlsx' ? 'txt' : doc.format);
   };
 
   const handleDelete = (doc) => {

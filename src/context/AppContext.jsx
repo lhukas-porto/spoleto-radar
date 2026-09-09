@@ -1457,7 +1457,7 @@ export function AppProvider({ children }) {
           return {
             ...s,
             franchisee: partners.map(p => p.name).join(' / '),
-            email: partners.map(p => p.email).filter(Boolean).join(', ') || s.email,
+            email: partners[0]?.email || s.email,
             phone: partners[0]?.phone || s.phone
           };
         }
@@ -1472,7 +1472,8 @@ export function AppProvider({ children }) {
           id: newFranchisee.id,
           name: newFranchisee.name,
           email: newFranchisee.email,
-          phone: newFranchisee.phone
+          phone: newFranchisee.phone,
+          photo_url: newFranchisee.photoUrl
         });
 
         // 2. Salva os vínculos na tabela store_franchisees
@@ -1547,7 +1548,8 @@ export function AppProvider({ children }) {
           id: id,
           name: updatedObj.name,
           email: updatedObj.email,
-          phone: updatedObj.phone
+          phone: updatedObj.phone,
+          photo_url: updatedObj.photoUrl
         });
 
         // 2. Atualiza vínculos de lojas
