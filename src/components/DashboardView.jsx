@@ -26,6 +26,7 @@ import {
   X
 } from 'lucide-react';
 import RegionalBenchmarkView from './RegionalBenchmarkView';
+import NetworkDiagnosticsReport from './NetworkDiagnosticsReport';
 
 export default function DashboardView() {
   const {
@@ -34,6 +35,7 @@ export default function DashboardView() {
     categories,
     visibleVisits: visits = [],
     franchisees = [],
+    franchiseeGroups = [],
     setActiveTab,
     setSelectedVisitForReport,
     setIsOverdueModalOpen,
@@ -49,11 +51,15 @@ export default function DashboardView() {
   const [selectedSubproblem, setSelectedSubproblem] = useState(null); // null = nenhum; subproblemId = lojas com esse problema
   const [dashboardSubTab, setDashboardSubTab] = useState('overview'); // 'overview' | 'benchmark' | 'ranking'
 
-  // High level KPIs
+  // High level KPIs (Agrupamento por Loja / Sociedade: múltiplos sócios da mesma loja contam como 1 franqueado)
   const totalStores = stores.length;
-  const totalFranchisees = franchisees.length > 0 
-    ? franchisees.length 
-    : Array.from(new Set(stores.map(s => s.franchisee).filter(Boolean))).length;
+  const totalFranchiseeGroups = (franchiseeGroups && franchiseeGroups.length > 0)
+    ? franchiseeGroups.length
+    : (franchisees.length > 0 
+        ? franchisees.length 
+        : Array.from(new Set(stores.map(s => s.franchisee).filter(Boolean))).length);
+  const totalPartners = franchisees.length;
+  const totalFranchisees = totalFranchiseeGroups;
   const totalStaff = consultants.length;
   const totalVisits = visits.length;
 
@@ -281,7 +287,11 @@ export default function DashboardView() {
           <div>
             <div className="kpi-label">Franqueados da Rede</div>
             <div className="kpi-value">{totalFranchisees}</div>
-            <div className="kpi-subtext">Sócios & Grupos Franqueados</div>
+            <div className="kpi-subtext">
+              {totalPartners > totalFranchisees 
+                ? `${totalPartners} sócios cadastrados em ${totalFranchisees} operações` 
+                : 'Grupos & Sócios Franqueados'}
+            </div>
           </div>
         </div>
 
@@ -347,6 +357,37 @@ export default function DashboardView() {
 
         <button
           type="button"
+          onClick={() => setDashboardSubTab('raio-x')}
+          style={{
+            padding: '0.55rem 1.25rem',
+            borderRadius: 'var(--radius-md)',
+            border: dashboardSubTab === 'raio-x' ? '2px solid #F59E0B' : '1.5px solid #F59E0B',
+            background: dashboardSubTab === 'raio-x' 
+              ? 'linear-gradient(135deg, #B45309 0%, #78350F 100%)' 
+              : 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+            color: dashboardSubTab === 'raio-x' ? '#FFFFFF' : '#78350F',
+            fontWeight: 900,
+            fontSize: '0.86rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: dashboardSubTab === 'raio-x' 
+              ? '0 4px 14px rgba(180, 83, 9, 0.4)' 
+              : '0 2px 10px rgba(217, 119, 6, 0.25)',
+            transform: dashboardSubTab === 'raio-x' ? 'scale(1.02)' : 'scale(1)',
+            transition: 'all 0.15s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.04)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = dashboardSubTab === 'raio-x' ? 'scale(1.02)' : 'scale(1)'}
+          title="Ver o Raio-X completo de problemas, gargalos e embaixadores da rede"
+        >
+          <Sparkles size={17} color={dashboardSubTab === 'raio-x' ? '#FDE68A' : '#B45309'} />
+          <span>Raio-X da Rede</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setDashboardSubTab('benchmark')}
           style={{
             padding: '0.55rem 1.15rem',
@@ -369,10 +410,72 @@ export default function DashboardView() {
       </div>
 
       {dashboardSubTab === 'benchmark' && <RegionalBenchmarkView />}
+      {dashboardSubTab === 'raio-x' && <NetworkDiagnosticsReport />}
 
       {dashboardSubTab === 'overview' && (
-        /* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+        <>
+          {/* Banner VIP de Destaque Executivo para o Raio-X */}
+          <div style={{
+            background: 'linear-gradient(135deg, #FFFDF9 0%, #FEF3C7 100%)',
+            border: '1.5px solid #FDE68A',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.9rem 1.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
+            marginBottom: '1.25rem',
+            flexWrap: 'wrap',
+            boxShadow: '0 2px 6px rgba(180, 83, 9, 0.06)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: '#FDE68A',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.2rem',
+                flexShrink: 0
+              }}>
+                🔍
+              </div>
+              <div>
+                <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#92400E' }}>
+                  Quer mapear quantas e quais lojas estão sem embaixador ou analisar gargalos específicos da rede?
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#B45309', marginTop: '0.1rem' }}>
+                  Acesse a matriz consolidada de Tópicos e Subtópicos com filtros e exportação pronta para IA e PDF.
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setDashboardSubTab('raio-x')}
+              style={{
+                backgroundColor: 'var(--primary-brown)',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 2px 6px rgba(93, 56, 38, 0.2)'
+              }}
+            >
+              <Sparkles size={14} color="#FDE68A" /> Abrir Raio-X da Rede &rarr;
+            </button>
+          </div>
+
+          {/* Main Grid: Gráfico Pizza de Gargalos Operacionais com Drilldown & Últimas Visitas */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(440px, 1.2fr) 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
 
           {/* =========================================================================
             GRÁFICO PIZZA / DONUT DE GARGALOS OPERACIONAIS COM SEGUNDO GRÁFICO DE SUBTÓPICOS ABAIXO
@@ -931,6 +1034,7 @@ export default function DashboardView() {
             </div>
           </div>
         </div>
+        </>
       )}
     </div>
   );

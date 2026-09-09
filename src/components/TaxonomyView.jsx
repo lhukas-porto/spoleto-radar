@@ -438,7 +438,7 @@ export default function TaxonomyView() {
           MODAL: EDITAR TÓPICO PRINCIPAL
           ========================================================================= */}
       {isEditCatModalOpen && editingCategory && (
-        <div className="modal-overlay" onClick={() => setIsEditCatModalOpen(false)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -490,7 +490,7 @@ export default function TaxonomyView() {
           MODAL: EDITAR SUBTÓPICO (TÍTULO, SEVERIDADE E PLANOS DE AÇÃO)
           ========================================================================= */}
       {editingSubproblemData && (
-        <div className="modal-overlay" onClick={() => setEditingSubproblemData(null)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -598,7 +598,7 @@ export default function TaxonomyView() {
           MODAL: NOVO TÓPICO PRINCIPAL
           ========================================================================= */}
       {isNewCatModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsNewCatModalOpen(false)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <div>
@@ -647,7 +647,7 @@ export default function TaxonomyView() {
           MODAL: NOVO SUBTÓPICO (TOTALMENTE DINÂMICO E ILIMITADO)
           ========================================================================= */}
       {isNewSubModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsNewSubModalOpen(false)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h2 style={{ fontSize: '1.2rem', color: 'var(--primary-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

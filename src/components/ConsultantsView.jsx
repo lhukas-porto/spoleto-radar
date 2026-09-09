@@ -829,7 +829,7 @@ export default function ConsultantsView() {
           MODAL DE CADASTRO DE NOVO MEMBRO DA EQUIPE SPOLETO
           ========================================================================= */}
       {isAddModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsAddModalOpen(false)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '580px', padding: '1.75rem' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">Cadastrar Novo Membro - Equipe Spoleto</h2>
@@ -986,7 +986,7 @@ export default function ConsultantsView() {
           MODAL DE EDIÇÃO DE MEMBRO DA EQUIPE SPOLETO & FOTO
           ========================================================================= */}
       {editingConsultant && (
-        <div className="modal-overlay" onClick={() => setEditingConsultant(null)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '580px', padding: '1.75rem' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">Editar Cadastro - {editingConsultant.name}</h2>
@@ -1176,7 +1176,7 @@ export default function ConsultantsView() {
           MODAL DE ATRIBUIÇÃO DE CARTEIRA DE LOJAS (COM REGRA DE EXCLUSIVIDADE)
           ========================================================================= */}
       {managingConsultant && (
-        <div className="modal-overlay" onClick={() => setManagingConsultant(null)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '850px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: '1.75rem' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>

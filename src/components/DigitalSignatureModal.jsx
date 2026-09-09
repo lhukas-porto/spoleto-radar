@@ -44,7 +44,7 @@ export default function DigitalSignatureModal({
   const hasAnySignature = consultantSig || storeSig;
 
   return (
-    <div className="modal-overlay" style={{ zIndex: 1200 }} onClick={onClose}>
+    <div className="modal-overlay" style={{ zIndex: 1200 }}>
       <div 
         className="modal-card" 
         style={{ maxWidth: '640px', width: '95%', padding: '1.75rem' }} 

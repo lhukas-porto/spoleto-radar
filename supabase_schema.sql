@@ -296,3 +296,52 @@ DROP POLICY IF EXISTS "Permitir escrita para todos" ON public.notifications;
 CREATE POLICY "Permitir leitura para todos" ON public.notifications FOR SELECT USING (true);
 CREATE POLICY "Permitir escrita para todos" ON public.notifications FOR ALL USING (true);
 
+-- =========================================================================
+-- 11. TABELA DE DOCUMENTOS DO REPOSITÓRIO (MODELOS & ARQUIVOS)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS public.documents (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  format TEXT NOT NULL,
+  file_size TEXT,
+  version TEXT DEFAULT 'v2026.1',
+  description TEXT,
+  download_url TEXT,
+  storage_path TEXT,
+  cloud_url TEXT,
+  cloud_provider TEXT,
+  is_cloud_link BOOLEAN DEFAULT false,
+  author TEXT DEFAULT 'Equipe de Consultoria',
+  is_official BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at DATE DEFAULT CURRENT_DATE NOT NULL
+);
+
+ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Permitir leitura para todos" ON public.documents;
+DROP POLICY IF EXISTS "Permitir escrita para todos" ON public.documents;
+CREATE POLICY "Permitir leitura para todos" ON public.documents FOR SELECT USING (true);
+CREATE POLICY "Permitir escrita para todos" ON public.documents FOR ALL USING (true);
+
+-- =========================================================================
+-- 12. POLÍTICAS DO BUCKET 'spoleto' NO SUPABASE STORAGE
+-- =========================================================================
+-- Execute estas políticas no SQL Editor do Supabase para liberar o upload/download de arquivos:
+DROP POLICY IF EXISTS "Permitir leitura publica spoleto" ON storage.objects;
+CREATE POLICY "Permitir leitura publica spoleto" ON storage.objects
+  FOR SELECT USING (bucket_id = 'spoleto');
+
+DROP POLICY IF EXISTS "Permitir upload publico spoleto" ON storage.objects;
+CREATE POLICY "Permitir upload publico spoleto" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'spoleto');
+
+DROP POLICY IF EXISTS "Permitir update publico spoleto" ON storage.objects;
+CREATE POLICY "Permitir update publico spoleto" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'spoleto');
+
+DROP POLICY IF EXISTS "Permitir delete publico spoleto" ON storage.objects;
+CREATE POLICY "Permitir delete publico spoleto" ON storage.objects
+  FOR DELETE USING (bucket_id = 'spoleto');
+
+

@@ -371,7 +371,7 @@ export default function OverdueActionsModal() {
   };
 
   return (
-    <div className="modal-overlay" onClick={() => setIsOverdueModalOpen(false)}>
+    <div className="modal-overlay">
       <div 
         className="modal-card" 
         style={{ maxWidth: '1160px', maxHeight: '92vh', overflowY: 'auto', padding: '0', borderRadius: 'var(--radius-lg)' }}
@@ -839,7 +839,7 @@ export default function OverdueActionsModal() {
 
         {/* Modal Secundário de Disparo de E-mail / WhatsApp */}
         {notificationConfig && selectedVisitItem && (
-          <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setNotificationConfig(null)}>
+          <div className="modal-overlay" style={{ zIndex: 1100 }}>
             <div 
               className="modal-card" 
               style={{ maxWidth: '680px', padding: '1.75rem', borderRadius: 'var(--radius-lg)' }}

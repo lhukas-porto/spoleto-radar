@@ -100,7 +100,7 @@ export default function StaffProfileModal() {
   const cleanPhone = (staff.phone || '').replace(/\D/g, '');
 
   return (
-    <div className="modal-overlay" onClick={() => setSelectedStaffForProfile(null)}>
+    <div className="modal-overlay">
       <div 
         className="modal-card" 
         style={{ maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto', padding: '0', borderRadius: 'var(--radius-lg)' }}

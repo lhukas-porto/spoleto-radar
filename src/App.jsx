@@ -13,6 +13,7 @@ import OverdueActionsModal from './components/OverdueActionsModal';
 import SubordinatesModal from './components/SubordinatesModal';
 import StoreProfileModal from './components/StoreProfileModal';
 import RepositoryModal from './components/RepositoryModal';
+import FranchiseeProfileModal from './components/FranchiseeProfileModal';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -79,6 +80,7 @@ export default function App() {
       <VisitReportModal />
       <StaffProfileModal />
       <StoreProfileModal store={selectedStoreForProfile} onClose={() => setSelectedStoreForProfile(null)} />
+      <FranchiseeProfileModal />
       <OverdueActionsModal />
       <SubordinatesModal />
       <RepositoryModal isOpen={isRepositoryOpen} onClose={() => setIsRepositoryOpen(false)} />

@@ -30,7 +30,11 @@ import {
   Compass,
   Camera,
   Sliders,
-  Flame
+  Flame,
+  Eye,
+  Award,
+  ExternalLink,
+  MessageCircle
 } from 'lucide-react';
 import FranchiseesView from './FranchiseesView';
 import NetworkMapView from './NetworkMapView';
@@ -42,6 +46,7 @@ export default function StoresView() {
     visibleStores: stores = [], 
     visibleConsultants: consultants = [], 
     franchisees = [],
+    franchiseeGroups = [],
     getStoreFranchisees,
     visibleVisits: visits = [], 
     addStore, 
@@ -50,6 +55,8 @@ export default function StoresView() {
     setSelectedStaffForProfile, 
     setSelectedVisitForReport,
     setSelectedStoreForProfile,
+    selectedFranchiseeForProfile,
+    setSelectedFranchiseeForProfile,
     simulatedRole,
     activeUser,
     hasPermission,
@@ -106,6 +113,7 @@ export default function StoresView() {
   // Zoom e Corte interativo de foto da loja
   const [zoomedPhoto, setZoomedPhoto] = useState(null);
   const [imageToCrop, setImageToCrop] = useState(null); // { src: string, target: 'new' | 'edit' }
+  const [selectedFranchiseeFor360, setSelectedFranchiseeFor360] = useState(null);
 
   // Handlers para o corte e posicionamento circular da foto da loja
   const handleFileSelect = (file, target) => {
@@ -339,21 +347,29 @@ export default function StoresView() {
     });
   };
 
-  const handleSaveEditStore = (e) => {
+  const handleSaveEditStore = async (e) => {
     e.preventDefault();
     if (!editingStore) return;
     if (!editStoreForm.name.trim() || !editStoreForm.code.trim()) {
       alert('Preencha pelo menos o Código RP e o Nome da Loja.');
       return;
     }
-    updateStore(editingStore.id, {
+    const linkedFrans = getStoreFranchisees ? getStoreFranchisees(editingStore.id) : [];
+    const franchiseeNames = linkedFrans.length > 0 
+      ? linkedFrans.map(f => f.name).join(', ') 
+      : (editStoreForm.franchisee ? editStoreForm.franchisee.toUpperCase().trim() : '');
+
+    await updateStore(editingStore.id, {
       ...editStoreForm,
       name: editStoreForm.name.toUpperCase().trim(),
       code: editStoreForm.code.toUpperCase().trim(),
+      address: (editStoreForm.address || '').trim(),
+      city: (editStoreForm.city || '').trim(),
+      state: editStoreForm.state || 'SP',
       workShift: editStoreForm.workShift || '6x1',
       email: (editStoreForm.email || '').toLowerCase().trim(),
       shoppingMallAdmin: (editStoreForm.shoppingMallAdmin || '').toUpperCase().trim(),
-      franchisee: editStoreForm.franchisee ? editStoreForm.franchisee.toUpperCase().trim() : '',
+      franchisee: franchiseeNames,
       phone: formatPhoneNumber(editStoreForm.phone),
       cep: formatCEP(editStoreForm.cep)
     });
@@ -446,7 +462,7 @@ export default function StoresView() {
             transition: 'all 0.15s ease'
           }}
         >
-          <Users size={16} /> Franqueados da Rede <span className="count-pill">{franchisees.length}</span>
+          <Users size={16} /> Franqueados da Rede <span className="count-pill">{franchiseeGroups.length || franchisees.length}</span>
         </button>
       </div>
 
@@ -888,7 +904,7 @@ export default function StoresView() {
 
       {/* Modal de Cadastro de Nova Loja */}
       {isModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '600px', padding: '1.75rem' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">Cadastrar Nova Unidade Spoleto</h2>
@@ -1169,7 +1185,7 @@ export default function StoresView() {
           MODAL DE EDIÇÃO DE UNIDADE SPOLETO
           ========================================================================= */}
       {editingStore && (
-        <div className="modal-overlay" onClick={() => setEditingStore(null)}>
+        <div className="modal-overlay">
           <div className="modal-card" style={{ maxWidth: '650px', padding: '1.75rem' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
@@ -1391,25 +1407,253 @@ export default function StoresView() {
                 </div>
 
                 <div className="form-group">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label className="form-label">Nome do Franqueado / Sócios</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                    <label className="form-label" style={{ marginBottom: 0 }}>Nome do Franqueado / Sócios</label>
                     <span 
                       onClick={() => { setEditingStore(null); setActiveStoreTab('franchisees'); }}
-                      style={{ fontSize: '0.72rem', color: 'var(--primary-brown)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 700 }}
-                      title="Ir para a aba de Franqueados para gestão de múltiplos sócios"
+                      style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                      title="Ir para a aba de Franqueados para cadastrar ou vincular sócios a esta loja"
                     >
                       🤝 Gerenciar Sócios
                     </span>
                   </div>
-                  <input 
-                    type="text" 
-                    value={editStoreForm.franchisee} 
-                    onChange={(e) => setEditStoreForm({ ...editStoreForm, franchisee: e.target.value.toUpperCase() })} 
-                    placeholder="NOME COMPLETO DO FRANQUEADO OU SÓCIOS" 
-                    style={{ textTransform: 'uppercase' }}
-                  />
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                    Dica: Para vincular múltiplos sócios nesta loja, use a aba <strong>Franqueados da Rede</strong>.
+
+                  {/* Campo Não-Editável: Exibe os sócios vinculados de forma limpa e amigável */}
+                  <div style={{
+                    backgroundColor: '#FAF8F5',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.55rem 0.75rem',
+                    minHeight: '44px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.45rem'
+                  }}>
+                    {(() => {
+                      const linked = editingStore && getStoreFranchisees ? getStoreFranchisees(editingStore.id) : [];
+                      if (linked.length > 0) {
+                        return linked.map((fran) => (
+                          <div 
+                            key={fran.id} 
+                            style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'space-between',
+                              padding: '0.45rem 0.75rem',
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: '6px',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                              {/* Avatar do Sócio com Foto e Zoom ao Clicar */}
+                              <div 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setZoomedPhoto({ 
+                                    url: fran.photoUrl || null, 
+                                    name: fran.name, 
+                                    role: 'SÓCIO FRANQUEADO SPOLETO' 
+                                  });
+                                }}
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  borderRadius: '50%',
+                                  backgroundColor: fran.photoUrl ? '#FFFFFF' : '#FEF3C7',
+                                  color: '#B45309',
+                                  border: fran.photoUrl ? '1.5px solid var(--accent-gold)' : '1px solid #FDE68A',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontWeight: 800,
+                                  fontSize: '0.85rem',
+                                  flexShrink: 0,
+                                  overflow: 'hidden',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                                  transition: 'transform 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.12)'}
+                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                title={fran.photoUrl ? "Clique para ampliar a foto do sócio" : "Foto não cadastrada"}
+                              >
+                                {fran.photoUrl ? (
+                                  <img 
+                                    src={fran.photoUrl} 
+                                    alt={fran.name} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  />
+                                ) : (
+                                  fran.name.charAt(0).toUpperCase()
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                                <span style={{ 
+                                  backgroundColor: '#FEF3C7', 
+                                  color: '#B45309', 
+                                  padding: '0.1rem 0.4rem', 
+                                  borderRadius: 'var(--radius-full)', 
+                                  fontSize: '0.62rem', 
+                                  fontWeight: 800,
+                                  letterSpacing: '0.04em'
+                                }}>
+                                  SÓCIO
+                                </span>
+                                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                                  {fran.name}
+                                </span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setSelectedFranchiseeForProfile(fran)}
+                              style={{
+                                padding: '0.3rem 0.75rem',
+                                backgroundColor: '#FAF5EE',
+                                border: '1.5px solid var(--primary-brown-light)',
+                                borderRadius: 'var(--radius-sm)',
+                                color: 'var(--primary-brown)',
+                                fontSize: '0.75rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.35rem',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'var(--primary-brown)';
+                                e.currentTarget.style.color = '#FFFFFF';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#FAF5EE';
+                                e.currentTarget.style.color = 'var(--primary-brown)';
+                              }}
+                              title={`Abrir Visão 360° do sócio ${fran.name}`}
+                            >
+                              <Eye size={13} /> 360°
+                            </button>
+                          </div>
+                        ));
+                      }
+
+                      // Fallback com botão 360 se houver nome textual antigo
+                      if (editStoreForm.franchisee) {
+                        const matched = franchisees.find(f => f.name.trim().toUpperCase() === editStoreForm.franchisee.trim().toUpperCase());
+                        return (
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            padding: '0.45rem 0.75rem',
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E5E7EB',
+                            borderRadius: '6px'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                              {/* Avatar com Foto e Zoom no fallback */}
+                              <div 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setZoomedPhoto({ 
+                                    url: matched?.photoUrl || null, 
+                                    name: editStoreForm.franchisee, 
+                                    role: 'SÓCIO FRANQUEADO SPOLETO' 
+                                  });
+                                }}
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  borderRadius: '50%',
+                                  backgroundColor: matched?.photoUrl ? '#FFFFFF' : '#F3F4F6',
+                                  color: '#4B5563',
+                                  border: matched?.photoUrl ? '1.5px solid var(--accent-gold)' : '1px solid #E5E7EB',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontWeight: 800,
+                                  fontSize: '0.85rem',
+                                  flexShrink: 0,
+                                  overflow: 'hidden',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                                  transition: 'transform 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.12)'}
+                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                title={matched?.photoUrl ? "Clique para ampliar a foto do sócio" : "Foto não cadastrada"}
+                              >
+                                {matched?.photoUrl ? (
+                                  <img 
+                                    src={matched.photoUrl} 
+                                    alt={editStoreForm.franchisee} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  />
+                                ) : (
+                                  editStoreForm.franchisee.charAt(0).toUpperCase()
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                                <span style={{ 
+                                  backgroundColor: '#FEF3C7', 
+                                  color: '#B45309', 
+                                  padding: '0.1rem 0.4rem', 
+                                  borderRadius: 'var(--radius-full)', 
+                                  fontSize: '0.62rem', 
+                                  fontWeight: 800
+                                }}>
+                                  SÓCIO
+                                </span>
+                                <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                                  {editStoreForm.franchisee}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedFranchiseeForProfile(matched || { name: editStoreForm.franchisee, assignedStoreIds: [editingStore.id] })}
+                              style={{
+                                padding: '0.3rem 0.75rem',
+                                backgroundColor: '#FAF5EE',
+                                border: '1.5px solid var(--primary-brown-light)',
+                                borderRadius: 'var(--radius-sm)',
+                                color: 'var(--primary-brown)',
+                                fontSize: '0.75rem',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.35rem'
+                              }}
+                              title={`Abrir Visão 360° de ${editStoreForm.franchisee}`}
+                            >
+                              <Eye size={13} /> 360°
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.2rem 0' }}>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                            Nenhum sócio vinculado a esta unidade no momento.
+                          </span>
+                          <span 
+                            onClick={() => { setEditingStore(null); setActiveStoreTab('franchisees'); }}
+                            style={{ fontSize: '0.72rem', color: 'var(--primary-brown)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }}
+                          >
+                            Vincular na aba Franqueados &rarr;
+                          </span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', display: 'block' }}>
+                    Os sócios são definidos e gerenciados exclusivamente na aba <strong>Franqueados da Rede</strong>.
                   </span>
                 </div>
 
@@ -1542,6 +1786,415 @@ export default function StoresView() {
           onConfirm={handleConfirmCrop}
           onCancel={() => setImageToCrop(null)}
         />
+      )}
+
+      {/* Modal Visão 360° do Franqueado / Sócio */}
+      {selectedFranchiseeFor360 && (() => {
+        const currentFran = franchisees.find(f => f.id === selectedFranchiseeFor360.id || (f.name && f.name.trim().toUpperCase() === selectedFranchiseeFor360.name?.trim().toUpperCase())) || selectedFranchiseeFor360;
+        
+        const franStores = stores.filter(s => {
+          if (currentFran.id && currentFran.assignedStoreIds?.includes(s.id)) return true;
+          if (currentFran.id && getStoreFranchisees) {
+            const linked = getStoreFranchisees(s.id);
+            if (linked.some(f => f.id === currentFran.id)) return true;
+          }
+          if (s.franchisee && currentFran.name && s.franchisee.trim().toUpperCase() === currentFran.name.trim().toUpperCase()) return true;
+          return false;
+        });
+
+        const franVisits = visits.filter(v => franStores.some(s => s.id === v.storeId));
+        
+        const totalActionPlans = franVisits.reduce((acc, v) => 
+          acc + (v.diagnostics || []).filter(d => d.actionPlan?.what || d.actionPlan?.action).length
+        , 0);
+
+        const pendingActionPlans = franVisits.reduce((acc, v) => 
+          acc + (v.diagnostics || []).filter(d => {
+            const st = (d.actionPlan?.status || '').toUpperCase();
+            return (d.actionPlan?.what || d.actionPlan?.action) && st !== 'CONCLUÍDO' && st !== 'VALIDADO';
+          }).length
+        , 0);
+
+        const cleanPhone = (currentFran.phone || '').replace(/\D/g, '');
+
+        return (
+          <div 
+            className="modal-overlay" 
+            style={{ zIndex: 10050, backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(3px)' }}
+            onClick={() => setSelectedFranchiseeFor360(null)}
+          >
+            <div 
+              className="modal-card" 
+              style={{ maxWidth: '640px', padding: '1.75rem', width: '92%', borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.25)' }} 
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="modal-header" style={{ alignItems: 'flex-start', borderBottom: '1px solid #F1F5F9', paddingBottom: '1.1rem', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                  <div 
+                    onClick={() => {
+                      setZoomedPhoto({
+                        url: currentFran.photoUrl || null,
+                        name: currentFran.name,
+                        role: 'SÓCIO FRANQUEADO SPOLETO'
+                      });
+                    }}
+                    style={{
+                      width: '54px',
+                      height: '54px',
+                      borderRadius: '50%',
+                      background: currentFran.photoUrl ? '#FFFFFF' : 'linear-gradient(135deg, var(--primary-brown) 0%, #B45309 100%)',
+                      color: '#FFFFFF',
+                      border: currentFran.photoUrl ? '2px solid var(--accent-gold)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '1.35rem',
+                      boxShadow: '0 4px 12px rgba(93, 56, 38, 0.25)',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      transition: 'transform 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Clique para ver a foto ampliada"
+                  >
+                    {currentFran.photoUrl ? (
+                      <img src={currentFran.photoUrl} alt={currentFran.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      currentFran.name?.charAt(0).toUpperCase() || 'S'
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.2rem' }}>
+                      <span style={{
+                        backgroundColor: '#FEF3C7',
+                        color: '#B45309',
+                        padding: '0.15rem 0.55rem',
+                        borderRadius: 'var(--radius-full)',
+                        fontSize: '0.66rem',
+                        fontWeight: 800,
+                        letterSpacing: '0.04em'
+                      }}>
+                        SÓCIO FRANQUEADO
+                      </span>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                        Visão Executiva 360°
+                      </span>
+                    </div>
+                    <h2 className="modal-title" style={{ fontSize: '1.25rem', color: 'var(--text-main)', margin: 0 }}>
+                      {currentFran.name}
+                    </h2>
+                  </div>
+                </div>
+
+                <button 
+                  className="modal-close" 
+                  onClick={() => setSelectedFranchiseeFor360(null)}
+                  style={{ padding: '0.35rem', borderRadius: '6px' }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Contatos Oficiais Rápidos */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', marginBottom: '1.25rem' }}>
+                {currentFran.phone ? (
+                  <a 
+                    href={`https://wa.me/55${cleanPhone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.45rem 0.85rem',
+                      backgroundColor: '#ECFDF5',
+                      border: '1px solid #A7F3D0',
+                      borderRadius: '8px',
+                      color: '#065F46',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      transition: 'all 0.15s ease'
+                    }}
+                    title="Conversar direto pelo WhatsApp"
+                  >
+                    <MessageCircle size={15} color="#10B981" />
+                    {formatPhoneNumber(currentFran.phone)}
+                  </a>
+                ) : (
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.6rem', background: '#F9FAFB', borderRadius: '6px' }}>
+                    <Phone size={13} /> Telefone não cadastrado
+                  </span>
+                )}
+
+                {currentFran.email ? (
+                  <a 
+                    href={`mailto:${currentFran.email}`}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      padding: '0.45rem 0.85rem',
+                      backgroundColor: '#EFF6FF',
+                      border: '1px solid #BFDBFE',
+                      borderRadius: '8px',
+                      color: '#1E40AF',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      textDecoration: 'none'
+                    }}
+                    title="Enviar e-mail para o Franqueado"
+                  >
+                    <Mail size={15} color="#3B82F6" />
+                    {currentFran.email}
+                  </a>
+                ) : (
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.6rem', background: '#F9FAFB', borderRadius: '6px' }}>
+                    <Mail size={13} /> E-mail não cadastrado
+                  </span>
+                )}
+              </div>
+
+              {/* 3 Mini KPIs Executivos */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                <div style={{ background: '#FAF8F5', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '0.75rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}>
+                    <Store size={13} color="var(--primary-brown)" /> Lojas na Rede
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary-brown)', marginTop: '0.2rem' }}>
+                    {franStores.length}
+                  </div>
+                </div>
+
+                <div style={{ background: '#FAF8F5', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '0.75rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}>
+                    <Calendar size={13} color="var(--primary-brown)" /> Visitas Feitas
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '0.2rem' }}>
+                    {franVisits.length}
+                  </div>
+                </div>
+
+                <div style={{ background: pendingActionPlans > 0 ? '#FEF2F2' : '#F0FDF4', border: `1px solid ${pendingActionPlans > 0 ? '#FECACA' : '#BBF7D0'}`, borderRadius: '10px', padding: '0.75rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.7rem', color: pendingActionPlans > 0 ? '#991B1B' : '#166534', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}>
+                    <FileText size={13} color={pendingActionPlans > 0 ? '#EF4444' : '#16A34A'} /> Ações Pendentes
+                  </div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: pendingActionPlans > 0 ? '#DC2626' : '#16A34A', marginTop: '0.2rem' }}>
+                    {pendingActionPlans}
+                  </div>
+                </div>
+              </div>
+
+              {/* Lista de Unidades sob Gestão */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Unidades / Restaurantes Vinculados ({franStores.length})
+                  </span>
+                </div>
+
+                <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingRight: '0.25rem' }}>
+                  {franStores.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '1.5rem', background: '#FAF8F5', borderRadius: '8px', border: '1px dashed var(--border-subtle)' }}>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)' }}>Nenhuma unidade vinculada a este perfil.</p>
+                    </div>
+                  ) : (
+                    franStores.map(store => (
+                      <div 
+                        key={store.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.6rem 0.85rem',
+                          background: '#FFFFFF',
+                          border: '1px solid #E5E7EB',
+                          borderRadius: '8px',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <span style={{
+                            padding: '0.15rem 0.45rem',
+                            backgroundColor: '#F3F4F6',
+                            color: '#374151',
+                            borderRadius: '4px',
+                            fontWeight: 800,
+                            fontSize: '0.72rem'
+                          }}>
+                            {store.code}
+                          </span>
+                          <div>
+                            <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                              {store.name}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                              📍 {store.city} - {store.state} &bull; {store.locationType || 'Shopping'}
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedFranchiseeFor360(null);
+                            setSelectedStoreForProfile(store);
+                          }}
+                          style={{
+                            padding: '0.3rem 0.65rem',
+                            backgroundColor: '#FAF5EE',
+                            border: '1px solid var(--primary-brown-light)',
+                            borderRadius: '6px',
+                            color: 'var(--primary-brown)',
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.3rem'
+                          }}
+                          title={`Ver Ficha 360° da loja ${store.name}`}
+                        >
+                          <Eye size={12} /> Ficha da Loja
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Rodapé do Modal */}
+              <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedFranchiseeFor360(null);
+                    setEditingStore(null);
+                    setActiveStoreTab('franchisees');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--primary-brown)',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}
+                >
+                  <Handshake size={14} /> Abrir Gestão Completa de Franqueados
+                </button>
+
+                <button 
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setSelectedFranchiseeFor360(null)}
+                  style={{ fontSize: '0.84rem', padding: '0.45rem 1.25rem' }}
+                >
+                  Fechar
+                </button>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Modal de Foto Ampliada com Zoom Centralizado */}
+      {zoomedPhoto && (
+        <div 
+          className="modal-backdrop" 
+          onClick={() => setZoomedPhoto(null)}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            zIndex: 10060,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)'
+          }}
+        >
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              maxWidth: '380px', 
+              padding: '2rem 1.5rem', 
+              borderRadius: 'var(--radius-lg)', 
+              textAlign: 'center',
+              backgroundColor: '#FFFFFF',
+              position: 'relative',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+            }}
+          >
+            <button 
+              onClick={() => setZoomedPhoto(null)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-muted)'
+              }}
+            >
+              <X size={20} />
+            </button>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)', margin: '0 0 0.25rem 0', fontWeight: 800 }}>
+                {zoomedPhoto.name}
+              </h3>
+              <div style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 700, textTransform: 'uppercase' }}>
+                {zoomedPhoto.role || 'SÓCIO FRANQUEADO SPOLETO'}
+              </div>
+            </div>
+
+            <div style={{ 
+              width: '280px', 
+              height: '280px', 
+              margin: '0 auto', 
+              borderRadius: '50%', 
+              overflow: 'hidden', 
+              border: '4px solid var(--accent-gold)', 
+              boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+              backgroundColor: 'var(--primary-brown-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '4.5rem',
+              fontWeight: 800,
+              color: 'var(--primary-brown)'
+            }}>
+              {zoomedPhoto.url ? (
+                <img 
+                  src={zoomedPhoto.url} 
+                  alt={zoomedPhoto.name} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                zoomedPhoto.name?.split(' ').map(n => n[0]).slice(0, 2).join('')
+              )}
+            </div>
+
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setZoomedPhoto(null)}
+                style={{ fontSize: '0.84rem', padding: '0.45rem 1.5rem' }}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

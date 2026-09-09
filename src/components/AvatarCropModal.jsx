@@ -160,7 +160,7 @@ export default function AvatarCropModal({
   if (!imageSrc) return null;
 
   return (
-    <div className="modal-overlay" style={{ zIndex: 10060 }} onClick={onCancel}>
+    <div className="modal-overlay" style={{ zIndex: 10060 }}>
       <div 
         className="modal-card" 
         style={{ 

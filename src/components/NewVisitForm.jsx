@@ -26,6 +26,7 @@ import {
   Lightbulb,
   UserCheck,
   PenTool,
+  PenLine,
   ShieldCheck,
   Camera,
   ZoomIn,
@@ -62,6 +63,8 @@ export default function NewVisitForm() {
   // Dropdown de Área Interna (guarda o ID do diagnóstico com dropdown aberto)
   const [activeInternalAreaDropdownId, setActiveInternalAreaDropdownId] = useState(null);
   const [internalAreaSearchQuery, setInternalAreaSearchQuery] = useState({});
+  // Controle de personalização manual do texto da ação (quando há sugestões selecionadas)
+  const [customActionOpen, setCustomActionOpen] = useState({});
 
   const businessConsultants = useMemo(() => {
     return consultants.filter(c => (c.role || 'CONSULTOR') === 'CONSULTOR');
@@ -309,6 +312,7 @@ export default function NewVisitForm() {
   };
 
   const toggleSuggestedAction = (diagId, actionText, allCategorySuggestions = []) => {
+    setCustomActionOpen(prev => ({ ...prev, [diagId]: false }));
     setDiagnostics(prev => prev.map(d => {
       if (d.id !== diagId) return d;
 
@@ -942,6 +946,9 @@ export default function NewVisitForm() {
                 const category = categories.find(c => c.id === diag.categoryId);
                 const sub = category?.subproblems.find(s => s.id === diag.subproblemId);
                 const suggestions = sub?.suggestedActions || [];
+                const selectedSuggestions = suggestions.filter(sug => (diag.actionPlan?.action || '').includes(sug));
+                const hasSelectedSuggestions = selectedSuggestions.length > 0;
+                const isCustomEditing = Boolean(customActionOpen[diag.id]);
 
                 return (
                   <div 
@@ -1026,31 +1033,78 @@ export default function NewVisitForm() {
                       </div>
                     )}
 
-                    <div className="form-grid" style={{ marginBottom: '0.75rem' }}>
-                      {/* Campo Ação (Editável e Autodimensionável) */}
-                      <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                          <label className="form-label" style={{ margin: 0 }}>Ação a ser executada *</label>
-                          {diag.actionPlan?.action && (
-                            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                              {diag.actionPlan.action.split('\n').filter(l => l.trim().length > 0).length} linha(s) de ação
-                            </span>
-                          )}
-                        </div>
-                        <textarea 
-                          rows={Math.max(2, Math.min(10, (diag.actionPlan?.action || '').split('\n').length + 1))}
-                          value={diag.actionPlan.action}
-                          onChange={(e) => updateActionPlanField(diag.id, 'action', e.target.value)}
-                          required
-                          placeholder="Descreva a ação corretiva a ser implementada na loja..."
+                    {/* Se há opções sugeridas selecionadas e o usuário não abriu edição manual, exibe atalho sutil */}
+                    {hasSelectedSuggestions && !isCustomEditing && (
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => setCustomActionOpen(prev => ({ ...prev, [diag.id]: true }))}
                           style={{
-                            minHeight: '68px',
-                            resize: 'vertical',
-                            lineHeight: '1.5',
-                            transition: 'height 0.15s ease'
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--primary-brown)',
+                            fontSize: '0.74rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            fontWeight: 600,
+                            padding: '0.2rem 0.4rem',
+                            borderRadius: 'var(--radius-sm)'
                           }}
-                        />
+                        >
+                          <PenLine size={12} /> Deseja personalizar ou adicionar texto complementar?
+                        </button>
                       </div>
+                    )}
+
+                    <div className="form-grid" style={{ marginBottom: '0.75rem' }}>
+                      {/* Campo Ação: oculto se houver sugestões marcadas, visível se não houver ou se o usuário escolheu personalizar */}
+                      {(!hasSelectedSuggestions || isCustomEditing) && (
+                        <div className="form-group" style={{ gridColumn: '1 / -1', animation: 'fadeIn 0.2s ease' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                            <label className="form-label" style={{ margin: 0 }}>
+                              {hasSelectedSuggestions ? 'Personalizar texto da ação' : 'Ação a ser executada *'}
+                            </label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              {diag.actionPlan?.action && (
+                                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                  {diag.actionPlan.action.split('\n').filter(l => l.trim().length > 0).length} linha(s) de ação
+                                </span>
+                              )}
+                              {hasSelectedSuggestions && isCustomEditing && (
+                                <button
+                                  type="button"
+                                  onClick={() => setCustomActionOpen(prev => ({ ...prev, [diag.id]: false }))}
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: 'var(--text-muted)',
+                                    fontSize: '0.72rem',
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline'
+                                  }}
+                                >
+                                  Ocultar campo de texto
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <textarea 
+                            rows={Math.max(2, Math.min(10, (diag.actionPlan?.action || '').split('\n').length + 1))}
+                            value={diag.actionPlan.action}
+                            onChange={(e) => updateActionPlanField(diag.id, 'action', e.target.value)}
+                            required={!hasSelectedSuggestions}
+                            placeholder="Descreva a ação corretiva a ser implementada na loja..."
+                            style={{
+                              minHeight: '68px',
+                              resize: 'vertical',
+                              lineHeight: '1.5',
+                              transition: 'height 0.15s ease'
+                            }}
+                          />
+                        </div>
+                      )}
 
                       {/* Quem (Responsável Spoleto) */}
                       <div className="form-group" style={{ gridColumn: diag.actionPlan.responsible === 'ÁREAS INTERNAS DA FRANQUEADORA' ? 'span 2' : 'auto' }}>

@@ -16,17 +16,24 @@ import {
   ExternalLink,
   MessageCircle,
   Award,
-  Sparkles
+  Sparkles,
+  Eye,
+  Camera,
+  Sliders
 } from 'lucide-react';
+import AvatarCropModal from './AvatarCropModal';
 
 export default function FranchiseesView() {
   const { 
     franchisees, 
+    franchiseeGroups = [],
     stores, 
     addFranchisee, 
     updateFranchisee, 
     deleteFranchisee, 
     setSelectedStoreForProfile,
+    selectedFranchiseeForProfile,
+    setSelectedFranchiseeForProfile,
     isAdminUnlocked,
     hasPermission
   } = useApp();
@@ -36,12 +43,30 @@ export default function FranchiseesView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFranchisee, setEditingFranchisee] = useState(null);
+  const [zoomedPhoto, setZoomedPhoto] = useState(null);
+  const [imageToCrop, setImageToCrop] = useState(null);
+
+  // Handlers para corte e reposicionamento com zoom da foto
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImageToCrop({ src: e.target.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleConfirmCrop = (croppedUrl) => {
+    setFormData(prev => ({ ...prev, photoUrl: croppedUrl }));
+    setImageToCrop(null);
+  };
 
   // Form State
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
+    photoUrl: null,
     assignedStoreIds: []
   });
 
@@ -54,6 +79,7 @@ export default function FranchiseesView() {
       name: '',
       email: '',
       phone: '',
+      photoUrl: null,
       assignedStoreIds: []
     });
     setStoreSearch('');
@@ -67,6 +93,7 @@ export default function FranchiseesView() {
       name: fran.name || '',
       email: fran.email || '',
       phone: fran.phone || '',
+      photoUrl: fran.photoUrl || null,
       assignedStoreIds: fran.assignedStoreIds || []
     });
     setStoreSearch('');
@@ -145,9 +172,15 @@ export default function FranchiseesView() {
     );
   });
 
-  // KPI Calculations
-  const totalFranchisees = franchisees.length;
-  const multiUnitCount = franchisees.filter(f => (f.assignedStoreIds || []).length > 1).length;
+  // KPI Calculations Inteligentes (Agrupamento por Loja / Sociedade)
+  const totalPartners = franchisees.length;
+  const totalFranchiseeGroups = (franchiseeGroups && franchiseeGroups.length > 0)
+    ? franchiseeGroups.length
+    : franchisees.length;
+  const totalFranchisees = totalFranchiseeGroups;
+  const multiUnitCount = (franchiseeGroups && franchiseeGroups.length > 0)
+    ? franchiseeGroups.filter(g => g.storeCount > 1).length
+    : franchisees.filter(f => (f.assignedStoreIds || []).length > 1).length;
   const totalAssignedStores = new Set(franchisees.flatMap(f => f.assignedStoreIds || [])).size;
 
   // Filtered stores in modal selection
@@ -182,16 +215,27 @@ export default function FranchiseesView() {
         )}
       </div>
 
-      {/* Mini KPIs de Franqueados */}
+      {/* Mini KPIs de Franqueados (Consolidados por Grupo / Operação) */}
       <div className="kpi-grid" style={{ marginBottom: '1.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
         <div className="kpi-card">
           <div className="kpi-icon-wrapper" style={{ background: 'var(--primary-brown-light)', color: 'var(--primary-brown)' }}>
             <Users size={22} />
           </div>
           <div>
-            <div className="kpi-label">Franqueados Cadastrados</div>
-            <div className="kpi-value">{totalFranchisees}</div>
-            <div className="kpi-subtext">Parceiros de negócios da rede</div>
+            <div className="kpi-label">Franqueados da Rede</div>
+            <div className="kpi-value" style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem' }}>
+              <span>{totalFranchisees}</span>
+              {totalPartners > totalFranchisees && (
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                  ({totalPartners} sócios)
+                </span>
+              )}
+            </div>
+            <div className="kpi-subtext">
+              {totalPartners > totalFranchisees 
+                ? 'Grupos / Operadores consolidados' 
+                : 'Parceiros de negócios da rede'}
+            </div>
           </div>
         </div>
 
@@ -251,6 +295,8 @@ export default function FranchiseesView() {
             const franStores = stores.filter(s => (fran.assignedStoreIds || []).includes(s.id));
             const isMultiUnit = franStores.length > 1;
             const cleanPhone = (fran.phone || '').replace(/\D/g, '');
+            const myGroup = (franchiseeGroups || []).find(g => g.partners.some(p => p.id === fran.id));
+            const otherPartners = (myGroup?.partners || []).filter(p => p.id !== fran.id);
 
             return (
               <div 
@@ -271,21 +317,43 @@ export default function FranchiseesView() {
                   {/* Topo do Card */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <div style={{
-                        width: '42px',
-                        height: '42px',
-                        borderRadius: '50%',
-                        background: isMultiUnit ? 'linear-gradient(135deg, #5D3826 0%, #B45309 100%)' : '#FAF8F5',
-                        border: '1.5px solid var(--border-subtle)',
-                        color: isMultiUnit ? '#FFFFFF' : 'var(--primary-brown)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 800,
-                        fontSize: '1.05rem',
-                        flexShrink: 0
-                      }}>
-                        {fran.name.charAt(0)}
+                      {/* Avatar do Franqueado com Zoom ao Clicar */}
+                      <div 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setZoomedPhoto({ 
+                            url: fran.photoUrl || null, 
+                            name: fran.name, 
+                            role: 'SÓCIO FRANQUEADO SPOLETO' 
+                          });
+                        }}
+                        style={{
+                          width: '46px',
+                          height: '46px',
+                          borderRadius: '50%',
+                          border: fran.photoUrl ? '2px solid var(--accent-gold)' : '1.5px solid var(--border-subtle)',
+                          overflow: 'hidden',
+                          background: fran.photoUrl ? '#FFFFFF' : (isMultiUnit ? 'linear-gradient(135deg, #5D3826 0%, #B45309 100%)' : '#FAF8F5'),
+                          color: isMultiUnit ? '#FFFFFF' : 'var(--primary-brown)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 800,
+                          fontSize: '1.15rem',
+                          cursor: 'pointer',
+                          flexShrink: 0,
+                          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                          transition: 'transform 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title="Clique para ver a foto ampliada"
+                      >
+                        {fran.photoUrl ? (
+                          <img src={fran.photoUrl} alt={fran.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          fran.name.charAt(0)
+                        )}
                       </div>
                       <div>
                         <h3 style={{ fontSize: '1.05rem', color: 'var(--text-main)', margin: 0, fontWeight: 800 }}>
@@ -295,10 +363,38 @@ export default function FranchiseesView() {
                           {isMultiUnit && <Sparkles size={11} color="#B45309" />}
                           {franStores.length} {franStores.length === 1 ? 'Loja sob gestão' : 'Lojas sob gestão'}
                         </span>
+                        {otherPartners.length > 0 && (
+                          <div style={{ marginTop: '0.25rem' }}>
+                            <span 
+                              style={{ 
+                                fontSize: '0.68rem', 
+                                backgroundColor: '#FEF3C7', 
+                                color: '#92400E', 
+                                padding: '0.12rem 0.45rem', 
+                                borderRadius: 'var(--radius-full)', 
+                                fontWeight: 700, 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: '0.25rem' 
+                              }}
+                              title={`Sociedade compartilhada com: ${otherPartners.map(p => p.name).join(', ')}`}
+                            >
+                              👥 Sociedade ({otherPartners.length + 1} sócios)
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFranchiseeForProfile(fran)}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--primary-brown)', cursor: 'pointer', padding: '0.3rem', borderRadius: '4px' }}
+                        title="Abrir Ficha 360°"
+                      >
+                        <Eye size={15} />
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleOpenEdit(fran)}
@@ -407,15 +503,46 @@ export default function FranchiseesView() {
                   </div>
                 </div>
 
-                {/* Botão de Edição Rápida */}
-                <div style={{ marginTop: '1.25rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem' }}>
+                {/* Ações do Card: Ficha 360° e Gerenciamento */}
+                <div style={{ marginTop: '1.25rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFranchiseeForProfile(fran)}
+                    style={{
+                      padding: '0.45rem 0.65rem',
+                      backgroundColor: '#FAF5EE',
+                      border: '1.5px solid var(--primary-brown-light)',
+                      borderRadius: 'var(--radius-sm)',
+                      color: 'var(--primary-brown)',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.35rem',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--primary-brown)';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FAF5EE';
+                      e.currentTarget.style.color = 'var(--primary-brown)';
+                    }}
+                    title={`Abrir Ficha 360° do Franqueado ${fran.name}`}
+                  >
+                    <Eye size={13} /> Ficha 360°
+                  </button>
                   <button
                     type="button"
                     className="btn-secondary"
                     onClick={() => handleOpenEdit(fran)}
-                    style={{ width: '100%', fontSize: '0.78rem', justifyContent: 'center', gap: '0.35rem' }}
+                    style={{ fontSize: '0.78rem', justifyContent: 'center', gap: '0.35rem' }}
+                    title="Editar Cadastro e Vínculo de Lojas"
                   >
-                    <Edit3 size={13} /> Gerenciar Lojas & Contatos
+                    <Edit3 size={13} /> Editar / Lojas
                   </button>
                 </div>
               </div>
@@ -428,7 +555,7 @@ export default function FranchiseesView() {
           MODAL DE CADASTRO / EDIÇÃO DE FRANQUEADO
           ========================================================================= */}
       {isModalOpen && (
-        <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
+        <div className="modal-backdrop">
           <div 
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
@@ -439,14 +566,104 @@ export default function FranchiseesView() {
                 <Users size={20} color="var(--primary-brown)" />
                 {editingFranchisee ? 'Editar Franqueado' : 'Cadastrar Novo Franqueado'}
               </h2>
-              <button className="modal-close" onClick={() => setIsModalOpen(false)}>
-                <X size={18} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {editingFranchisee && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFranchiseeForProfile(editingFranchisee)}
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      backgroundColor: '#FAF5EE',
+                      border: '1.5px solid var(--primary-brown-light)',
+                      borderRadius: '6px',
+                      color: 'var(--primary-brown)',
+                      fontSize: '0.76rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--primary-brown)';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FAF5EE';
+                      e.currentTarget.style.color = 'var(--primary-brown)';
+                    }}
+                    title="Abrir Visão 360° deste franqueado"
+                  >
+                    <Eye size={13} /> Ficha 360°
+                  </button>
+                )}
+                <button className="modal-close" onClick={() => setIsModalOpen(false)}>
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.5rem 0' }}>
                 
+                {/* Upload de Foto de Perfil com Corte e Zoom */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '0.85rem', background: '#FAF8F5', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-strong)' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    border: '2px solid var(--accent-gold)',
+                    overflow: 'hidden',
+                    backgroundColor: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+                  }}>
+                    {formData.photoUrl ? (
+                      <img src={formData.photoUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <Camera size={24} color="var(--text-muted)" />
+                    )}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <label style={{ marginBottom: '0.25rem', display: 'block', fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                      Foto de Perfil do Franqueado
+                    </label>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => {
+                        handleFileSelect(e.target.files?.[0]);
+                        e.target.value = '';
+                      }}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                    {formData.photoUrl && (
+                      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.45rem', alignItems: 'center' }}>
+                        <button 
+                          type="button" 
+                          onClick={() => setImageToCrop({ src: formData.photoUrl })}
+                          style={{ fontSize: '0.74rem', color: 'var(--primary-brown)', background: '#FFFFFF', border: '1px solid var(--border-subtle)', borderRadius: '4px', cursor: 'pointer', padding: '0.25rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}
+                          title="Reposicionar ou dar zoom na foto"
+                        >
+                          <Sliders size={12} /> Ajustar Posição / Zoom
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setFormData(prev => ({ ...prev, photoUrl: null }))}
+                          style={{ fontSize: '0.74rem', color: '#991B1B', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 600 }}
+                        >
+                          Remover Foto
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Nome do Franqueado */}
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.35rem', color: 'var(--text-main)' }}>
@@ -623,17 +840,132 @@ export default function FranchiseesView() {
               </div>
 
               {/* Botões do Modal */}
-              <div className="modal-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-primary">
-                  <Check size={16} /> {editingFranchisee ? 'Salvar Alterações' : 'Cadastrar Franqueado'}
-                </button>
+              <div className="modal-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  {editingFranchisee && (
+                    <button 
+                      type="button" 
+                      className="btn-secondary"
+                      onClick={() => setSelectedFranchiseeForProfile(editingFranchisee)}
+                      style={{ fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', color: 'var(--primary-brown)', borderColor: 'var(--primary-brown-light)', backgroundColor: '#FAF5EE', fontWeight: 700 }}
+                    >
+                      <Eye size={14} /> Ficha 360° do Franqueado
+                    </button>
+                  )}
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    <Check size={16} /> {editingFranchisee ? 'Salvar Alterações' : 'Cadastrar Franqueado'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal de Foto Ampliada com Zoom Centralizado */}
+      {zoomedPhoto && (
+        <div 
+          className="modal-backdrop" 
+          onClick={() => setZoomedPhoto(null)}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            zIndex: 10000,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)'
+          }}
+        >
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              maxWidth: '380px', 
+              padding: '2rem 1.5rem', 
+              borderRadius: 'var(--radius-lg)', 
+              textAlign: 'center',
+              backgroundColor: '#FFFFFF',
+              position: 'relative',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+            }}
+          >
+            <button 
+              onClick={() => setZoomedPhoto(null)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-muted)'
+              }}
+            >
+              <X size={20} />
+            </button>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.2rem', color: 'var(--text-main)', margin: '0 0 0.25rem 0', fontWeight: 800 }}>
+                {zoomedPhoto.name}
+              </h3>
+              <div style={{ fontSize: '0.82rem', color: 'var(--primary-brown)', fontWeight: 700, textTransform: 'uppercase' }}>
+                {zoomedPhoto.role}
+              </div>
+            </div>
+
+            <div style={{ 
+              width: '280px', 
+              height: '280px', 
+              margin: '0 auto', 
+              borderRadius: '50%', 
+              overflow: 'hidden', 
+              border: '4px solid var(--accent-gold)', 
+              boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+              backgroundColor: 'var(--primary-brown-light)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '4.5rem',
+              fontWeight: 800,
+              color: 'var(--primary-brown)'
+            }}>
+              {zoomedPhoto.url ? (
+                <img 
+                  src={zoomedPhoto.url} 
+                  alt={zoomedPhoto.name} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              ) : (
+                zoomedPhoto.name.split(' ').map(n => n[0]).slice(0, 2).join('')
+              )}
+            </div>
+
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setZoomedPhoto(null)}
+                style={{ fontSize: '0.84rem', padding: '0.45rem 1.5rem' }}
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Interativo de Corte e Posicionamento Circular da Foto */}
+      {imageToCrop && (
+        <AvatarCropModal
+          imageSrc={imageToCrop.src}
+          title="Ajustar Foto do Franqueado"
+          subtitle="Arraste para posicionar e use o controle deslizante para dar zoom."
+          onConfirm={handleConfirmCrop}
+          onCancel={() => setImageToCrop(null)}
+        />
       )}
     </div>
   );

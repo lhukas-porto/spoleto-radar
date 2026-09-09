@@ -258,7 +258,7 @@ export default function VisitReportModal() {
   };
 
   return (
-    <div className="modal-overlay" onClick={() => setSelectedVisitForReport(null)}>
+    <div className="modal-overlay">
       <div 
         className="modal-card" 
         style={{ maxWidth: '980px', padding: '2.25rem', width: '95%', position: 'relative' }} 
@@ -1079,7 +1079,7 @@ export default function VisitReportModal() {
           MODAL DE DISPARO DO PDF (WHATSAPP / E-MAIL / AMBOS)
           ========================================================================= */}
       {isShareModalOpen && (
-        <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setIsShareModalOpen(false)}>
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
           <div className="modal-card" style={{ maxWidth: '520px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
               <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

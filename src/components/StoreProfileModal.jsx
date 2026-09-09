@@ -137,7 +137,7 @@ export default function StoreProfileModal({ store, onClose }) {
     .sort((a, b) => b.count - a.count);
 
   return (
-    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 9990 }}>
+    <div className="modal-overlay" style={{ zIndex: 9990 }}>
       <div 
         className="modal-card" 
         style={{ 

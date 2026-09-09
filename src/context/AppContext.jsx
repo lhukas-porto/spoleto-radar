@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { 
   INITIAL_STORES, 
   INITIAL_CONSULTANTS, 
@@ -7,12 +7,12 @@ import {
   INITIAL_REGIONS,
   INITIAL_INTERNAL_AREAS
 } from '../data/initialData';
-import { INITIAL_DOCUMENTS } from '../data/initialDocuments';
 import { DEFAULT_MODULES, DEFAULT_ROLES } from '../data/initialPermissions';
 import { INITIAL_WORK_SHIFTS } from '../data/initialWorkShifts';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { formatPhoneNumber } from '../utils/dateHelpers';
 import { formatCEP } from '../utils/brazilianLocations';
+import { getFranchiseeGroups } from '../utils/franchiseeHelpers';
 
 const AppContext = createContext();
 
@@ -166,15 +166,18 @@ export function AppProvider({ children }) {
     return [];
   });
 
+  // Agrupamento de sócios em Grupos Franqueados únicos por operação/loja
+  const franchiseeGroups = useMemo(() => getFranchiseeGroups(franchisees), [franchisees]);
+
   const [documents, setDocuments] = useState(() => {
     const saved = localStorage.getItem('spoleto_documents_v1');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       } catch (e) {}
     }
-    return INITIAL_DOCUMENTS;
+    return [];
   });
 
   const [turnoverRecords, setTurnoverRecords] = useState(() => {
@@ -576,6 +579,7 @@ export function AppProvider({ children }) {
 
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
   const [selectedStoreForProfile, setSelectedStoreForProfile] = useState(null);
+  const [selectedFranchiseeForProfile, setSelectedFranchiseeForProfile] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
 
@@ -1215,6 +1219,23 @@ export function AppProvider({ children }) {
     return true;
   };
 
+  // Helper para enviar apenas colunas existentes no Supabase stores table
+  const sanitizeStoreForSupabase = (st) => ({
+    code: st.code ? st.code.toUpperCase().trim() : '',
+    name: st.name ? st.name.toUpperCase().trim() : '',
+    state: st.state || 'SP',
+    city: st.city || '',
+    cep: st.cep ? formatCEP(st.cep) : '',
+    address: st.address || '',
+    franchisee: st.franchisee ? st.franchisee.toUpperCase().trim() : '',
+    location_type: st.locationType || 'Shopping',
+    status: st.status || 'Ativa',
+    phone: st.phone ? formatPhoneNumber(st.phone) : '',
+    email: st.email ? st.email.toLowerCase().trim() : '',
+    consultant_id: st.consultantId || null,
+    photo_url: st.photoUrl || null
+  });
+
   // Add Store
   const addStore = async (storeData) => {
     const newStore = {
@@ -1225,6 +1246,7 @@ export function AppProvider({ children }) {
       state: storeData.state || 'SP',
       cep: formatCEP(storeData.cep),
       locationType: storeData.locationType || 'Shopping',
+      workShift: storeData.workShift || '6x1',
       franchisee: (storeData.franchisee || '').toUpperCase().trim(),
       phone: formatPhoneNumber(storeData.phone),
       email: (storeData.email || '').toLowerCase().trim(),
@@ -1236,7 +1258,14 @@ export function AppProvider({ children }) {
       status: 'Ativa'
     };
 
-    setStores(prev => [newStore, ...prev]);
+    setStores(prev => {
+      const next = [newStore, ...prev];
+      try {
+        localStorage.setItem('trigo_stores_v2', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
     if (newStore.consultantId) {
       setConsultants(prev => prev.map(c => {
         if (c.id === newStore.consultantId) {
@@ -1250,24 +1279,14 @@ export function AppProvider({ children }) {
 
     if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('stores').insert([{
+        const payload = sanitizeStoreForSupabase(newStore);
+        const { error } = await supabase.from('stores').insert([{
           id: newStore.id,
-          code: newStore.code,
-          name: newStore.name,
-          state: newStore.state,
-          city: newStore.city,
-          cep: newStore.cep,
-          address: newStore.address,
-          franchisee: newStore.franchisee,
-          location_type: newStore.locationType,
-          phone: newStore.phone,
-          email: newStore.email,
-          consultant_id: newStore.consultantId,
-          photo_url: newStore.photoUrl,
-          shopping_mall_admin: newStore.shoppingMallAdmin,
-          franchise_contract_expiration: newStore.franchiseContractExpiration,
-          status: newStore.status
+          ...payload
         }]);
+        if (error) {
+          console.warn('Erro ao inserir loja no Supabase:', error);
+        }
       } catch (e) {
         console.error('Supabase store insert error:', e);
       }
@@ -1278,47 +1297,51 @@ export function AppProvider({ children }) {
 
   // Update Store
   const updateStore = async (storeId, updatedData) => {
-    let updatedObj = null;
-    const oldStore = stores.find(s => s.id === storeId);
+    const oldStore = stores.find(s => String(s.id) === String(storeId));
     const oldConsultantId = oldStore?.consultantId;
-    const newConsultantId = updatedData.consultantId || null;
+    const newConsultantId = updatedData.consultantId !== undefined ? updatedData.consultantId : (oldStore?.consultantId || null);
 
+    // Constrói objeto atualizado de forma síncrona e determinística
+    const updatedObj = {
+      ...(oldStore || {}),
+      id: storeId,
+      code: updatedData.code ? updatedData.code.toUpperCase().trim() : (oldStore?.code || ''),
+      name: updatedData.name ? updatedData.name.toUpperCase().trim() : (oldStore?.name || ''),
+      city: updatedData.city !== undefined ? updatedData.city.trim() : (oldStore?.city || ''),
+      state: updatedData.state || oldStore?.state || 'SP',
+      cep: updatedData.cep !== undefined ? formatCEP(updatedData.cep) : (oldStore?.cep || ''),
+      locationType: updatedData.locationType || oldStore?.locationType || 'Shopping',
+      workShift: updatedData.workShift !== undefined ? updatedData.workShift : (oldStore?.workShift || '6x1'),
+      status: updatedData.status !== undefined ? updatedData.status : (oldStore?.status || 'Ativa'),
+      franchisee: updatedData.franchisee !== undefined ? updatedData.franchisee.toUpperCase().trim() : (oldStore?.franchisee || ''),
+      phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : (oldStore?.phone || ''),
+      email: updatedData.email !== undefined ? updatedData.email.toLowerCase().trim() : (oldStore?.email || ''),
+      address: updatedData.address !== undefined ? updatedData.address.trim() : (oldStore?.address || ''),
+      consultantId: newConsultantId,
+      photoUrl: updatedData.photoUrl !== undefined ? updatedData.photoUrl : (oldStore?.photoUrl || null),
+      shoppingMallAdmin: updatedData.shoppingMallAdmin !== undefined ? (updatedData.shoppingMallAdmin ? updatedData.shoppingMallAdmin.toUpperCase().trim() : '') : (oldStore?.shoppingMallAdmin || ''),
+      franchiseContractExpiration: updatedData.franchiseContractExpiration !== undefined ? updatedData.franchiseContractExpiration : (oldStore?.franchiseContractExpiration || '')
+    };
+
+    // Atualiza o estado das lojas e persiste imediatamente no LocalStorage
     setStores(prev => {
-      return prev.map(s => {
-        if (s.id !== storeId) return s;
-        updatedObj = {
-          ...s,
-          code: updatedData.code ? updatedData.code.toUpperCase().trim() : s.code,
-          name: updatedData.name ? updatedData.name.toUpperCase().trim() : s.name,
-          city: updatedData.city !== undefined ? updatedData.city.trim() : s.city,
-          state: updatedData.state || s.state,
-          cep: updatedData.cep !== undefined ? formatCEP(updatedData.cep) : s.cep,
-          locationType: updatedData.locationType || s.locationType,
-          workShift: updatedData.workShift !== undefined ? updatedData.workShift : (s.workShift || '6x1'),
-          status: updatedData.status !== undefined ? updatedData.status : (s.status || 'Ativa'),
-          franchisee: updatedData.franchisee !== undefined ? updatedData.franchisee.toUpperCase().trim() : s.franchisee,
-          phone: updatedData.phone !== undefined ? formatPhoneNumber(updatedData.phone) : s.phone,
-          email: updatedData.email !== undefined ? updatedData.email.toLowerCase().trim() : s.email,
-          address: updatedData.address !== undefined ? updatedData.address.trim() : s.address,
-          consultantId: newConsultantId,
-          photoUrl: updatedData.photoUrl !== undefined ? updatedData.photoUrl : s.photoUrl,
-          shoppingMallAdmin: updatedData.shoppingMallAdmin !== undefined ? (updatedData.shoppingMallAdmin ? updatedData.shoppingMallAdmin.toUpperCase().trim() : '') : (s.shoppingMallAdmin || ''),
-          franchiseContractExpiration: updatedData.franchiseContractExpiration !== undefined ? updatedData.franchiseContractExpiration : (s.franchiseContractExpiration || '')
-        };
-        return updatedObj;
-      });
+      const next = prev.map(s => String(s.id) === String(storeId) ? updatedObj : s);
+      try {
+        localStorage.setItem('trigo_stores_v2', JSON.stringify(next));
+      } catch (e) {}
+      return next;
     });
 
-    // Sync selectedStoreForProfile if this store is currently open in the profile modal
-    if (selectedStoreForProfile && selectedStoreForProfile.id === storeId && updatedObj) {
+    // Sincroniza selectedStoreForProfile se esta loja estiver aberta na Ficha 360°
+    if (selectedStoreForProfile && String(selectedStoreForProfile.id) === String(storeId)) {
       setSelectedStoreForProfile(updatedObj);
     }
 
-    // Sync consultant assignment if changed
+    // Sincroniza vinculação do consultor caso tenha mudado
     if (oldConsultantId !== newConsultantId) {
       setConsultants(prev => prev.map(c => {
         if (c.id === oldConsultantId) {
-          const filtered = (c.assignedStores || []).filter(id => id !== storeId);
+          const filtered = (c.assignedStores || []).filter(id => String(id) !== String(storeId));
           return { ...c, assignedStores: filtered, storesCount: filtered.length };
         }
         if (c.id === newConsultantId) {
@@ -1329,26 +1352,14 @@ export function AppProvider({ children }) {
       }));
     }
 
-    if (isSupabaseConfigured && supabase && updatedObj) {
+    // Sincroniza com Supabase usando apenas colunas aceitas pelo banco
+    if (isSupabaseConfigured && supabase) {
       try {
-        await supabase.from('stores').update({
-          code: updatedObj.code,
-          name: updatedObj.name,
-          state: updatedObj.state,
-          city: updatedObj.city,
-          cep: updatedObj.cep,
-          address: updatedObj.address,
-          franchisee: updatedObj.franchisee,
-          location_type: updatedObj.locationType,
-          work_shift: updatedObj.workShift,
-          status: updatedObj.status,
-          phone: updatedObj.phone,
-          email: updatedObj.email,
-          consultant_id: updatedObj.consultantId,
-          photo_url: updatedObj.photoUrl,
-          shopping_mall_admin: updatedObj.shoppingMallAdmin,
-          franchise_contract_expiration: updatedObj.franchiseContractExpiration
-        }).eq('id', storeId);
+        const payload = sanitizeStoreForSupabase(updatedObj);
+        const { error } = await supabase.from('stores').update(payload).eq('id', storeId);
+        if (error) {
+          console.warn('Erro ao atualizar loja no Supabase:', error.message || error);
+        }
       } catch (e) {
         console.error('Supabase store update error:', e);
       }
@@ -1431,6 +1442,7 @@ export function AppProvider({ children }) {
       name: data.name.toUpperCase().trim(),
       email: (data.email || '').toLowerCase().trim(),
       phone: formatPhoneNumber(data.phone),
+      photoUrl: data.photoUrl || null,
       assignedStoreIds: data.assignedStoreIds || []
     };
 
@@ -1501,12 +1513,18 @@ export function AppProvider({ children }) {
         name: data.name ? data.name.toUpperCase().trim() : f.name,
         email: data.email !== undefined ? data.email.toLowerCase().trim() : f.email,
         phone: data.phone !== undefined ? formatPhoneNumber(data.phone) : f.phone,
+        photoUrl: data.photoUrl !== undefined ? data.photoUrl : (f.photoUrl || null),
         assignedStoreIds: newStoreIds
       };
       return updatedObj;
     });
 
     setFranchisees(nextFranchisees);
+
+    // Sincroniza se a Ficha 360° do franqueado estiver aberta
+    if (selectedFranchiseeForProfile && (selectedFranchiseeForProfile.id === id || selectedFranchiseeForProfile.name === updatedObj?.name)) {
+      setSelectedFranchiseeForProfile(updatedObj);
+    }
 
     // Atualiza as lojas que pertencem a este franqueado e outros sócios
     setStores(prev => prev.map(s => {
@@ -1806,6 +1824,8 @@ export function AppProvider({ children }) {
       setSelectedStaffForProfile,
       selectedStoreForProfile,
       setSelectedStoreForProfile,
+      selectedFranchiseeForProfile,
+      setSelectedFranchiseeForProfile,
       isOverdueModalOpen,
       setIsOverdueModalOpen,
       managingSubordinatesLeader,
@@ -1828,6 +1848,7 @@ export function AppProvider({ children }) {
       updateStore,
       deleteStore,
       franchisees,
+      franchiseeGroups,
       getStoreFranchisees,
       addFranchisee,
       updateFranchisee,
