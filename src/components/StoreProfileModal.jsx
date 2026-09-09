@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { formatPhoneNumber, formatBrDate } from '../utils/dateHelpers';
+import ContractExpiryBadge from './ContractExpiryBadge';
 import { 
   Store, 
   MapPin, 
@@ -58,6 +59,9 @@ export default function StoreProfileModal({ store, onClose }) {
   const [departures, setDepartures] = useState(0);
   const [admissions, setAdmissions] = useState(0);
   const [turnoverNotes, setTurnoverNotes] = useState('');
+
+  // Contract expiry date — leitura para badge visual
+  const expiryDate = store?.contractExpiryDate || store?.contract_expiry_date || '';
 
   if (!store) return null;
 
@@ -275,22 +279,8 @@ export default function StoreProfileModal({ store, onClose }) {
                     </span>
                   )}
 
-                  {store.franchiseContractExpiration && (
-                    <span style={{ 
-                      background: 'rgba(217, 119, 6, 0.3)', 
-                      border: '1px solid rgba(245, 158, 11, 0.5)',
-                      color: '#FDE68A', 
-                      fontSize: '0.76rem', 
-                      padding: '0.2rem 0.6rem', 
-                      borderRadius: 'var(--radius-sm)',
-                      fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.35rem'
-                    }} title="Vencimento do Contrato de Franquias">
-                      <Calendar size={12} /> Venc. Franquia: {formatBrDate(store.franchiseContractExpiration)}
-                    </span>
-                  )}
+                  {/* Badge de Vencimento do Contrato — apenas visual */}
+                  {expiryDate && <ContractExpiryBadge expiryDate={expiryDate} />}
 
                   <span style={{ 
                     background: store.status === 'Ativa' ? '#16A34A' : '#D97706', 

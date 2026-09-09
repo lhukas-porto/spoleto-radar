@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS public.stores (
   photo_url TEXT,
   shopping_mall_admin TEXT,
   franchise_contract_expiration TEXT,
+  contract_expiry_date DATE,
   status TEXT DEFAULT 'Ativa' NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

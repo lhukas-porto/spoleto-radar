@@ -22,7 +22,8 @@ import {
   Cloud,
   Link2,
   Globe,
-  RefreshCw
+  RefreshCw,
+  Edit3
 } from 'lucide-react';
 import { 
   saveFileBinary, 
@@ -116,6 +117,7 @@ export default function RepositoryModal({ isOpen, onClose }) {
   const { 
     documents = [], 
     addDocument, 
+    updateDocument,
     deleteDocument, 
     showToast, 
     activeUser, 
@@ -138,6 +140,18 @@ export default function RepositoryModal({ isOpen, onClose }) {
   const [cloudFormat, setCloudFormat] = useState('xlsx');
   const [isSaving, setIsSaving] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState(null);
+
+  // Form de Edição de Modelo Existente
+  const [editingDoc, setEditingDoc] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategory, setEditCategory] = useState('Financeiro & CMV');
+  const [editDescription, setEditDescription] = useState('');
+  const [editMode, setEditMode] = useState('file'); // 'file' | 'cloud'
+  const [editCloudUrl, setEditCloudUrl] = useState('');
+  const [editCloudFormat, setEditCloudFormat] = useState('xlsx');
+  const [editNewFile, setEditNewFile] = useState(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const editFileInputRef = useRef(null);
 
   const fileInputRef = useRef(null);
 
@@ -366,6 +380,105 @@ export default function RepositoryModal({ isOpen, onClose }) {
       showToast('Erro ao salvar o arquivo no repositório.', 'error');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleStartEdit = (doc) => {
+    setEditingDoc(doc);
+    setEditTitle(doc.title || '');
+    setEditCategory(doc.category || 'Financeiro & CMV');
+    setEditDescription(doc.description || '');
+    setEditMode(doc.isCloudLink ? 'cloud' : 'file');
+    setEditCloudUrl(doc.cloudUrl || '');
+    setEditCloudFormat(doc.format || 'xlsx');
+    setEditNewFile(null);
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editingDoc) return;
+    if (!editTitle.trim()) {
+      alert('Por favor, informe o título do modelo.');
+      return;
+    }
+
+    setIsSavingEdit(true);
+    try {
+      if (editMode === 'cloud') {
+        if (!editCloudUrl.trim()) {
+          alert('Por favor, informe o link de compartilhamento da nuvem.');
+          setIsSavingEdit(false);
+          return;
+        }
+
+        const resolution = resolveCloudUrl(editCloudUrl, editCloudFormat);
+        const updatedFields = {
+          title: editTitle.trim(),
+          category: editCategory,
+          description: editDescription.trim() || `Arquivo compartilhado via ${resolution.provider}.`,
+          format: editCloudFormat || resolution.detectedFormat || 'xlsx',
+          downloadUrl: resolution.directDownloadUrl,
+          cloudUrl: resolution.cloudUrl,
+          cloudProvider: resolution.provider,
+          isCloudLink: true
+        };
+
+        updateDocument(editingDoc.id, updatedFields);
+        showToast('✅ Link e dados do modelo atualizados com sucesso!');
+      } else {
+        let updatedFields = {
+          title: editTitle.trim(),
+          category: editCategory,
+          description: editDescription.trim() || 'Modelo disponibilizado para uso da equipe e franqueados Spoleto.'
+        };
+
+        if (editNewFile) {
+          const ext = editNewFile.name.split('.').pop()?.toLowerCase() || 'pdf';
+          const sizeInMb = (editNewFile.size / (1024 * 1024)).toFixed(1);
+          const fileSize = sizeInMb > 0 ? `${sizeInMb} MB` : `${Math.round(editNewFile.size / 1024)} KB`;
+
+          let storagePath = editingDoc.storagePath;
+          let publicUrl = editingDoc.downloadUrl;
+
+          // 1. Upload do novo arquivo para o Supabase Storage
+          try {
+            const upRes = await uploadFileToSupabase(editingDoc.id, editNewFile);
+            if (upRes.success) {
+              storagePath = upRes.storagePath;
+              publicUrl = upRes.publicUrl;
+            }
+          } catch (upErr) {
+            console.warn('Erro ao atualizar no Supabase Storage:', upErr);
+          }
+
+          // 2. Atualiza binário no IndexedDB
+          await saveFileBinary(editingDoc.id, editNewFile);
+
+          updatedFields = {
+            ...updatedFields,
+            format: ext,
+            fileSize,
+            originalFileName: editNewFile.name,
+            storagePath: storagePath || null,
+            downloadUrl: publicUrl || null,
+            hasRealFile: true,
+            isSupabaseFile: Boolean(storagePath)
+          };
+          showToast('✅ Nova versão do arquivo e dados atualizados com sucesso!');
+        } else {
+          showToast('✅ Dados do modelo atualizados com sucesso!');
+        }
+
+        updateDocument(editingDoc.id, updatedFields);
+      }
+
+      setEditingDoc(null);
+      setEditNewFile(null);
+    } catch (err) {
+      console.error('Erro ao atualizar modelo:', err);
+      showToast('Erro ao atualizar modelo.', 'error');
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -1139,6 +1252,40 @@ export default function RepositoryModal({ isOpen, onClose }) {
                         <Download size={13} /> Baixar
                       </button>
 
+                      {/* Botão de Edição */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartEdit(doc);
+                        }}
+                        style={{
+                          backgroundColor: '#FAF5EE',
+                          border: '1px solid var(--primary-brown-light)',
+                          color: 'var(--primary-brown)',
+                          cursor: 'pointer',
+                          padding: '0.35rem 0.65rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'var(--primary-brown)';
+                          e.currentTarget.style.color = '#FFFFFF';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FAF5EE';
+                          e.currentTarget.style.color = 'var(--primary-brown)';
+                        }}
+                        title={`Editar dados ou arquivo de "${doc.title}"`}
+                      >
+                        <Edit3 size={13} /> Editar
+                      </button>
+
                       {/* Botão de Exclusão em cada arquivo do repositório */}
                       <button
                         type="button"
@@ -1289,6 +1436,303 @@ export default function RepositoryModal({ isOpen, onClose }) {
                   <Trash2 size={15} /> Sim, Excluir
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Edição de Modelo Existente */}
+        {editingDoc && (
+          <div 
+            className="modal-overlay" 
+            style={{ zIndex: 12000, backgroundColor: 'rgba(0, 0, 0, 0.72)', backdropFilter: 'blur(5px)' }}
+            onClick={() => setEditingDoc(null)}
+          >
+            <div 
+              className="modal-card" 
+              style={{ maxWidth: '620px', width: '92%', borderRadius: '16px', overflow: 'hidden', padding: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div style={{
+                background: 'linear-gradient(135deg, #3E2415 0%, #5D3826 100%)',
+                color: '#FFFFFF',
+                padding: '1.25rem 1.75rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FEF3C7'
+                  }}>
+                    <Edit3 size={20} />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF' }}>
+                      Editar Modelo do Repositório
+                    </h3>
+                    <p style={{ margin: '0.15rem 0 0', fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>
+                      Atualize o título, a planilha/arquivo ou a categoria
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setEditingDoc(null)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '30px',
+                    height: '30px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSaveEdit} style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+                
+                {/* Título */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Título do Modelo / Arquivo *
+                  </label>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1.5px solid var(--border-subtle)',
+                      fontSize: '0.88rem',
+                      fontWeight: 700
+                    }}
+                  />
+                </div>
+
+                {/* Categoria */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Categoria / Disciplina
+                  </label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1.5px solid var(--border-subtle)',
+                      fontSize: '0.88rem'
+                    }}
+                  >
+                    {categoriesList.filter(c => c !== 'Todas').map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Descrição */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                    Descrição / Instruções de Uso
+                  </label>
+                  <textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    rows={2}
+                    placeholder="Orientações de como utilizar este modelo nas lojas..."
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem 0.85rem',
+                      borderRadius: '8px',
+                      border: '1.5px solid var(--border-subtle)',
+                      fontSize: '0.84rem',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+
+                {/* Seção de Arquivo / Planilha */}
+                <div style={{
+                  backgroundColor: '#FAF8F5',
+                  borderRadius: '10px',
+                  padding: '1rem 1.15rem',
+                  border: '1px solid #E5E7EB'
+                }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--primary-brown)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <FileSpreadsheet size={15} /> Gestão da Planilha / Arquivo
+                  </div>
+
+                  {editMode === 'cloud' ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.74rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>
+                          Link de Compartilhamento da Nuvem (Google Sheets, Drive, Dropbox)
+                        </label>
+                        <input
+                          type="url"
+                          value={editCloudUrl}
+                          onChange={(e) => setEditCloudUrl(e.target.value)}
+                          placeholder="https://docs.google.com/spreadsheets/d/..."
+                          style={{
+                            width: '100%',
+                            padding: '0.55rem 0.75rem',
+                            borderRadius: '6px',
+                            border: '1px solid var(--border-subtle)',
+                            fontSize: '0.82rem'
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.74rem', color: 'var(--text-muted)', marginBottom: '0.25rem', fontWeight: 600 }}>
+                          Formato do Arquivo na Nuvem
+                        </label>
+                        <select
+                          value={editCloudFormat}
+                          onChange={(e) => setEditCloudFormat(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-subtle)', fontSize: '0.82rem' }}
+                        >
+                          <option value="xlsx">Planilha Excel (.xlsx / Google Sheets)</option>
+                          <option value="docx">Documento Word (.docx / Google Docs)</option>
+                          <option value="pptx">Apresentação (.pptx / Google Slides)</option>
+                          <option value="pdf">Documento PDF (.pdf)</option>
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      {/* Arquivo Atual */}
+                      <div style={{
+                        fontSize: '0.8rem',
+                        color: '#4B5563',
+                        backgroundColor: '#FFFFFF',
+                        padding: '0.55rem 0.75rem',
+                        borderRadius: '6px',
+                        border: '1px solid #E5E7EB',
+                        marginBottom: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}>
+                        <span>
+                          Arquivo Atual: <strong>{editingDoc.originalFileName || editingDoc.title}</strong>
+                        </span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                          {editingDoc.fileSize}
+                        </span>
+                      </div>
+
+                      {/* Substituir por novo arquivo */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
+                          Substituir por um novo arquivo (opcional):
+                        </label>
+                        
+                        <input
+                          type="file"
+                          ref={editFileInputRef}
+                          style={{ display: 'none' }}
+                          accept=".xlsx,.xls,.csv,.doc,.docx,.ppt,.pptx,.pdf,.txt"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setEditNewFile(e.target.files[0]);
+                            }
+                          }}
+                        />
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <button
+                            type="button"
+                            onClick={() => editFileInputRef.current?.click()}
+                            style={{
+                              padding: '0.45rem 0.85rem',
+                              backgroundColor: '#FFFFFF',
+                              border: '1.5px dashed var(--primary-brown)',
+                              borderRadius: '6px',
+                              color: 'var(--primary-brown)',
+                              fontSize: '0.78rem',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.35rem'
+                            }}
+                          >
+                            <UploadCloud size={14} /> Selecionar Nova Planilha/Arquivo
+                          </button>
+
+                          {editNewFile && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: '#16A34A', fontWeight: 700 }}>
+                              <Check size={14} />
+                              <span>{editNewFile.name} ({(editNewFile.size / 1024).toFixed(0)} KB)</span>
+                              <button
+                                type="button"
+                                onClick={() => setEditNewFile(null)}
+                                style={{ background: 'none', border: 'none', color: '#DC2626', cursor: 'pointer', padding: 0 }}
+                                title="Cancelar substituição"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+                          Se nenhum novo arquivo for selecionado, o arquivo atual será mantido.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Botões */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setEditingDoc(null)}
+                    disabled={isSavingEdit}
+                    style={{ fontSize: '0.84rem' }}
+                  >
+                    Cancelar
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={isSavingEdit}
+                    style={{
+                      fontSize: '0.84rem',
+                      padding: '0.6rem 1.4rem',
+                      backgroundColor: 'var(--primary-brown)',
+                      fontWeight: 800,
+                      gap: '0.4rem'
+                    }}
+                  >
+                    {isSavingEdit ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                    {isSavingEdit ? 'Salvando...' : 'Salvar Alterações'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

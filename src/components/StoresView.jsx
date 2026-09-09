@@ -87,7 +87,7 @@ export default function StoresView() {
     email: '',
     photoUrl: null,
     shoppingMallAdmin: '',
-    franchiseContractExpiration: '',
+    contractExpiryDate: '',
     consultantId: consultants.find(c => (c.role || 'CONSULTOR') === 'CONSULTOR')?.id || ''
   });
 
@@ -106,7 +106,7 @@ export default function StoresView() {
     email: '',
     photoUrl: null,
     shoppingMallAdmin: '',
-    franchiseContractExpiration: '',
+    contractExpiryDate: '',
     consultantId: ''
   });
 
@@ -342,7 +342,7 @@ export default function StoresView() {
       email: store.email ? store.email.toLowerCase().trim() : '',
       photoUrl: store.photoUrl || null,
       shoppingMallAdmin: store.shoppingMallAdmin || '',
-      franchiseContractExpiration: store.franchiseContractExpiration || '',
+      contractExpiryDate: store.contractExpiryDate || store.contract_expiry_date || '',
       consultantId: store.consultantId || ''
     });
   };
@@ -371,7 +371,8 @@ export default function StoresView() {
       shoppingMallAdmin: (editStoreForm.shoppingMallAdmin || '').toUpperCase().trim(),
       franchisee: franchiseeNames,
       phone: formatPhoneNumber(editStoreForm.phone),
-      cep: formatCEP(editStoreForm.cep)
+      cep: formatCEP(editStoreForm.cep),
+      contractExpiryDate: editStoreForm.contractExpiryDate || null
     });
     setEditingStore(null);
   };
@@ -1112,11 +1113,11 @@ export default function StoresView() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Vencimento do Contrato de Franquias</label>
-                  <DateInput 
-                    value={newStore.franchiseContractExpiration || ''} 
-                    onChange={(val) => setNewStore({ ...newStore, franchiseContractExpiration: val })} 
-                    placeholder="DD/MM/AAAA"
+                  <label className="form-label">📅 Vencimento do Contrato de Franquia</label>
+                  <input
+                    type="date"
+                    value={newStore.contractExpiryDate || ''}
+                    onChange={(e) => setNewStore({ ...newStore, contractExpiryDate: e.target.value })}
                   />
                 </div>
 
@@ -1398,11 +1399,11 @@ export default function StoresView() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Vencimento do Contrato de Franquias</label>
-                  <DateInput 
-                    value={editStoreForm.franchiseContractExpiration || ''} 
-                    onChange={(val) => setEditStoreForm({ ...editStoreForm, franchiseContractExpiration: val })} 
-                    placeholder="DD/MM/AAAA"
+                  <label className="form-label">📅 Vencimento do Contrato de Franquia</label>
+                  <input
+                    type="date"
+                    value={editStoreForm.contractExpiryDate || ''}
+                    onChange={(e) => setEditStoreForm({ ...editStoreForm, contractExpiryDate: e.target.value })}
                   />
                 </div>
 

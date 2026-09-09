@@ -91,7 +91,7 @@ export default function FranchiseesView() {
     setEditingFranchisee(fran);
     setFormData({
       name: fran.name || '',
-      email: fran.email || '',
+      email: (fran.email || '').includes(',') ? fran.email.split(',')[0].trim() : (fran.email || ''),
       phone: fran.phone || '',
       photoUrl: fran.photoUrl || null,
       assignedStoreIds: fran.assignedStoreIds || []
@@ -423,17 +423,20 @@ export default function FranchiseesView() {
                     {/* Email */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem' }}>
                       <Mail size={13} color="var(--primary-brown)" />
-                      {fran.email ? (
-                        <a 
-                          href={`mailto:${fran.email}`}
-                          style={{ color: 'var(--primary-brown)', textDecoration: 'underline', fontWeight: 600, wordBreak: 'break-all' }}
-                          title="Enviar e-mail direto para o Franqueado"
-                        >
-                          {fran.email}
-                        </a>
-                      ) : (
-                        <span style={{ color: 'var(--text-muted)' }}>E-mail não cadastrado</span>
-                      )}
+                      {(() => {
+                        const displayEmail = (fran.email || '').includes(',') ? fran.email.split(',')[0].trim() : (fran.email || '').trim();
+                        return displayEmail ? (
+                          <a 
+                            href={`mailto:${displayEmail}`}
+                            style={{ color: 'var(--primary-brown)', textDecoration: 'underline', fontWeight: 600, wordBreak: 'break-all' }}
+                            title="Enviar e-mail direto para o Franqueado"
+                          >
+                            {displayEmail}
+                          </a>
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)' }}>E-mail não cadastrado</span>
+                        );
+                      })()}
                     </div>
 
                     {/* WhatsApp */}

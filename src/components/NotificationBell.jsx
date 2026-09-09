@@ -79,6 +79,32 @@ export default function NotificationBell() {
   // Compute smart notifications from active visits and stores
   const notifications = [];
 
+  // 5. Contract Expiry Alerts for Consultants
+  stores.forEach(store => {
+    if (!store.contract_expiry_date) return;
+    const today = new Date();
+    const expiry = new Date(store.contract_expiry_date);
+    const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+    let level = null;
+    if (diffDays <= 0) level = 'expired';
+    else if (diffDays <= 30) level = '30d';
+    else if (diffDays <= 90) level = '90d';
+    if (level) {
+      notifications.push({
+        id: `contract-${store.id}-${level}`,
+        type: 'contract',
+        level,
+        title: `🔔 Alertas de Vencimento (${level}) - ${store.name}`,
+        description: `Contrato da franquia vence em ${diffDays} dia(s).`,
+        timestamp: diffDays <= 0 ? 'Vencido' : `${diffDays}d`,
+        targetStore: store,
+        badgeColor: level === 'expired' ? '#EF4444' : level === '30d' ? '#F59E0B' : '#10B981',
+        badgeBg: level === 'expired' ? '#FEE2E2' : level === '30d' ? '#FEF3C7' : '#ECFDF5',
+        icon: <Clock size={15} color={level === 'expired' ? '#991B1B' : '#B45309'} />
+      });
+    }
+  });
+
   // 1. SLA Notifications (D-1 e D-0)
   visits.forEach(v => {
     const store = stores.find(s => s.id === v.storeId);

@@ -179,7 +179,13 @@ export function AppProvider({ children }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.map(f => ({
+            ...f,
+            email: f.email && f.email.includes(',') ? f.email.split(',')[0].trim() : (f.email || '').trim(),
+            photoUrl: f.photoUrl || f.photo_url || null
+          }));
+        }
       } catch (e) {}
     }
     return [];
@@ -465,6 +471,25 @@ export function AppProvider({ children }) {
 
   const addDocument = (newDoc) => {
     setDocuments(prev => [newDoc, ...prev]);
+  };
+
+  const updateDocument = (docId, updatedFields) => {
+    setDocuments(prev => {
+      const next = prev.map(d => {
+        if (d.id === docId) {
+          return {
+            ...d,
+            ...updatedFields,
+            updatedAt: new Date().toISOString().split('T')[0]
+          };
+        }
+        return d;
+      });
+      try {
+        localStorage.setItem('spoleto_documents_v1', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
   };
 
   const deleteDocument = async (docId) => {
@@ -793,7 +818,8 @@ export function AppProvider({ children }) {
                 consultantId: cloud.consultant_id || cloud.consultantId || local.consultantId || null,
                 photoUrl: cloud.photo_url || cloud.photoUrl || local.photoUrl || null,
                 shoppingMallAdmin: cloud.shopping_mall_admin || cloud.shoppingMallAdmin || local.shoppingMallAdmin || '',
-                franchiseContractExpiration: cloud.franchise_contract_expiration || cloud.franchiseContractExpiration || local.franchiseContractExpiration || ''
+                franchiseContractExpiration: cloud.franchise_contract_expiration || cloud.franchiseContractExpiration || local.franchiseContractExpiration || '',
+                contractExpiryDate: cloud.contract_expiry_date || local.contractExpiryDate || null
               };
             });
             cloudStores.forEach(s => {
@@ -814,6 +840,7 @@ export function AppProvider({ children }) {
                   photoUrl: s.photo_url || s.photoUrl || null,
                   shoppingMallAdmin: s.shopping_mall_admin || s.shoppingMallAdmin || '',
                   franchiseContractExpiration: s.franchise_contract_expiration || s.franchiseContractExpiration || '',
+                  contractExpiryDate: s.contract_expiry_date || null,
                   status: s.status || 'Ativa'
                 });
               }
@@ -821,37 +848,109 @@ export function AppProvider({ children }) {
             return merged;
           });
 
-          // Reconstruir lista de franqueados da nuvem automaticamente
-          setFranchisees(prev => {
-            const franMap = new Map();
-            prev.forEach(f => franMap.set(f.name.toUpperCase().trim(), f));
+          // Buscar franqueados e vínculos diretamente das tabelas dedicadas no Supabase
+          const { data: cloudFranchisees } = await supabase.from('franchisees').select('*');
+          const { data: cloudStoreLinks } = await supabase.from('store_franchisees').select('*');
 
-            cloudStores.forEach(s => {
-              const fRaw = (s.franchisee || '').trim();
-              if (!fRaw || fRaw.toUpperCase() === 'FRANQUEADO OFICIAL') return;
+          if (cloudFranchisees && cloudFranchisees.length > 0) {
+            const linksByFranId = new Map();
+            if (cloudStoreLinks && cloudStoreLinks.length > 0) {
+              cloudStoreLinks.forEach(l => {
+                if (!linksByFranId.has(l.franchisee_id)) {
+                  linksByFranId.set(l.franchisee_id, []);
+                }
+                linksByFranId.get(l.franchisee_id).push(l.store_id);
+              });
+            }
 
-              const partnerNames = fRaw.split(/[\/•,]/).map(p => p.trim()).filter(Boolean);
-              partnerNames.forEach(pName => {
-                const up = pName.toUpperCase();
-                if (!franMap.has(up)) {
-                  franMap.set(up, {
-                    id: 'fran-' + Math.random().toString(36).substr(2, 7),
-                    name: up,
-                    email: (s.email || '').toLowerCase().trim(),
-                    phone: formatPhoneNumber(s.phone),
-                    assignedStoreIds: [s.id]
+            setFranchisees(prev => {
+              const localById = new Map(prev.map(f => [f.id, f]));
+              const localByName = new Map(prev.map(f => [(f.name || '').toUpperCase().trim(), f]));
+
+              const loaded = cloudFranchisees.map(cf => {
+                const local = localById.get(cf.id) || localByName.get((cf.name || '').toUpperCase().trim());
+                const storeIdsFromLinks = linksByFranId.get(cf.id) || [];
+                const storeIdsFromLocal = local?.assignedStoreIds || [];
+
+                // Também vincula lojas cujos nomes de franqueados batem
+                const storeIdsFromStores = (cloudStores || []).filter(s => {
+                  const sFran = (s.franchisee || '').toUpperCase();
+                  const cfName = (cf.name || '').toUpperCase().trim();
+                  return cfName && sFran.includes(cfName);
+                }).map(s => s.id);
+
+                const allStoreIds = Array.from(new Set([...storeIdsFromLinks, ...storeIdsFromLocal, ...storeIdsFromStores]));
+
+                // Garante que o email seja individual e nunca mesclado
+                let cleanEmail = (cf.email || local?.email || '').toLowerCase().trim();
+                if (cleanEmail.includes(',')) {
+                  cleanEmail = cleanEmail.split(',')[0].trim();
+                }
+
+                return {
+                  id: cf.id,
+                  name: (cf.name || '').toUpperCase().trim(),
+                  email: cleanEmail,
+                  phone: formatPhoneNumber(cf.phone || local?.phone),
+                  photoUrl: cf.photo_url || local?.photoUrl || null,
+                  assignedStoreIds: allStoreIds
+                };
+              });
+
+              // Preserva qualquer franqueado local que ainda não esteja na nuvem
+              const loadedIds = new Set(loaded.map(f => f.id));
+              const loadedNames = new Set(loaded.map(f => f.name));
+              prev.forEach(lf => {
+                if (lf.name && !loadedIds.has(lf.id) && !loadedNames.has((lf.name || '').toUpperCase().trim())) {
+                  loaded.push({
+                    ...lf,
+                    email: lf.email && lf.email.includes(',') ? lf.email.split(',')[0].trim() : (lf.email || '').trim(),
+                    photoUrl: lf.photoUrl || lf.photo_url || null
                   });
-                } else {
-                  const existing = franMap.get(up);
-                  if (!existing.assignedStoreIds.includes(s.id)) {
-                    existing.assignedStoreIds.push(s.id);
-                  }
                 }
               });
-            });
 
-            return Array.from(franMap.values());
-          });
+              return loaded;
+            });
+          } else {
+            // Fallback caso a tabela franchisees esteja temporariamente vazia
+            setFranchisees(prev => {
+              const franMap = new Map();
+              prev.forEach(f => franMap.set(f.name.toUpperCase().trim(), {
+                ...f,
+                email: f.email && f.email.includes(',') ? f.email.split(',')[0].trim() : f.email
+              }));
+
+              cloudStores.forEach(s => {
+                const fRaw = (s.franchisee || '').trim();
+                if (!fRaw || fRaw.toUpperCase() === 'FRANQUEADO OFICIAL') return;
+
+                const partnerNames = fRaw.split(/[\/•,]/).map(p => p.trim()).filter(Boolean);
+                partnerNames.forEach(pName => {
+                  const up = pName.toUpperCase();
+                  if (!franMap.has(up)) {
+                    const sEmail = (s.email || '').trim();
+                    const singleEmail = sEmail.includes(',') ? '' : sEmail.toLowerCase();
+                    franMap.set(up, {
+                      id: 'fran-' + Math.random().toString(36).substr(2, 7),
+                      name: up,
+                      email: singleEmail,
+                      phone: formatPhoneNumber(s.phone),
+                      photoUrl: null,
+                      assignedStoreIds: [s.id]
+                    });
+                  } else {
+                    const existing = franMap.get(up);
+                    if (!existing.assignedStoreIds.includes(s.id)) {
+                      existing.assignedStoreIds.push(s.id);
+                    }
+                  }
+                });
+              });
+
+              return Array.from(franMap.values());
+            });
+          }
         }
 
         // Fetch Categories
@@ -1352,7 +1451,9 @@ export function AppProvider({ children }) {
     phone: st.phone ? formatPhoneNumber(st.phone) : '',
     email: st.email ? st.email.toLowerCase().trim() : '',
     consultant_id: st.consultantId || null,
-    photo_url: st.photoUrl || null
+    photo_url: st.photoUrl || null,
+    shopping_mall_admin: st.shoppingMallAdmin || null,
+    contract_expiry_date: st.contractExpiryDate || null
   });
 
   // Add Store
@@ -1374,6 +1475,7 @@ export function AppProvider({ children }) {
       photoUrl: storeData.photoUrl || null,
       shoppingMallAdmin: storeData.shoppingMallAdmin ? storeData.shoppingMallAdmin.toUpperCase().trim() : '',
       franchiseContractExpiration: storeData.franchiseContractExpiration || '',
+      contractExpiryDate: storeData.contractExpiryDate || null,
       status: 'Ativa'
     };
 
@@ -1439,7 +1541,8 @@ export function AppProvider({ children }) {
       consultantId: newConsultantId,
       photoUrl: updatedData.photoUrl !== undefined ? updatedData.photoUrl : (oldStore?.photoUrl || null),
       shoppingMallAdmin: updatedData.shoppingMallAdmin !== undefined ? (updatedData.shoppingMallAdmin ? updatedData.shoppingMallAdmin.toUpperCase().trim() : '') : (oldStore?.shoppingMallAdmin || ''),
-      franchiseContractExpiration: updatedData.franchiseContractExpiration !== undefined ? updatedData.franchiseContractExpiration : (oldStore?.franchiseContractExpiration || '')
+      franchiseContractExpiration: updatedData.franchiseContractExpiration !== undefined ? updatedData.franchiseContractExpiration : (oldStore?.franchiseContractExpiration || ''),
+      contractExpiryDate: updatedData.contractExpiryDate !== undefined ? (updatedData.contractExpiryDate || null) : (oldStore?.contractExpiryDate || oldStore?.contract_expiry_date || null)
     };
 
     // Atualiza o estado das lojas e persiste imediatamente no LocalStorage
@@ -1608,7 +1711,7 @@ export function AppProvider({ children }) {
             const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
             await supabase.from('stores').update({
               franchisee: partners.map(p => p.name).join(' / '),
-              email: partners.map(p => p.email).filter(Boolean).join(', '),
+              email: partners[0]?.email || '',
               phone: partners[0]?.phone || ''
             }).eq('id', sId);
           }
@@ -1631,7 +1734,7 @@ export function AppProvider({ children }) {
       updatedObj = {
         ...f,
         name: data.name ? data.name.toUpperCase().trim() : f.name,
-        email: data.email !== undefined ? data.email.toLowerCase().trim() : f.email,
+        email: data.email !== undefined ? (data.email.includes(',') ? data.email.split(',')[0].trim() : data.email.toLowerCase().trim()) : f.email,
         phone: data.phone !== undefined ? formatPhoneNumber(data.phone) : f.phone,
         photoUrl: data.photoUrl !== undefined ? data.photoUrl : (f.photoUrl || null),
         assignedStoreIds: newStoreIds
@@ -1653,7 +1756,7 @@ export function AppProvider({ children }) {
         return {
           ...s,
           franchisee: partners.map(p => p.name).join(' / '),
-          email: partners.map(p => p.email).filter(Boolean).join(', ') || s.email,
+          email: (!s.email || s.email.includes(',')) ? (partners[0]?.email || '') : s.email,
           phone: partners[0]?.phone || s.phone
         };
       }
@@ -1684,7 +1787,7 @@ export function AppProvider({ children }) {
             const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
             await supabase.from('stores').update({
               franchisee: partners.map(p => p.name).join(' / '),
-              email: partners.map(p => p.email).filter(Boolean).join(', '),
+              email: partners[0]?.email || '',
               phone: partners[0]?.phone || ''
             }).eq('id', sId);
           }
@@ -1711,7 +1814,7 @@ export function AppProvider({ children }) {
         return {
           ...s,
           franchisee: partners.map(p => p.name).join(' / '),
-          email: partners.map(p => p.email).filter(Boolean).join(', ') || '',
+          email: partners[0]?.email || '',
           phone: partners[0]?.phone || s.phone
         };
       }
@@ -1728,7 +1831,7 @@ export function AppProvider({ children }) {
             const partners = nextFranchisees.filter(f => f.assignedStoreIds && f.assignedStoreIds.includes(sId));
             await supabase.from('stores').update({
               franchisee: partners.map(p => p.name).join(' / '),
-              email: partners.map(p => p.email).filter(Boolean).join(', '),
+              email: partners[0]?.email || '',
               phone: partners[0]?.phone || ''
             }).eq('id', sId);
           }
@@ -1984,6 +2087,7 @@ export function AppProvider({ children }) {
       isRepositoryOpen,
       setIsRepositoryOpen,
       addDocument,
+      updateDocument,
       deleteDocument,
       syncDocumentsWithSupabaseStorage,
       turnoverRecords,

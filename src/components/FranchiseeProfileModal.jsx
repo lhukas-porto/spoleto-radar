@@ -260,32 +260,35 @@ export default function FranchiseeProfileModal() {
                   </span>
                 )}
 
-                {fran.email ? (
-                  <a 
-                    href={`mailto:${fran.email}`}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      padding: '0.35rem 0.75rem',
-                      background: 'rgba(59, 130, 246, 0.25)',
-                      border: '1px solid #60A5FA',
-                      borderRadius: '8px',
-                      color: '#EFF6FF',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      textDecoration: 'none'
-                    }}
-                    title="Enviar e-mail para o franqueado"
-                  >
-                    <Mail size={14} color="#93C5FD" />
-                    {fran.email}
-                  </a>
-                ) : (
-                  <span style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.7)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <Mail size={12} /> Sem e-mail
-                  </span>
-                )}
+                {(() => {
+                  const displayEmail = (fran.email || '').includes(',') ? fran.email.split(',')[0].trim() : (fran.email || '').trim();
+                  return displayEmail ? (
+                    <a 
+                      href={`mailto:${displayEmail}`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        padding: '0.35rem 0.75rem',
+                        background: 'rgba(59, 130, 246, 0.25)',
+                        border: '1px solid #60A5FA',
+                        borderRadius: '8px',
+                        color: '#EFF6FF',
+                        fontSize: '0.76rem',
+                        fontWeight: 700,
+                        textDecoration: 'none'
+                      }}
+                      title="Enviar e-mail para o franqueado"
+                    >
+                      <Mail size={14} color="#93C5FD" />
+                      {displayEmail}
+                    </a>
+                  ) : (
+                    <span style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.7)', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Mail size={12} /> Sem e-mail
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           </div>
