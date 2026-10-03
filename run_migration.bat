@@ -2,7 +2,7 @@
 rem Change to project root
 cd /d "%~dp0"
 rem Apply Supabase migrations
-supabase db push
+supabase db push --file supabase_schema_update.sql
 if %errorlevel% neq 0 (
   echo Migration failed with exit code %errorlevel%
 ) else (

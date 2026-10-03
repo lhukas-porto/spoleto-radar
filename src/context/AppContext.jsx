@@ -46,6 +46,15 @@ export function AppProvider({ children }) {
   // Navigation State
   const [activeTab, setActiveTab] = useState('dashboard');
   
+  // Toast Helper
+  const [toastMessage, setToastMessage] = useState(null);
+  const showToast = React.useCallback((message) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4000);
+  }, []);
+  
   // Data States (Local + Cloud Sincronizado com migração automática v2)
   const [stores, setStores] = useState(() => {
     if (localStorage.getItem('trigo_stores') && !localStorage.getItem('trigo_stores_v2')) {
@@ -596,43 +605,121 @@ export function AppProvider({ children }) {
   };
 
   // ==========================================
-  // HIERARQUIA & SIMULADOR DE PERFIS ("VER COMO...")
-  // Roles: 'ADMIN' | 'DIRETORIA' | 'GERENTE_NACIONAL' | 'GERENTE_REGIONAL' | 'CONSULTOR'
+  // AUTENTICAÇÃO REAL & HIERARQUIA CORPORATIVA
+  // Usuário Autorizado nesta fase: Liliane Cury (Gerência Nacional)
   // ==========================================
-  const [simulatedRole, setSimulatedRole] = useState(() => {
-    const saved = localStorage.getItem('spoleto_simulated_role_v1');
-    if (saved && saved !== 'ADMIN') return saved;
-    return 'DIRETORIA';
-  });
-
-  const [simulatedUserId, setSimulatedUserId] = useState(() => {
-    return localStorage.getItem('spoleto_simulated_user_id_v1') || '';
-  });
-
-  useEffect(() => {
+  const [currentUser, setCurrentUser] = useState(() => {
     try {
-      localStorage.setItem('spoleto_simulated_role_v1', simulatedRole);
-      localStorage.setItem('spoleto_simulated_user_id_v1', simulatedUserId);
+      const saved = localStorage.getItem('spoleto_auth_user_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.email?.toLowerCase() === 'liliane.cury@spoleto.com.br') {
+          return parsed;
+        }
+      }
     } catch (e) {}
-  }, [simulatedRole, simulatedUserId]);
+    return null;
+  });
+
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  // Perfil padrão garantido da Liliane Cury
+  const getLilianeProfile = React.useCallback(() => {
+    const staffEntry = (consultants || []).find(c => c.email?.toLowerCase() === 'liliane.cury@spoleto.com.br') ||
+                       (consultants || []).find(c => c.role === 'GERENTE_NACIONAL');
+    return {
+      id: staffEntry?.id || 'staff-1788278683147',
+      name: staffEntry?.name || 'LILIANE TAHAN CURY TEIXEIRA DE RESENDE',
+      shortName: 'Liliane Cury',
+      email: 'liliane.cury@spoleto.com.br',
+      role: 'GERENTE_NACIONAL',
+      region: staffEntry?.region || 'Nacional / Brasil',
+      reportsTo: staffEntry?.reportsTo || 'staff-1788284716654',
+      photoUrl: staffEntry?.photoUrl || null
+    };
+  }, [consultants]);
+
+  const loginWithSession = React.useCallback((session) => {
+    const sessionEmail = (session?.user?.email || '').trim().toLowerCase();
+    if (sessionEmail === 'liliane.cury@spoleto.com.br') {
+      const profile = getLilianeProfile();
+      setCurrentUser(profile);
+      setSimulatedRole('GERENTE_NACIONAL');
+      setSimulatedUserId(profile.id);
+      try {
+        localStorage.setItem('spoleto_auth_user_v2', JSON.stringify(profile));
+      } catch (e) {}
+      showToast('Bem-vinda, Liliane Cury! 🎯');
+    }
+  }, [getLilianeProfile, showToast]);
+
+  const logout = async () => {
+    try {
+      if (isSupabaseConfigured && supabase) {
+        await supabase.auth.signOut();
+      }
+    } catch (err) {
+      console.warn('Erro ao deslogar do Supabase:', err);
+    }
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem('spoleto_auth_user_v2');
+    } catch (e) {}
+    showToast('Sessão encerrada com sucesso.');
+  };
+
+  // Checagem de sessão do Supabase no carregamento inicial
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkSupabaseSession() {
+      if (!isSupabaseConfigured || !supabase) {
+        if (isMounted) setIsAuthLoading(false);
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email?.trim().toLowerCase() === 'liliane.cury@spoleto.com.br') {
+          if (isMounted) loginWithSession(session);
+        }
+      } catch (err) {
+        console.warn('Erro ao verificar sessão Supabase:', err);
+      } finally {
+        if (isMounted) setIsAuthLoading(false);
+      }
+    }
+
+    checkSupabaseSession();
+
+    let authListener = null;
+    if (isSupabaseConfigured && supabase) {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session?.user?.email?.trim().toLowerCase() === 'liliane.cury@spoleto.com.br') {
+          loginWithSession(session);
+        } else if (event === 'SIGNED_OUT') {
+          setCurrentUser(null);
+          try {
+            localStorage.removeItem('spoleto_auth_user_v2');
+          } catch (e) {}
+        }
+      });
+      authListener = data?.subscription;
+    }
+
+    return () => {
+      isMounted = false;
+      authListener?.unsubscribe?.();
+    };
+  }, [consultants, loginWithSession]);
+
+  // Papel e ID do usuário: fixados na Gerência Nacional quando logado como Liliane
+  const [simulatedRole, setSimulatedRole] = useState('GERENTE_NACIONAL');
+  const [simulatedUserId, setSimulatedUserId] = useState('staff-1788278683147');
 
   const changeSimulatedProfile = (newRole, newUserId = '') => {
     setSimulatedRole(newRole);
     setSimulatedUserId(newUserId);
-    
-    // Se o usuário atual não tiver permissão para configurações e estiver nela, redireciona para o dashboard
-    if (['CONSULTOR', 'GERENTE_REGIONAL'].includes(newRole) && (activeTab === 'taxonomy' || activeTab === 'settings')) {
-      setActiveTab('dashboard');
-    }
-
-    const roleNames = {
-      ADMIN: 'Administrador (Acesso Total)',
-      DIRETORIA: 'Diretoria (Nacional)',
-      GERENTE_NACIONAL: 'Gerência Nacional',
-      GERENTE_REGIONAL: 'Gerente Regional',
-      CONSULTOR: 'Consultor(a) de Negócios'
-    };
-    showToast(`👁️ Modo simulador: ${roleNames[newRole] || newRole}`);
   };
 
   // Usuário atualmente ativo no simulador
@@ -719,7 +806,6 @@ export function AppProvider({ children }) {
   const [selectedVisitForReport, setSelectedVisitForReport] = useState(null);
   const [selectedStoreForProfile, setSelectedStoreForProfile] = useState(null);
   const [selectedFranchiseeForProfile, setSelectedFranchiseeForProfile] = useState(null);
-  const [toastMessage, setToastMessage] = useState(null);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
 
   // Cleanup deprecated legacy LocalStorage keys
@@ -989,38 +1075,54 @@ export function AppProvider({ children }) {
     syncDocumentsWithSupabaseStorage();
   }, []);
 
-  // Save to LocalStorage (v2 keys)
+  // Save to LocalStorage com proteção defensiva contra QuotaExceededError
   useEffect(() => {
-    localStorage.setItem('trigo_stores_v2', JSON.stringify(stores));
+    try {
+      localStorage.setItem('trigo_stores_v2', JSON.stringify(stores));
+    } catch (e) {
+      console.warn('Limite de armazenamento atingido para trigo_stores_v2:', e);
+    }
   }, [stores]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_consultants_v2', JSON.stringify(consultants));
+    try {
+      localStorage.setItem('trigo_consultants_v2', JSON.stringify(consultants));
+    } catch (e) {
+      console.warn('Limite de armazenamento atingido para trigo_consultants_v2:', e);
+    }
   }, [consultants]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_categories_v2', JSON.stringify(categories));
+    try {
+      localStorage.setItem('trigo_categories_v2', JSON.stringify(categories));
+    } catch (e) {
+      console.warn('Limite de armazenamento atingido para trigo_categories_v2:', e);
+    }
   }, [categories]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_visits_v2', JSON.stringify(visits));
+    try {
+      localStorage.setItem('trigo_visits_v2', JSON.stringify(visits));
+    } catch (e) {
+      console.warn('Limite de armazenamento atingido para trigo_visits_v2:', e);
+    }
   }, [visits]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_regions_v2', JSON.stringify(regions));
+    try {
+      localStorage.setItem('trigo_regions_v2', JSON.stringify(regions));
+    } catch (e) {
+      console.warn('Limite de armazenamento atingido para trigo_regions_v2:', e);
+    }
   }, [regions]);
 
   useEffect(() => {
-    localStorage.setItem('trigo_franchisees_v4', JSON.stringify(franchisees));
+    try {
+      localStorage.setItem('trigo_franchisees_v4', JSON.stringify(franchisees));
+    } catch (e) {
+      console.warn('Limite de armazenamento atingido para trigo_franchisees_v4:', e);
+    }
   }, [franchisees]);
-
-  // Toast Helper
-  const showToast = (message) => {
-    setToastMessage(message);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 4000);
-  };
 
   // Add Visit
   const addVisit = async (visitData) => {
@@ -2110,6 +2212,11 @@ export function AppProvider({ children }) {
       rolesList: DEFAULT_ROLES,
       isAdminUnlocked,
       toggleAdminUnlock,
+      // Autenticação Corporativa (Supabase Auth)
+      currentUser,
+      isAuthLoading,
+      loginWithSession,
+      logout,
       // Hierarquia & Simulador de Perfis
       simulatedRole,
       simulatedUserId,
