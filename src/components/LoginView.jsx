@@ -274,22 +274,6 @@ export default function LoginView({ onLoginSuccess }) {
           }}>
             Portal Executivo de Gestão da Rede
           </p>
-
-          <div style={{
-            marginTop: '0.85rem',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            background: 'rgba(241, 168, 10, 0.18)',
-            border: '1px solid rgba(241, 168, 10, 0.4)',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '20px',
-            fontSize: '0.74rem',
-            color: '#FDE68A',
-            fontWeight: 600
-          }}>
-            <span>Acesso ao Sistema</span>
-          </div>
         </div>
 
         {/* Abas de Acesso */}
