@@ -288,8 +288,7 @@ export default function LoginView({ onLoginSuccess }) {
             color: '#FDE68A',
             fontWeight: 600
           }}>
-            <ShieldCheck size={13} color="#F1A80A" />
-            <span>Fase Piloto • Acesso Gerência Nacional</span>
+            <span>Acesso ao Sistema</span>
           </div>
         </div>
 
@@ -410,7 +409,6 @@ export default function LoginView({ onLoginSuccess }) {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="ex: liliane.cury@spoleto.com.br"
                     style={{
                       width: '100%',
                       padding: '0.75rem 0.75rem 0.75rem 2.4rem',
@@ -457,7 +455,6 @@ export default function LoginView({ onLoginSuccess }) {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Sua senha cadastrada no Supabase"
                     style={{
                       width: '100%',
                       padding: '0.75rem 2.5rem 0.75rem 2.4rem',
@@ -545,9 +542,9 @@ export default function LoginView({ onLoginSuccess }) {
                 lineHeight: 1.4
               }}>
                 <div style={{ fontWeight: 700, marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <KeyRound size={14} color="#D97706" /> Definir Senha Inicial da Gerência Nacional
+                  <KeyRound size={14} color="#D97706" /> Cadastro de Senha Inicial
                 </div>
-                Digite uma senha segura para cadastrar o acesso da Liliane Cury diretamente no Supabase Auth.
+                Digite uma senha segura para cadastrar o seu acesso no sistema.
               </div>
 
               <div style={{ marginBottom: '1.15rem' }}>
@@ -586,7 +583,6 @@ export default function LoginView({ onLoginSuccess }) {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Ex: Spoleto@2026"
                     style={{
                       width: '100%',
                       padding: '0.75rem 2.5rem 0.75rem 2.4rem',
@@ -736,7 +732,7 @@ export default function LoginView({ onLoginSuccess }) {
           }}>
             <ShieldAlert size={15} color="#94A3B8" style={{ flexShrink: 0 }} />
             <span>
-              Ambiente protegido com RLS e criptografia JWT. Acesso exclusivo autorizado para <strong>{AUTHORIZED_EMAIL}</strong>.
+              Ambiente protegido com RLS e criptografia JWT.
             </span>
           </div>
         </div>
